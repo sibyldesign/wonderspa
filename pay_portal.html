@@ -35,20 +35,20 @@
   </div>
 
   <script>
-    // 🚨 雅翎，請把下面這行引號內，精準換成妳「GAS 後端 Main.gs 部署出來的正式網路應用程式網址(.exec結尾)」
-    const GAS_BACKEND_API = "https://script.google.com/macros/s/AKfycbwIGY8L774iM-U50uniLROYu_2I-T-osoV6xOYVk99CaQZt6kMRJmgnBhWhxvS35A5r/exec";
+    <script>
+    const GAS_BACKEND_API = "https://script.google.com/macros/s/妳最新正式部署的ID/exec";
 
     const urlParams = new URLSearchParams(window.location.search);
     const orderId = urlParams.get('orderId');
     
     window.onload = function() {
       if (!orderId) { 
-        alert('缺少訂單編號，請重新操作。'); 
+        alert('缺少訂單編號，請重新從預約前台操作。'); 
         return; 
       }
             
-      // 🚀 門戶核心：透過 fetch API 跨界跟 GAS 後端要綠界表單
-      fetch(`${GAS_BACKEND_API}?action=getPaymentForm&orderId=${orderId}`)
+      // 🚀 核心：拿著 orderId，透過網址 fetch 跨界向後端要綠界表單
+      fetch(`${GAS_BACKEND_API}?action=getPaymentForm&orderId=${orderId.trim()}`)
         .then(response => response.json())
         .then(res => {
           if (res.success && res.html) {
@@ -60,8 +60,7 @@
           }
         })
         .catch(err => {
-          alert('連線至伺服器逾時，請確認後端 API 狀態。');
-          console.error(err);
+          alert('連線至 Google 伺服器超時或 API 網址填錯，詳情：' + err.toString());
         });
     };
 
@@ -70,7 +69,7 @@
       if (form) {
         form.submit();
       } else {
-        alert('付款表單尚未準備就緒，請稍候。');
+        alert('付款表單尚未準備就緒，請稍候再試。');
       }
     }
   </script>
