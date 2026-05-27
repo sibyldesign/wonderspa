@@ -35,8 +35,8 @@
   </div>
 
   <script>
-    // 🚨 請在下方引號中，精準換成妳「最新正式部署出來」的 .exec 後端網址
-    const GAS_BACKEND_API = "https://script.google.com/macros/s/AKfycbz_XXXXXXXXXXXX/exec";
+    // 🚀【精準綁定】這裏已經為妳牢牢綁定最新的 GAS-B 老闆後台正式 .exec 網址
+    const GAS_BACKEND_API = "https://script.google.com/macros/s/AKfycbzJUWT6hOXHuZx5RRwCrY8FdzWX7jHt3Hc9SQFoR51kNNqc9Nz30jAhxpBWkYMqpdQ/exec";
 
     const urlParams = new URLSearchParams(window.location.search);
     const orderId = urlParams.get('orderId');
@@ -47,26 +47,38 @@
         return; 
       }
             
-      // 🚀 透過獨立網域 fetch 跨界安全通訊，向後端索取綠界表單 HTML
-      fetch(`${GAS_BACKEND_API}?action=getPaymentForm&orderId=${orderId.trim()}`)
-        .then(response => response.json())
-        .then(res => {
-          if (res.success && res.html) {
-            document.getElementById('formContainer').innerHTML = res.html;
-            document.getElementById('loadingUI').classList.add('hidden');
-            document.getElementById('readyUI').classList.remove('hidden');
-          } else {
-            alert('金流資料加載失敗：' + (res.message || '未知錯誤'));
-          }
+      // 🚀【精準血管修正】改用標準 CORS POST 模式跨網域打包發送，讓 GAS-B doPost 完美讀取
+      fetch(GAS_BACKEND_API, {
+        method: "POST",
+        mode: "cors",
+        contentType: "application/json",
+        body: JSON.stringify({
+          action: "getPaymentForm",
+          orderId: orderId.trim()
         })
-        .catch(err => {
-          alert('連線至 Google 伺服器超時，請確認後端 API 部署狀態。');
-          console.error(err);
-        });
+      })
+      .then(response => response.json())
+      .then(res => {
+        if (res.success && res.html) {
+          document.getElementById('formContainer').innerHTML = res.html;
+          document.getElementById('loadingUI').classList.add('hidden');
+          document.getElementById('readyUI').classList.remove('hidden');
+          
+          // 💡 自動化極致：如果希望客人一轉進來 GitHub「完全不用按按鈕，0秒自動轉去綠界」，可以把下面這行的雙斜線拿掉：
+          // submitToECPay();
+        } else {
+          alert('金流資料加載失敗：' + (res.message || '未知錯誤'));
+        }
+      })
+      .catch(err => {
+        alert('連線至 Google 伺服器超時，請確認後端 API 部署狀態（須為所有人可存取）。');
+        console.error(err);
+      });
     };
 
     function submitToECPay() {
-      const form = document.getElementById('ecpayForm');
+      // 💡 修正：對位 GAS-B 生成的表單 ID (ecpayAutoForm)
+      const form = document.getElementById('ecpayAutoForm');
       if (form) {
         form.submit();
       } else {
