@@ -1,179 +1,144 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <base target="_top">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>專屬安全補付通道 - WONDER WANDER</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght=400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <style>
-    body { font-family: 'Noto Sans TC', sans-serif; background-color: #F5F1ED; color: #7E6B5A; }
-    .fade-in { animation: fadeIn 0.5s ease-out forwards; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-  </style>
-  <script>
-    tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: '#D9C5B2', dark: '#7E6B5A', accent: '#C5A059', surface: '#FFFFFF', inputbg: '#FAF9F8' } } } }
-  </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WONDER WANDER - 安全補付通道</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght=400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+body { font-family: 'Noto Sans TC', sans-serif; background-color: #F5F1ED; color: #7E6B5A; }
+.fade-in { animation: fadeIn 0.6s ease-in-out forwards; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+<script>
+tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: '#D9C5B2', dark: '#7E6B5A', accent: '#C5A059', surface: '#FFFFFF' } } } }
+</script>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen p-4 antialiased">
+<body class="antialiased min-h-screen flex flex-col justify-between">
 
-  <div class="text-center mb-6 fade-in">
-    <img src="https://i.postimg.cc/ZYvTKGkY/Wonder-SPA-LOGO.png" alt="WONDER WANDER" class="h-24 w-auto object-contain mx-auto opacity-90">
-    <h1 class="text-xs font-bold tracking-[0.3em] text-dark/70 mt-3">補付專用金流通道</h1>
-    <div class="h-px w-8 bg-accent mx-auto mt-2 opacity-40"></div>
+<header class="bg-surface shadow-sm flex flex-col justify-center items-center pt-8 pb-6 px-4">
+  <img src="https://i.postimg.cc/ZYvTKGkY/Wonder-SPA-LOGO.png" alt="WONDER WANDER" class="h-28 w-auto object-contain">
+  <div class="text-center mt-3">
+    <h1 class="text-xs font-bold tracking-[0.3em] text-dark/80">SECURE PAYMENT PORTAL</h1>
+    <div class="h-px w-10 bg-accent mx-auto mt-2 opacity-50"></div>
   </div>
+</header>
 
-  <div class="bg-surface w-full max-w-sm rounded-[2rem] p-6 shadow-xl border border-secondary/20 fade-in relative overflow-hidden">
-    
-    <div class="bg-[#F5EBE1] p-4 rounded-2xl border border-accent/20 text-center mb-5">
-      <p class="text-[11px] text-dark/80 font-bold leading-relaxed">
-        <i class="fas fa-exclamation-circle text-accent mr-1"></i> 若您剛剛在預約畫面「前往支付」卡住轉圈圈，請在此處填寫資訊，即可直接安全跳轉至綠界完成刷卡付款。
-      </p>
+<main class="flex-1 px-6 py-8 w-full max-w-[420px] mx-auto flex flex-col justify-center items-center text-center fade-in">
+  
+  <div class="bg-surface p-6 rounded-[1.5rem] border border-secondary/20 shadow-lg text-left w-full box-border space-y-5">
+    <p class="text-xs font-bold text-accent tracking-widest border-b border-secondary/10 pb-2 flex items-center">
+      <i class="fas fa-shield-alt mr-1.5"></i> 智慧型安全補付安全網
+    </p>
+
+    <div class="space-y-1.5">
+      <label class="text-[11px] font-bold text-dark/70 tracking-wider">輸入預約時的手機號碼查詢訂單：</label>
+      <div class="flex gap-2">
+        <input type="tel" id="queryPhone" placeholder="例如：0912345678" class="flex-1 bg-primary/50 border border-secondary/30 rounded-xl px-3.5 py-2.5 text-xs font-medium text-dark placeholder-dark/30 focus:outline-none focus:border-accent transition-colors">
+        <button type="button" onclick="searchOrderByPhone()" class="bg-dark hover:bg-accent text-white text-xs font-bold px-4 rounded-xl shadow-md transition-colors tracking-wider">
+          查詢訂單
+        </button>
+      </div>
     </div>
 
-    <div class="space-y-4">
-      
-      <div>
-        <label class="block text-[10px] font-bold text-dark/60 mb-1 pl-1"> 1. 輸入預約的手機號碼 (對帳必填) </label>
-        <div class="relative">
-          <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-dark/40 text-xs"><i class="fas fa-phone-alt"></i></span>
-          <input type="tel" id="guestPhone" placeholder="請輸入手機號碼" class="w-full bg-inputbg border border-secondary/30 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-accent font-medium">
-        </div>
+    <div id="orderStatusBox" class="bg-primary/30 rounded-xl p-4 border border-dashed border-secondary/30 hidden space-y-2">
+      <div class="text-[11px] text-dark/60 font-bold flex justify-between">
+        <span>查詢到的單號：</span>
+        <span id="displayOrderId" class="text-dark font-mono">--</span>
       </div>
-
-      <div>
-        <label class="block text-[10px] font-bold text-dark/60 mb-1 pl-1"> 2. 選擇您要付款的服務項目 </label>
-        <div class="relative">
-          <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-dark/40 text-xs"><i class="fas fa-spa"></i></span>
-          <select id="serviceSelect" class="w-full bg-inputbg border border-secondary/30 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-accent appearance-none font-medium text-dark/80">
-            <option value="" disabled selected>🔍 正在與雲端價目表同步...</option>
-          </select>
-          <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-dark/40 text-xs"><i class="fas fa-chevron-down"></i></span>
-        </div>
+      <div class="h-px bg-secondary/10 w-full"></div>
+      <div class="text-xs font-bold text-dark flex justify-between items-baseline">
+        <span>應付金額：</span>
+        <span class="text-lg text-accent font-bold tracking-tight">自動加載中...</span>
       </div>
+    </div>
 
-      <div class="w-full h-[1px] bg-secondary/20 my-4"></div>
-
-      <div id="ecpayFormSlot" style="display: none;"></div>
-
-      <button type="button" onclick="launchECPay()" id="payBtn" class="w-full bg-dark hover:bg-accent text-white font-bold py-4 rounded-xl mt-2 text-xs tracking-[0.2em] transition-all shadow-md flex items-center justify-center gap-2 group">
-        <i class="fas fa-shield-alt text-accent"></i> 建立安全金流連線
+    <div id="paymentActionArea" class="hidden pt-2">
+      <button type="button" onclick="executePay()" class="w-full bg-[#7E6B5A] hover:bg-[#C5A059] text-white font-bold py-3.5 px-6 rounded-xl shadow-xl shadow-dark/10 transition-all tracking-[0.2em] text-xs flex items-center justify-center gap-2 group transform active:scale-95 duration-200">
+        <i class="fas fa-credit-card text-xs text-secondary group-hover:text-white transition-colors"></i>
+        重新連線前往支付
+        <i class="fas fa-arrow-right text-xs opacity-70 group-hover:translate-x-1 transition-transform"></i>
       </button>
-
     </div>
   </div>
 
-  <p class="text-[9px] text-secondary/70 font-bold tracking-widest mt-6">Secured by ECPay & Sibyl數位管家</p>
+  <div id="ecpayFormContainer" style="display:none !important;"></div>
 
-  <script>
-    // 👑 綁定妳的後台大腦專案 (GAS-B) 的正式發布網址 (.exec)
-    const BACKEND_API = "https://script.google.com/macros/s/AKfycbwIGY8L774iM-U50uniLROYu_2I-T-osoV6xOYVk99CaQZt6kMRJmgnBhWhxvS35A5r/exec";
-    
-    // 從大腦後台撈取「Service_服務價目表」最新上架資訊
-    window.onload = function() {
-      fetch(BACKEND_API, {
-        method: "POST",
-        mode: "cors",
-        body: JSON.stringify({ action: "getPaymentForm", orderId: "FETCH_SERVICES_LIST" }) 
-      })
-      .then(res => res.json())
-      .then(data => {
-        const select = document.getElementById('serviceSelect');
-        select.innerHTML = '<option value="" disabled selected>-- 請選擇服務項目 --</option>';
-        
-        // 💡 預設的保底選單，萬一連線超時也有按鈕可以按
-        let services = [
-          { name: "全身指油壓| - 120分鐘", price: 3880 },
-          { name: "全身指油壓| - 90分鐘", price: 3580 }
-        ];
-        
-        if (data && data.success && data.list && data.list.length > 0) {
-          services = data.list;
-        }
-        
-        services.forEach(item => {
-          let opt = document.createElement('option');
-          opt.value = item.name + "|" + item.price;
-          opt.innerText = `${item.name} (NT$ ${item.price.toLocaleString()})`;
-          select.appendChild(opt);
-        });
-      })
-      .catch(err => {
-        // 發生任何異常自動切換為保底固定選單，確保營業絕對不中斷
-        const select = document.getElementById('serviceSelect');
-        select.innerHTML = `
-          <option value="" disabled selected>-- 請選擇服務項目 --</option>
-          <option value="肌肉帥哥專屬精油舒壓摩 - 120分鐘|2900">肌肉帥哥專屬精油舒壓摩 - 120分鐘 (NT$ 2,900)</option>
-          <option value="肌肉帥哥專專屬精油舒壓摩 - 90分鐘|2300">肌肉帥哥專屬精油舒壓摩 - 90分鐘 (NT$ 2,300)</option>
-        `;
-      });
-    };
+</main>
 
-    // 🚀 核心：點擊後 0 秒差，原地封裝直接發射去綠界！
-    function launchECPay() {
-      const phone = document.getElementById('guestPhone').value.replace(/\D/g, '');
-      const selectVal = document.getElementById('serviceSelect').value;
-      
-      if (phone.length < 9) { return Swal.fire('填寫錯誤', '請輸入完整的手機號碼以利後台對帳！', 'warning'); }
-      if (!selectVal) { return Swal.fire('尚未選擇', '請選擇您剛剛預約的服務項目與時間！', 'warning'); }
-      
-      const parts = selectVal.split('|');
-      const serviceName = parts[0];
-      const price = parts[1];
-      
-      const btn = document.getElementById('payBtn');
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 金流通道安全加密中...';
-      btn.disabled = true;
-      
-      // 💡 完美對帳關鍵：動態生成補付單號（帶著客人的手機），後台看到這個單號與手機，就能一秒幫他入帳！
-      const timestamp = new Date();
-      const formatTime = timestamp.getFullYear() +
-                         String(timestamp.getMonth()+1).padStart(2,'0') +
-                         String(timestamp.getDate()).padStart(2,'0') +
-                         String(timestamp.getHours()).padStart(2,'0') +
-                         String(timestamp.getMinutes()).padStart(2,'0') +
-                         String(timestamp.getSeconds()).padStart(2,'0');
-      
-      const orderId = "RE" + formatTime + phone.slice(-4);
-      const tradeDate = timestamp.getFullYear() + "/" + String(timestamp.getMonth()+1).padStart(2,'0') + "/" + String(timestamp.getDate()).padStart(2,'0') + " " + String(timestamp.getHours()).padStart(2,'0') + ":" + String(timestamp.getMinutes()).padStart(2,'0') + ":" + String(timestamp.getSeconds()).padStart(2,'0');
+<footer class="pb-8 text-center w-full">
+  <p class="text-[10px] text-secondary font-bold tracking-[0.15em]">Designed by Sibyl數位管家</p>
+</footer>
 
-      // 請求後台大腦安全計算簽章並拉起綠界
-      fetch(BACKEND_API, {
-        method: "POST",
-        mode: "cors",
-        body: JSON.stringify({
-          action: "generateStandaloneForm",
-          orderId: orderId,
-          price: price,
-          service: serviceName,
-          phone: phone,
-          dateStr: tradeDate
-        })
-      })
-      .then(res => res.json())
-      .then(res => {
-        if (res.success && res.html) {
-          const slot = document.getElementById('ecpayFormSlot');
-          slot.innerHTML = res.html;
-          
-          // 0 秒差精準發射！
-          const form = slot.querySelector('form');
-          if (form) { form.submit(); } else { alert('金流表單對接失敗'); }
-        } else {
-          alert('簽章建立失敗：' + res.message);
-          btn.innerHTML = '<i class="fas fa-shield-alt text-accent"></i> 建立安全金流連線';
-          btn.disabled = false;
-        }
-      })
-      .catch(err => {
-        alert('安全通道伺服器過載，請稍後重試。');
-        btn.innerHTML = '<i class="fas fa-shield-alt text-accent"></i> 建立安全金流連線';
-        btn.disabled = false;
-      });
+<script>
+// 💡 請將此處精準換成妳剛才重新部署完畢的 GAS-B 正式版網址！
+const GAS_BACKEND_URL = "https://script.google.com/macros/s/AKfycbwIGY8L774iM-U50uniLROYu_2I-T-osoV6xOYVk99CaQZt6kMRJmgnBhWhxvS35A5r/exec";
+let cachedFormHtml = "";
+
+window.onload = function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const phoneParam = urlParams.get('phone') || urlParams.get('orderId'); // 兼容前台傳來的各種參數
+  if (phoneParam) {
+    document.getElementById('queryPhone').value = phoneParam;
+    searchOrderByPhone();
+  }
+}
+
+function searchOrderByPhone() {
+  const phoneVal = document.getElementById('queryPhone').value.trim();
+  if(!phoneVal) {
+    Swal.fire({ icon: 'warning', title: '請輸入手機號碼', text: '我們需要手機號碼才能幫妳對帳喔！', confirmButtonColor: '#7E6B5A' });
+    return;
+  }
+  
+  Swal.fire({ title: '正在安全通道中對帳...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+  
+  // 💡 向大腦發送帶有手機號碼的查單請求
+  fetch(GAS_BACKEND_URL, {
+    method: "POST",
+    body: JSON.stringify({ action: "getPaymentForm", phone: phoneVal })
+  })
+  .then(res => res.json())
+  .then(res => {
+    Swal.close();
+    if(res.success && res.html) {
+      cachedFormHtml = res.html;
+      document.getElementById('displayOrderId').innerText = res.orderId || "最新預約訂單";
+      document.getElementById('orderStatusBox').classList.remove('hidden');
+      document.getElementById('paymentActionArea').classList.remove('hidden');
+      Swal.fire({ icon: 'success', title: '訂單對帳成功！', text: '已順利帶入最新未付款項目，請點擊下方按鈕前往結帳。', confirmButtonColor: '#7E6B5A' });
+    } else {
+      document.getElementById('orderStatusBox').classList.add('hidden');
+      document.getElementById('paymentActionArea').classList.add('hidden');
+      Swal.fire({ icon: 'info', title: '查無未付款訂單', text: res.message || '該手機號碼目前沒有尚待付款的訂單喔！', confirmButtonColor: '#7E6B5A' });
     }
-  </script>
+  })
+  .catch(err => {
+    Swal.close();
+    Swal.fire({ icon: 'error', title: '安全通道連線失敗', text: '請檢查網路連線或稍後重試。', confirmButtonColor: '#7E6B5A' });
+  });
+}
+
+function executePay() {
+  if(!cachedFormHtml) return;
+  Swal.fire({ title: '正在開啟綠界安全金流...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+  
+  const container = document.getElementById('ecpayFormContainer');
+  container.innerHTML = cachedFormHtml;
+  
+  setTimeout(() => {
+    const form = container.querySelector('form');
+    if(form) {
+      form.submit();
+    } else {
+      Swal.close();
+      Swal.fire({ icon: 'error', title: '金流加載失敗', text: '無法自動提交表單，請重新查詢。', confirmButtonColor: '#7E6B5A' });
+    }
+  }, 300);
+}
+</script>
 </body>
 </html>
