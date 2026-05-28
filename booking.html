@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+<base target="_top">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>WONDER WANDER - 線上智慧預約系統</title>
@@ -12,7 +13,7 @@
 .disabled-date { opacity: 0.3; cursor: not-allowed !important; background-color: #f9f9f9 !important; }
 .disabled-date b { color: #ccc !important; }
 html, body { max-width: 100vw; overflow-x: hidden; min-height: 100%; }
-body { font-family: 'Noto Sans TC', sans-serif; background-color: #F5F1ED; color: #7E6B5A; -webkit-tap-highlight-color: transparent; }
+body { font-family: 'Noto Sans TC', sans-serif; background-color: #F5F1ED; }
 ::-webkit-scrollbar { display: none; }
 .fade-in { animation: fadeIn 0.6s ease-in-out; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -31,10 +32,9 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 </head>
 <body class="text-dark antialiased relative">
 
-<!-- 💎 會員儲值 / 匯款回報視窗 (Modal) -->
 <div id="topUpModal" class="hidden fixed inset-0 bg-dark/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
 <div class="bg-surface w-full max-w-sm rounded-[1.5rem] p-6 shadow-2xl relative fade-in">
-  <button type="button" onclick="closeTopUpModal()" class="absolute top-4 right-4 text-dark/50 hover:text-dark"><i class="fas fa-times text-lg"></i></button>
+  <button type="button" onclick="closeTopUpModal()" class="absolute top-4 right-4 text-dark/50 hover:text-dark"><i class="fas fa-times text-xl"></i></button>
   <h3 class="text-dark font-bold text-sm tracking-widest mb-4 border-b border-secondary/20 pb-2"><i class="fas fa-coins text-accent mr-1"></i> 儲值回報申請</h3>
   <div class="space-y-4">
     <div class="bg-[#F5EBE1] p-3 rounded-xl border border-accent/20 text-center">
@@ -64,7 +64,6 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 
 <main class="px-7 py-6 w-full max-w-[420px] mx-auto space-y-6">
 
-<!-- 📢 店內重要公告天線 (100% 齒輪對齊圖二試算表 `歡慶開幕！`) -->
 <div id="announcementContainer" class="flex justify-center fade-in hidden mb-2">
 <div class="inline-flex items-center justify-center gap-2 bg-[#F5EBE1] text-dark px-5 py-2 rounded-full text-[10px] font-bold tracking-widest shadow-sm">
 <i class="fas fa-bullhorn text-accent"></i><span id="announcementText"></span>
@@ -76,7 +75,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 <h2 class="text-[15px] font-bold tracking-[0.1em] text-dark mb-1 relative z-10">Wonder SPA</h2>
 <p class="text-[10px] font-bold text-accent tracking-widest mb-6 relative z-10">仕女按摩 · 肌肉帥哥按摩師</p>
 <p class="text-dark/80 text-[12px] leading-[2.4] tracking-widest font-bold relative z-10">
-指尖下的親密對話 <br>給肌膚最溫柔的奢華呵護 <br>嚴選肌肉帥哥，40 小時培訓才可上工 <br>忙碌生活中的小確幸，我們為你把關
+指尖下的親密對話 <br>給肌膚最溫柔的奢華呵護 <br>嚴選肌肉帥哥，40 小時培訓才可上工 <br>忙碌生活中的小確幸，我們為情把關
 </p>
 <div class="w-[80%] h-[1px] bg-secondary/30 mx-auto my-6 relative z-10"></div>
 <p class="text-accent/80 text-[12px] tracking-widest serif-italic relative z-10 leading-relaxed">" In the sensory wander,<br>find the wonder within. "</p>
@@ -201,13 +200,12 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 <label class="block text-[10px] font-bold text-dark/60 mb-1.5 pl-1">折扣碼 DISCOUNT CODE</label>
 <div class="flex gap-2">
 <input type="text" id="couponCode" placeholder="如有代碼請輸入" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent uppercase tracking-wider box-border" oninput="this.value = this.value.toUpperCase()">
-<button type="button" id="applyCouponBtn" onclick="applyCoupon()" class="bg-dark text-white px-5 py-3 rounded-xl font-bold tracking-widest text-[12px] hover:bg-accent transition-colors shadow-sm">套用</button>
+<button type="button" id="applyCouponBtn" onclick="applyCoupon()" class="bg-dark text-white px-5 py-3 rounded-xl font-bold tracking-widest text-[12px] hover:bg-accent transition-colors flex-shrink-0 shadow-sm">套用</button>
 </div>
 <div id="couponMessage" class="text-[11px] mt-2 hidden font-bold tracking-wide"></div>
 </div>
 </div>
 
-<!-- 完美對齊原版：付款須知、女性專屬空間勾選聲明區塊 -->
 <div class="bg-surface p-6 rounded-[1.5rem] shadow-soft space-y-4 w-full border border-secondary/10 fade-in">
 <h2 class="text-xs font-bold tracking-widest border-b border-secondary/10 pb-3 flex items-center text-dark">
 <i class="fas fa-info-circle text-accent mr-2"></i>付款須知 PAYMENT NOTICE
@@ -227,15 +225,14 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 </div>
 </div>
 
-<!-- 🗺️ 完美對齊原版：交通導引與社群三大icon區塊 -->
 <div class="mt-8 space-y-6 pb-4 text-center fade-in">
-<div class="bg-surface border border-secondary/30 rounded-[1.5rem ] overflow-hidden shadow-soft text-left">
+<div class="bg-surface border border-secondary/30 rounded-[1.5rem] overflow-hidden shadow-soft text-left">
 <details class="group">
 <summary class="p-5 font-bold text-dark flex items-center justify-between cursor-pointer outline-none bg-inputbg transition-colors">
   <span class="flex items-center gap-2 text-xs tracking-widest"><i class="fas fa-map-marker-alt text-accent"></i>交通與接待指引</span>
   <i class="fas fa-chevron-down text-dark/50 transition-transform group-open:rotate-180"></i>
 </summary>
-<div class="p-5 pt-2 border-t border-dashed border-secondary/30 text-dark/80 text-[11px ] leading-relaxed">
+<div class="p-5 pt-2 border-t border-dashed border-secondary/30 text-dark/80 text-[11px] leading-relaxed">
   <p class="mb-3"><span class="font-bold text-dark"><i class="fas fa-train text-accent/70 w-4"></i>捷運：</span> 靠近 <span class="text-accent font-bold">雙連站</span> 或 <span class="text-accent font-bold">中山國小站</span>。</p>
   <p><span class="font-bold text-dark"><i class="fas fa-walking text-accent/70 w-4"></i>接待：</span> 由於位置較隱密，請至明顯地標 <span class="text-accent font-bold bg-accent/10 px-1 rounded">屈臣氏 林森門市</span> 稍候，我們將有專人前往接待入館。</p>
 </div>
@@ -312,7 +309,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
   // 108 原版一秒內防狂敲重複送單鎖
   let isProcessingBooking = false;
 
-  // 1. 跨網域穿透抓取初始化快取資料 (對齊圖二公告)
+  // 1. 跨網域穿透抓取初始化快取資料 (對齊試算表公告)
   window.onload = function() {
     let td = new Date(); currentYear = td.getFullYear(); currentMonth = td.getMonth();
     
@@ -327,7 +324,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
           initMasterDropdown(res.staff);
           initTopUpPlans(res.plans);
           
-          // ✨ 完美接引圖二公告：由雲端試算表 Config 設定直接渲染到最上方
+          // ✨ 完美接引公告：由雲端試算表 Config 設定直接渲染到最上方
           if(res.announcement) {
             document.getElementById('announcementText').innerText = res.announcement;
             document.getElementById('announcementContainer').classList.remove('hidden');
