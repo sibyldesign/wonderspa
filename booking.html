@@ -9,410 +9,590 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
+  html, body { max-width: 100vw; overflow-x: hidden; min-height: 100%; }
   body { font-family: 'Noto Sans TC', sans-serif; background-color: #F5F1ED; color: #7E6B5A; -webkit-tap-highlight-color: transparent; }
-  .disabled-date { opacity: 0.25; cursor: not-allowed !important; background-color: #EFEAE4 !important; }
-  .disabled-date b { color: #B0A296 !important; }
+  .disabled-date { opacity: 0.3; cursor: not-allowed !important; background-color: #f9f9f9 !important; }
+  .disabled-date b { color: #ccc !important; }
   ::-webkit-scrollbar { display: none; }
-  .fade-in { animation: fadeIn 0.5s ease-in-out forwards; }
+  .fade-in { animation: fadeIn 0.6s ease-in-out; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-  .selected-btn { background-color: #7E6B5A !important; color: #FFFFFF !important; border-color: #7E6B5A !important; transform: scale(1.02); box-shadow: 0 4px 12px rgba(126,107,90,0.15); }
+  .history-scroll::-webkit-scrollbar { display: block; width: 4px; }
+  .history-scroll::-webkit-scrollbar-thumb { background-color: #D9C5B2; border-radius: 4px; }
+  .serif-italic { font-family: 'Times New Roman', Times, serif; font-style: italic; }
+  .glass-btn { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(8px); border: 1px solid rgba(126, 107, 90, 0.1); }
+  details > summary { list-style: none; }
+  details > summary::-webkit-details-marker { display: none; }
+  details[open] summary ~ * { animation: slideDown 0.3s ease-in-out; }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+  body > div #submitBtn { display: none !important; }
 </style>
 <script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: { primary: '#F5F1ED', secondary: '#D9C5B2', dark: '#7E6B5A', accent: '#C5A059', surface: '#FFFFFF' }
-      }
-    }
-  }
+  tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: '#D9C5B2', dark: '#7E6B5A', accent: '#C5A059', surface: '#FFFFFF', inputbg: '#FAF9F8' }, boxShadow: { 'soft': '0 8px 30px rgba(126, 107, 90, 0.05)' } } } }
 </script>
 </head>
-<body class="antialiased min-h-screen pb-12">
+<body class="text-dark antialiased relative">
 
-<header class="bg-surface shadow-sm flex flex-col justify-center items-center pt-8 pb-6 px-4 sticky top-0 z-50">
-  <img src="https://i.postimg.cc/ZYvTKGkY/Wonder-SPA-LOGO.png" alt="WONDER WANDER" class="h-20 w-auto object-contain">
-  <div class="text-center mt-2">
-    <div class="h-px w-8 bg-accent mx-auto my-1 opacity-60"></div>
-    <p class="text-[10px] tracking-[0.25em] text-dark/60 font-bold">ONLINE RESERVATION</p>
+<div id="topUpModal" class="hidden fixed inset-0 bg-dark/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="bg-surface w-full max-w-sm rounded-[1.5rem] p-6 shadow-2xl relative fade-in">
+    <button type="button" onclick="closeTopUpModal()" class="absolute top-4 right-4 text-dark/50 hover:text-dark"><i class="fas fa-times text-lg"></i></button>
+    <h3 class="text-dark font-bold text-sm tracking-widest mb-4 border-b border-secondary/20 pb-2"><i class="fas fa-coins text-accent mr-1"></i> 儲值回報申請 </h3>
+    <div class="space-y-4">
+      <div class="bg-[#F5EBE1] p-3 rounded-xl border border-accent/20 text-center">
+        <p class="text-[10px] text-dark/60 font-bold mb-1"> 請先匯款至下方帳戶： </p>
+        <p class="text-[13px] text-accent font-bold tracking-widest"> 國泰世華銀行 (013) </p>
+        <p class="text-[15px] text-dark font-bold tracking-widest my-0.5">0565-0605-4643</p>
+      </div>
+      <p class="text-[10px] text-accent font-bold leading-relaxed"> 請於匯款完成後填寫此表，我們將盡速為您審核入帳。 </p>
+      <div><label class="text-[10px] font-bold text-dark/60"> 手機號碼 (必填) </label><input type="tel" id="tuPhone" placeholder="請輸入手機" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-3 py-2.5 text-sm mt-1 focus:outline-none focus:border-accent"></div>
+      <div><label class="text-[10px] font-bold text-dark/60"> 轉帳後五碼 (必填) </label><input type="text" id="tuAccount" maxlength="5" placeholder="輸入後五碼" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-3 py-2.5 text-sm mt-1 focus:outline-none focus:border-accent"></div>
+      <div><label class="text-[10px] font-bold text-dark/60"> 儲值方案 </label>
+        <select id="tuPlan" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-3 py-2.5 text-sm mt-1 focus:outline-none focus:border-accent appearance-none"></select>
+      </div>
+      <div><label class="text-[10px] font-bold text-dark/60"> 匯款金額 (必填) </label><input type="number" id="tuAmount" placeholder="請輸入實際匯款金額" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-3 py-2.5 text-sm mt-1 focus:outline-none focus:border-accent"></div>
+      <button type="button" onclick="submitTopUp()" id="tuSubmitBtn" class="w-full bg-dark text-white font-bold py-3.5 rounded-xl mt-2 text-xs tracking-widest hover:bg-accent transition-all shadow-md"> 送出審核 </button>
+    </div>
+  </div>
+</div>
+
+<header class="bg-surface shadow-sm flex flex-col justify-center items-center pt-8 pb-6 px-4">
+  <img src="https://i.postimg.cc/ZYvTKGkY/Wonder-SPA-LOGO.png" alt="WONDER WANDER" class="h-32 w-auto object-contain">
+  <div class="text-center mt-5">
+    <h1 class="text-sm font-bold tracking-[0.4em] text-dark/80">ONLINE BOOKING</h1>
+    <div class="h-px w-10 bg-accent mx-auto mt-2 opacity-50"></div>
   </div>
 </header>
 
-<main class="max-w-[420px] mx-auto px-5 mt-6 fade-in">
-  <div id="announcementBox" class="bg-amber-50/70 border border-accent/20 p-3.5 rounded-2xl text-left hidden mb-5">
-    <p class="text-[11px] text-accent font-bold tracking-wider flex items-center gap-1.5 mb-1">
-      <i class="fas fa-bullhorn text-xs"></i> 店內重要公告
-    </p>
-    <p id="announcementText" class="text-[11px] text-dark/80 leading-relaxed font-medium pl-5"></p>
+<main class="px-7 py-6 w-full max-w-[420px] mx-auto space-y-6">
+
+  <div id="announcementContainer" class="flex justify-center fade-in hidden mb-2">
+    <div class="inline-flex items-center justify-center gap-2 bg-[#F5EBE1] text-dark px-5 py-2 rounded-full text-[10px] font-bold tracking-widest shadow-sm">
+      <i class="fas fa-bullhorn text-accent"></i><span id="announcementText"></span>
+    </div>
   </div>
 
-  <form id="bookingForm" class="space-y-5" onsubmit="event.preventDefault();">
-    <div class="bg-surface p-5 rounded-[1.5rem] border border-secondary/10 shadow-sm space-y-4">
-      <p class="text-xs font-bold text-accent tracking-widest border-b border-secondary/10 pb-2 flex items-center">
-        <i class="fas fa-user-edit mr-1.5"></i> 填寫基本資料
-      </p>
-      
-      <div class="space-y-1">
-        <label class="text-[11px] font-bold text-dark/70 tracking-wider">預約姓名 <span class="text-red-500">*</span></label>
-        <input type="text" id="userName" required class="w-full bg-primary/40 border border-secondary/20 rounded-xl px-3.5 py-2.5 text-xs font-medium text-dark focus:outline-none focus:border-accent transition-colors">
-      </div>
+  <section class="bg-surface p-8 rounded-[2rem] shadow-soft text-center w-full box-border border border-secondary/20 fade-in relative overflow-hidden">
+    <div class="absolute -top-2 right-4 text-[120px] leading-none text-secondary/15 font-serif font-bold italic select-none pointer-events-none">"</div>
+    <h2 class="text-[15px] font-bold tracking-[0.1em] text-dark mb-1 relative z-10">Wonder SPA</h2>
+    <p class="text-[10px] font-bold text-accent tracking-widest mb-6 relative z-10"> 仕女按摩 · 肌肉帥哥按摩師 </p>
+    <p class="text-dark/80 text-[12px] leading-[2.4] tracking-widest font-bold relative z-10">
+      指尖下的親密對話 <br> 給肌膚最溫柔的奢華呵護 <br> 嚴選肌肉帥哥，40 小時培訓才可上工 <br> 忙碌生活中的小確幸，我們為你把關
+    </p>
+    <div class="w-[80%] h-[1px] bg-secondary/30 mx-auto my-6 relative z-10"></div>
+    <p class="text-accent/80 text-[12px] tracking-widest serif-italic relative z-10 leading-relaxed">" In the sensory wander,<br>find the wonder within. "</p>
+  </section>
 
-      <div class="space-y-1">
-        <label class="text-[11px] font-bold text-dark/70 tracking-wider">手機號碼 <span class="text-red-500">*</span> (舊客輸入將自動帶入個資)</label>
-        <div class="flex gap-2">
-          <input type="tel" id="userPhone" placeholder="例如：0912345678" required class="flex-1 bg-primary/40 border border-secondary/20 rounded-xl px-3.5 py-2.5 text-xs font-mono font-medium text-dark focus:outline-none focus:border-accent transition-colors">
-          <button type="button" onclick="triggerProfileLookup()" class="bg-dark hover:bg-accent text-white text-xs font-bold px-4 rounded-xl shadow-sm transition-colors tracking-wider whitespace-nowrap">智慧帶入</button>
-        </div>
-      </div>
+  <form id="bookingForm" class="space-y-6">
 
-      <div class="space-y-1">
-        <label class="text-[11px] font-bold text-dark/70 tracking-wider">LINE 暱稱 <span class="text-red-500">*</span> (方便對帳聯絡)</label>
-        <input type="text" id="lineName" required placeholder="例如：雅翎 Sibyl" class="w-full bg-primary/40 border border-secondary/20 rounded-xl px-3.5 py-2.5 text-xs font-medium text-dark focus:outline-none focus:border-accent transition-colors">
-      </div>
-    </div>
-
-    <div class="bg-surface p-5 rounded-[1.5rem] border border-secondary/10 shadow-sm space-y-4">
-      <p class="text-xs font-bold text-accent tracking-widest border-b border-secondary/10 pb-2 flex items-center">
-        <i class="fas fa-spa mr-1.5"></i> 選擇保養課程
-      </p>
-      <div id="servicesContainer" class="grid grid-cols-1 gap-2.5">
-        </div>
-    </div>
-
-    <div class="bg-surface p-5 rounded-[1.5rem] border border-secondary/10 shadow-sm space-y-4">
-      <p class="text-xs font-bold text-accent tracking-widest border-b border-secondary/10 pb-2 flex items-center">
-        <i class="fas fa-user-friends mr-1.5"></i> 指定服務師傅
-      </p>
-      <div id="mastersContainer" class="grid grid-cols-2 gap-2.5">
-        </div>
-    </div>
-
-    <div class="bg-surface p-5 rounded-[1.5rem] border border-secondary/10 shadow-sm space-y-4">
-      <p class="text-xs font-bold text-accent tracking-widest border-b border-secondary/10 pb-2 flex items-center">
-        <i class="fas fa-calendar-alt mr-1.5"></i> 選擇預約日期
-      </p>
-      <div id="datesContainer" class="grid grid-cols-4 gap-2 text-center">
+    <div class="bg-surface p-6 rounded-[1.5rem] shadow-soft space-y-4 w-full border border-secondary/10">
+      <h2 class="text-xs font-bold tracking-widest border-b border-secondary/10 pb-3 flex items-center">
+        <i class="fas fa-user-circle mr-2 text-accent"></i> 顧客資訊 CUSTOMER
+      </h2>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-[10px] font-bold text-dark/60 mb-1.5 pl-1 flex justify-between items-end">
+            <span> 電話 PHONE </span><span id="fetchDataBtnText" class="text-accent text-[9px] font-bold"></span>
+          </label>
+          <div class="flex gap-2">
+            <input type="tel" name="userPhone" id="userPhoneInput" required placeholder="請輸入手機號碼" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent box-border">
+            <button type="button" id="fetchDataBtn" onclick="fetchCustomerProfile()" class="bg-dark text-white px-4 py-3 rounded-xl font-bold tracking-widest text-[11px] hover:bg-accent transition-colors flex-shrink-0 shadow-sm whitespace-nowrap"> 查詢帶入 </button>
+          </div>
         </div>
 
-      <p class="text-xs font-bold text-accent tracking-widest border-b border-secondary/10 pt-2 pb-2 flex items-center">
-        <i class="fas fa-clock mr-1.5"></i> 選擇預約時間
-      </p>
-      <div id="timesContainer" class="grid grid-cols-3 gap-2 text-center">
-        <div class="col-span-3 text-[11px] text-dark/40 py-4">請先選取上方課程、師傅與預約日期喔！</div>
-      </div>
-    </div>
+        <div id="walletDisplaySection" class="hidden mt-3 p-4 bg-[#F5EBE1]/50 border border-accent/20 rounded-xl shadow-sm">
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-[11px] font-bold text-dark tracking-wide"><i class="fas fa-crown text-accent mr-1"></i> 會員身分 </span>
+            <span id="vipLevelText" class="text-[11px] font-bold text-accent bg-surface px-2 py-0.5 rounded shadow-sm"> 一般會員 </span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-[11px] font-bold text-dark tracking-wide"><i class="fas fa-wallet text-accent mr-1"></i> 儲值金餘額 </span>
+            <span id="walletBalanceText" class="text-[14px] font-bold text-dark">NT$ 0</span>
+          </div>
+          <input type="hidden" id="availableWalletBalance" value="0">
+        </div>
 
-    <div class="bg-surface p-5 rounded-[1.5rem] border border-secondary/10 shadow-sm space-y-4">
-      <p class="text-xs font-bold text-accent tracking-widest border-b border-secondary/10 pb-2 flex items-center">
-        <i class="fas fa-tags mr-1.5"></i> 優惠折抵與會員卡錢包
-      </p>
-      
-      <div class="space-y-1.5">
-        <label class="text-[11px] font-bold text-dark/70 tracking-wider">輸入活動折扣碼：</label>
-        <div class="flex gap-2">
-          <input type="text" id="couponCode" placeholder="沒有可不填" class="flex-1 bg-primary/40 border border-secondary/20 rounded-xl px-3.5 py-2.5 text-xs font-bold text-dark tracking-widest uppercase focus:outline-none focus:border-accent transition-colors">
-          <button type="button" onclick="verifyCoupon()" class="bg-dark hover:bg-accent text-white text-xs font-bold px-4 rounded-xl shadow-sm transition-colors tracking-wider whitespace-nowrap">驗證套用</button>
+        <div id="historySection" class="hidden mt-2 p-3 bg-secondary/10 rounded-xl border border-secondary/20">
+          <h3 class="text-[10px] font-bold text-dark mb-2 flex items-center gap-1"><i class="fas fa-history text-accent"></i> 您的歷史預約 </h3>
+          <div id="historyList" class="space-y-2 max-h-40 overflow-y-auto pr-1 history-scroll mt-2"></div>
         </div>
-      </div>
-
-      <div id="walletBox" class="bg-primary/40 border border-dashed border-secondary/30 p-3.5 rounded-xl hidden space-y-2">
-        <div class="flex justify-between items-center">
-          <p class="text-[11px] text-dark/70 font-bold flex items-center gap-1.5">
-            <i class="fas fa-wallet text-accent text-xs"></i> 尊榮卡片餘額：
-            <span id="vipTag" class="bg-accent/10 text-accent text-[9px] font-bold px-1.5 py-0.5 rounded">一般會員</span>
-          </p>
-          <span id="walletBalanceText" class="text-sm font-mono font-bold text-dark">NT$ 0</span>
+        <div>
+          <label class="block text-[10px] font-bold text-dark/60 mb-1.5 pl-1"> 姓名 NAME </label>
+          <input type="text" name="userName" id="userNameInput" required placeholder="請輸入姓名" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent box-border">
         </div>
-        <div class="flex items-center gap-2 pt-1 border-t border-secondary/10">
-          <input type="checkbox" id="useWalletCheckbox" onchange="calculateFinalPriceSummary()" class="w-4 h-4 rounded border-secondary/30 text-dark focus:ring-accent">
-          <label for="useWalletCheckbox" class="text-[11px] font-bold text-accent cursor-pointer">使用會員儲值金全額扣抵本單費用</label>
-        </div>
-      </div>
-
-      <div class="bg-primary/50 rounded-xl p-4 space-y-2 border border-secondary/20">
-        <div class="text-[11px] text-dark/60 font-bold flex justify-between">
-          <span>課程原價：</span>
-          <span id="summaryOriginalPrice" class="font-mono">$ 0</span>
-        </div>
-        <div id="summaryDiscountRow" class="text-[11px] text-red-700 font-bold flex justify-between hidden">
-          <span>折扣碼折抵：</span>
-          <span id="summaryDiscountPrice" class="font-mono">-$ 0</span>
-        </div>
-        <div id="summaryWalletRow" class="text-[11px] text-emerald-800 font-bold flex justify-between hidden">
-          <span>儲值金扣抵：</span>
-          <span id="summaryWalletPrice" class="font-mono">-$ 0</span>
-        </div>
-        <div class="h-px bg-secondary/10 w-full my-1"></div>
-        <div class="text-xs font-bold text-dark flex justify-between items-baseline">
-          <span>最終應付金額：</span>
-          <span id="summaryFinalPrice" class="text-lg text-accent font-mono font-bold tracking-tight">NT$ 0</span>
+        <div>
+          <label class="block text-[10px] font-bold text-dark/60 mb-1.5 pl-1"> LINE 名稱 LINE NAME </label>
+          <input type="text" name="lineName" id="lineNameInput" required placeholder="請輸入 Line 顯示名稱" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent box-border">
         </div>
       </div>
     </div>
 
-    <div class="pt-2">
-      <button id="submitBtn" type="button" onclick="submitOrderForm()" class="w-full bg-[#7E6B5A] hover:bg-[#C5A059] text-white font-bold py-4 px-6 rounded-xl shadow-xl shadow-dark/10 transition-all tracking-[0.25em] text-xs flex items-center justify-center gap-2 group transform active:scale-95 duration-200">
-        <i class="fas fa-shield-alt text-xs text-secondary group-hover:text-white transition-colors"></i>
-        確認送出並前往支付
-        <i class="fas fa-arrow-right text-xs opacity-70 group-hover:translate-x-1 transition-transform"></i>
+    <div class="flex justify-center mb-2 fade-in">
+      <button type="button" onclick="openTopUpModal()" class="w-full py-3 bg-[#F5EBE1] border border-accent/40 rounded-xl text-dark text-[11px] font-bold tracking-[0.2em] hover:bg-[#E8DFD5] transition-all shadow-sm">
+        <i class="fas fa-gem text-accent mr-1"></i> 會員儲值 / 匯款回報
       </button>
-      
-      <div class="mt-4 p-3 bg-red-50/80 border border-red-100/60 rounded-xl text-left w-full">
-        <p class="text-[11px] text-red-800 font-bold leading-relaxed tracking-wide flex items-center gap-1">
+    </div>
+
+    <div class="bg-surface p-6 rounded-[1.5rem] shadow-soft space-y-5 w-full relative border border-secondary/10">
+      <div id="initOverlay" class="absolute inset-0 bg-surface/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center rounded-[1.5rem]">
+        <div class="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin mb-2"></div><span class="text-xs text-dark/70 tracking-widest font-bold"> 系統連線中... </span>
+      </div>
+      <h2 class="text-xs font-bold tracking-widest border-b border-secondary/10 pb-3 flex items-center justify-between">
+        <span><i class="fas fa-calendar-alt mr-2 text-accent"></i> 預約安排 SCHEDULE </span>
+      </h2>
+
+      <div class="flex p-1 bg-secondary/10 rounded-xl mb-4">
+        <button type="button" id="modeBtnMaster" onclick="switchMode('master')" class="flex-1 py-2 text-[11px] font-bold rounded-lg bg-surface shadow-sm text-dark transition-all"> 選師傅 </button>
+        <button type="button" id="modeBtnTime" onclick="switchMode('time')" class="flex-1 py-2 text-[11px] font-bold rounded-lg text-dark/50 transition-all"> 看空檔 </button>
+      </div>
+
+      <div id="stepMaster">
+        <label class="block text-[10px] font-bold text-dark/60 mb-1.5 pl-1"> 1. 選擇師傅 MASTER </label>
+        <select id="masterSelect" name="master" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent appearance-none box-border" onchange="unlockServices()">
+          <option value="" disabled selected> 請選擇師傅 </option>
+        </select>
+        <button type="button" onclick="openTeacherWall()" class="block w-full mt-3 py-3 bg-[#D9C5B2]/20 border border-secondary/30 rounded-xl text-dark text-[11px] font-bold tracking-[0.2em] hover:bg-secondary/30 transition-all shadow-sm text-center">
+          <i class="fas fa-images mr-2 text-accent"></i> 瀏覽師傅形象牆
+        </button>
+      </div>
+
+      <div class="mt-4">
+        <label id="serviceLabel" class="block text-[10px] font-bold text-dark/60 mb-1.5 pl-1"> 2. 選擇服務 SERVICE </label>
+        <select name="mainService" id="serviceSelect" onchange="unlockCalendar()" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent appearance-none box-border" disabled>
+          <option value="" disabled selected> 請先完成上方選項 </option>
+        </select>
+      </div>
+
+      <div class="mt-4">
+        <label id="dateLabel" class="block text-[10px] font-bold text-dark/60 mb-2 pl-1"> 3. 選擇日期 DATE </label>
+        <div id="calendarContainer" class="bg-inputbg border border-secondary/30 rounded-xl p-4 relative">
+          <div class="flex justify-between items-center mb-4 px-2">
+            <button type="button" onclick="changeMonth(-1)" class="text-dark/50 hover:text-accent font-bold p-1"><</button>
+            <div id="monthYearText" class="text-sm font-bold tracking-widest text-dark"></div>
+            <button type="button" onclick="changeMonth(1)" class="text-dark/50 hover:text-accent font-bold p-1">></button>
+          </div>
+          <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-dark/40 mb-2">
+            <div> 日 </div><div> 一 </div><div> 二 </div><div> 三 </div><div> 四 </div><div> 五 </div><div> 六 </div>
+          </div>
+          <div id="calendarDays" class="grid grid-cols-7 gap-1 text-center"></div>
+          <div id="calendarOverlay" class="absolute inset-0 bg-inputbg/80 backdrop-blur-[2px] flex items-center justify-center rounded-xl z-10 transition-opacity duration-300">
+            <span class="bg-dark text-white text-[10px] tracking-widest px-4 py-2 rounded-full shadow-sm"> 請先選擇服務項目 </span>
+          </div>
+        </div>
+      </div>
+
+      <div id="timeSlotsSection" class="hidden fade-in pt-2">
+        <label id="timeLabel" class="block text-[10px] font-bold text-dark/60 mb-2 pl-1"> 4. 選擇時段 TIME </label>
+        <div id="timeSlotsGrid" class="grid grid-cols-3 gap-2"></div>
+        <p id="noTimeText" class="text-xs text-center text-red-400 hidden py-2 font-bold bg-red-50 rounded-lg"> 此日期無空檔，請選擇其他日期 </p>
+      </div>
+
+      <div id="availableMastersSection" class="hidden fade-in pt-2 border-t border-secondary/20 mt-4">
+        <label class="block text-[10px] font-bold text-dark/60 mb-2 pl-1 mt-4"> 5. 選擇師傅 MASTER </label>
+        <div id="availableMastersGrid" class="grid grid-cols-2 gap-2"></div>
+      </div>
+
+      <input type="hidden" name="bookDate" id="hiddenDate">
+      <input type="hidden" name="bookTime" id="hiddenTime">
+      <input type="hidden" name="finalMaster" id="hiddenMaster">
+
+      <div class="pt-4 border-t border-secondary/20 mt-6">
+        <label class="block text-[10px] font-bold text-dark/60 mb-1.5 pl-1"> 折扣碼 DISCOUNT CODE </label>
+        <div class="flex gap-2">
+          <input type="text" id="couponCode" placeholder="如有代碼請輸入" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent uppercase tracking-wider box-border" oninput="this.value = this.value.toUpperCase()">
+          <button type="button" id="applyCouponBtn" onclick="applyCoupon()" class="bg-dark text-white px-5 py-3 rounded-xl font-bold tracking-widest text-[12px] hover:bg-accent transition-colors shadow-sm"> 套用 </button>
+        </div>
+        <div id="couponMessage" class="text-[11px] mt-2 hidden font-bold tracking-wide"></div>
+      </div>
+    </div>
+<div class="bg-surface p-6 rounded-[1.5rem] shadow-soft space-y-3 w-full border border-secondary/10">
+      <h2 class="text-xs font-bold tracking-widest border-b border-secondary/10 pb-3 flex items-center">
+        <i class="fas fa-file-invoice-dollar mr-2 text-accent"></i> 結帳明細 SUMMARY
+      </h2>
+      <div class="space-y-2 text-xs">
+        <div class="flex justify-between text-dark/70">
+          <span> 課程原價 </span><span id="summaryOriginalPrice" class="font-mono font-bold">$ 0</span>
+        </div>
+        <div id="summaryDiscountRow" class="flex justify-between text-red-600 font-bold hidden">
+          <span> 折扣碼折抵 </span><span id="summaryDiscountPrice" class="font-mono">-$ 0</span>
+        </div>
+        <div id="summaryWalletRow" class="flex justify-between text-emerald-700 font-bold hidden">
+          <span> 儲值金扣抵 </span><span id="summaryWalletPrice" class="font-mono">-$ 0</span>
+        </div>
+        <div class="h-[1px] bg-secondary/20 my-2"></div>
+        <div class="flex justify-between items-center pt-1">
+          <span class="text-xs font-bold text-dark"> 最終應付金額 </span>
+          <span id="summaryFinalPrice" class="text-base text-accent font-mono font-bold">NT$ 0</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-4">
+      <button type="button" id="submitBtnReal" onclick="submitOrderForm()" class="w-full bg-dark hover:bg-accent text-white font-bold py-4 rounded-xl shadow-md transition-all tracking-[0.25em] text-xs flex items-center justify-center gap-2 transform active:scale-95 duration-150">
+        <i class="fas fa-lock text-[10px] text-secondary"></i> 確認送出並前往支付 <i class="fas fa-arrow-right text-[10px]"></i>
+      </button>
+
+      <div class="p-3.5 bg-red-50/80 border border-red-100/50 rounded-xl text-left w-full box-border">
+        <p class="text-[10px] text-red-800 font-bold tracking-wide flex items-center gap-1">
           <i class="fas fa-exclamation-circle text-[10px]"></i> 網頁卡住轉圈圈？
         </p>
-        <p class="text-[10px] text-dark/60 font-medium mt-1 leading-relaxed pl-4">
+        <p class="text-[9px] text-dark/60 font-medium mt-1 leading-relaxed pl-4">
           如點擊遇卡住或無法跳轉，亦可稍後前往 GitHub「補付通道」輸入電話『查詢帶入』完成付款。
         </p>
       </div>
     </div>
   </form>
-
-  <div id="ecpayContainer" style="display:none !important;"></div>
 </main>
 
-<footer class="mt-12 text-center w-full">
-  <p class="text-[10px] text-secondary font-bold tracking-[0.15em]">Designed by Sibelle Digital</p>
+<footer class="mt-12 mb-8 text-center w-full">
+  <p class="text-[9px] text-secondary font-bold tracking-[0.25em]">Designed by Sibelle Digital</p>
 </footer>
 
+<div id="teacherWallModal" class="hidden fixed inset-0 bg-dark/95 backdrop-blur-md z-50 flex items-center justify-center p-4" onclick="closeTeacherWall()">
+  <div class="bg-surface w-full max-w-sm rounded-[2rem] p-6 shadow-2xl relative fade-in max-h-[85vh] overflow-y-auto" onclick="event.stopPropagation()">
+    <button type="button" onclick="closeTeacherWall()" class="absolute top-4 right-4 text-dark/50 hover:text-dark z-10"><i class="fas fa-times text-lg"></i></button>
+    <h3 class="text-dark font-bold text-xs tracking-widest mb-4 text-center"><i class="fas fa-images text-accent mr-1"></i> WONDER MASTER 師傅群 </h3>
+    <div class="space-y-4 text-center">
+      <div class="border border-secondary/20 p-3 rounded-2xl bg-primary/20">
+        <p class="text-xs font-bold text-dark tracking-wide">【首席男神師傅陣容】</p>
+        <p class="text-[11px] text-dark/70 leading-relaxed mt-2"> 店內皆為精選高顏值、身材精實健美之專業仕女按摩師，皆通過 40 小時內部嚴格手法與儀態考核培訓。您可以放心指定。 </p>
+      </div>
+      <img src="https://i.postimg.cc/mD8NdrM1/image.png" class="w-full h-auto rounded-xl shadow-sm object-cover" alt="形象照">
+      <p class="text-[10px] text-accent font-bold"> - 點擊任意空白處即可關閉視窗 - </p>
+    </div>
+  </div>
+</div>
+
 <script>
-  // 🚀【跨網域穿透天線配置】精準指向妳剛才建立並部署完成的全新 GAS 專案 API 入口網址！
-  const GAS_BACKEND_URL = "https://script.google.com/macros/s/AKfycbwIGY8L774iM-U50uniLROYu_2I-T-osoV6xOYVk99CaQZt6kMRJmgnBhWhxvS35A5r/exec";
+  // 🚀【跨網域新大腦接收天線】
+  const GAS_BACKEND_URL = "https://script.google.com/macros/s/AKfycbz1dbcGlSIxtgC7d0mO5OrM2qoerkM0bA8nrp2TYfgYh4h3mWx8FXxE-le3Dh16XncAgQ/exec";
 
   let globalData = {};
+  let bookingMode = 'master'; 
   let selectedService = null;
   let selectedMaster = null;
   let selectedDate = null;
   let selectedTime = null;
-  let activeCouponDiscount = 0;
-  let customerWalletBalance = 0;
+  let couponDiscount = 0;
+  let walletBalance = 0;
+  let currentYear, currentMonth;
 
-  // 封裝標準的 Fetch API 來跟後端 GAS 通訊
-  async function callGasAPI(payload) {
-    const response = await fetch(GAS_BACKEND_URL, {
-      method: "POST",
-      body: JSON.stringify(payload)
-    });
-    return await response.json();
-  }
-
-  // 1. 初始化網頁快取
+  // 1. 初始化頁面快取
   window.onload = function() {
-    Swal.fire({ title: '安全串接中...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
-    
-    // 改用 AJAX Post 穿透獲取初始化資料
+    let td = new Date(); currentYear = td.getFullYear(); currentMonth = td.getMonth();
     fetch(GAS_BACKEND_URL + "?action=getInitialFrontData")
       .then(res => res.json())
       .then(res => {
-        Swal.close();
+        document.getElementById('initOverlay').style.display = 'none';
         if(res.success) {
           globalData = res;
-          renderServices(res.services);
-          renderMasters(res.staff);
-          renderDates();
+          initServiceDropdown(res.services);
+          initMasterDropdown(res.staff);
+          initTopUpPlans(res.plans);
           if(res.announcement) {
             document.getElementById('announcementText').innerText = res.announcement;
-            document.getElementById('announcementBox').classList.remove('hidden');
+            document.getElementById('announcementContainer').classList.remove('hidden');
           }
-        } else {
-          Swal.fire('錯誤', '資料庫載入失敗', 'error');
-        }
-      }).catch(err => { Swal.close(); Swal.fire('錯誤', '網路連線異常', 'error'); });
+        } else { Swal.fire('錯誤', '雲端資料庫載入失敗，請重新整理', 'error'); }
+      }).catch(err => { console.error(err); });
   };
 
-  function renderServices(services) {
-    const container = document.getElementById('servicesContainer');
-    container.innerHTML = services.map(s => `
-      <button type="button" onclick="selectService(this, '${s.name}', ${s.price})" class="w-full bg-primary/20 hover:bg-primary/50 text-left px-4 py-3.5 rounded-xl border border-secondary/20 transition-all text-xs font-bold tracking-wider flex justify-between items-center">
-        <span>💆 ${s.name} (${s.time}分鐘)</span>
-        <span class="text-accent font-mono">NT$ ${parseInt(s.price).toLocaleString()}</span>
-      </button>
-    `).join('');
-  }
-
-  function selectService(btn, name, price) {
-    document.querySelectorAll('#servicesContainer button').forEach(b => b.classList.remove('selected-btn'));
-    btn.classList.add('selected-btn');
-    selectedService = { name, price }; selectedTime = null;
-    calculateFinalPriceSummary(); filterAvailableTimes();
-  }
-
-  function renderMasters(staff) {
-    const container = document.getElementById('mastersContainer');
-    let html = `<button type="button" onclick="selectMaster(this, '共用')" class="w-full bg-primary/20 text-center py-3 rounded-xl border border-secondary/20 text-xs font-bold transition-all">🤝 不指定 (由店內安排)</button>`;
-    html += staff.map(t => `<button type="button" onclick="selectMaster(this, '${t.id}')" class="w-full bg-primary/20 text-center py-3 rounded-xl border border-secondary/20 text-xs font-bold transition-all">✨ ${t.display}</button>`).join('');
-    container.innerHTML = html;
-  }
-
-  function selectMaster(btn, id) {
-    document.querySelectorAll('#mastersContainer button').forEach(b => b.classList.remove('selected-btn'));
-    btn.classList.add('selected-btn');
-    selectedMaster = id; selectedTime = null; filterAvailableTimes();
-  }
-
-  function renderDates() {
-    const container = document.getElementById('datesContainer');
-    let html = []; const daysArr = ['日','一','二','三','四','五','六']; let d = new Date();
-    for (let i = 0; i < 30; i++) {
-      let dateStr = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
-      let displayMD = String(d.getMonth()+1).padStart(2,'0') + '/' + String(d.getDate()).padStart(2,'0');
-      html.push(`<button type="button" onclick="selectDate(this, '${dateStr}')" class="bg-primary/20 border border-secondary/20 py-2.5 rounded-xl text-center flex flex-col justify-center items-center gap-0.5 group hover:border-dark transition-all"><b class="text-xs text-dark tracking-tight font-mono">${displayMD}</b><span class="text-[9px] text-dark/50 font-bold">(週${daysArr[d.getDay()]})</span></button>`);
-      d.setDate(d.getDate() + 1);
-    }
-    container.innerHTML = html.join('');
-  }
-
-  function selectDate(btn, dateStr) {
-    document.querySelectorAll('#datesContainer button').forEach(b => b.classList.remove('selected-btn'));
-    btn.classList.add('selected-btn');
-    selectedDate = dateStr; selectedTime = null; filterAvailableTimes();
-  }
-
-  function filterAvailableTimes() {
-    const container = document.getElementById('timesContainer');
-    if (!selectedService || !selectedMaster || !selectedDate) {
-      container.innerHTML = '<div class="col-span-3 text-[11px] text-dark/40 py-4">請先選取上方課程、師傅與預約日期喔！</div>'; return;
-    }
-    let matchedSlots = globalData.slots.filter(s => s.date === selectedDate);
-    if (selectedMaster !== '共用') { matchedSlots = matchedSlots.filter(s => s.master === selectedMaster); }
-    let finalTimes = []; let uniqueTimes = Array.from(new Set(matchedSlots.map(s => s.time))).sort();
-    uniqueTimes.forEach(t => {
-      let sameTimeBookings = globalData.bookings.filter(b => b.date === selectedDate && b.start === t);
-      if (sameTimeBookings.length < globalData.maxRooms) finalTimes.push(t);
+  // 2. 初始化下拉選單
+  function initServiceDropdown(services) {
+    let select = document.getElementById('serviceSelect');
+    select.innerHTML = '<option value="" disabled selected>請選擇服務課程</option>';
+    services.forEach(s => {
+      let opt = new Option(`💆 ${s.name} (${s.time}min) - $${parseInt(s.price).toLocaleString()}`, s.name);
+      opt.dataset.price = s.price; opt.dataset.teacher = s.teacher; select.add(opt);
     });
-    if (finalTimes.length === 0) {
-      container.innerHTML = '<div class="col-span-3 text-[11px] text-red-800 font-bold py-4">⚠️ 抱歉，該時段人員或房間已全數滿約</div>'; return;
+  }
+
+  function initMasterDropdown(staff) {
+    let select = document.getElementById('masterSelect');
+    select.innerHTML = '<option value="" disabled selected>請選擇服務師傅</option>';
+    select.add(new Option("🤝 不指定 (由店內安排)", "共用"));
+    staff.forEach(t => { select.add(new Option(`✨ ${t.display}`, t.id)); });
+  }
+
+  function initTopUpPlans(plans) {
+    let select = document.getElementById('tuPlan'); if(!select) return;
+    select.innerHTML = ''; select.add(new Option("自訂金額回報", "自訂金額"));
+    plans.forEach(p => { select.add(new Option(`🎁 ${p.name} (匯$${p.amount}送$${p.bonus})`, p.name)); });
+  }
+
+  // 3. 收折模式切換
+  function switchMode(mode) {
+    bookingMode = mode; selectedMaster = null; selectedService = null; selectedDate = null; selectedTime = null;
+    document.getElementById('modeBtnMaster').className = mode === 'master' ? "flex-1 py-2 text-[11px] font-bold rounded-lg bg-surface shadow-sm text-dark transition-all" : "flex-1 py-2 text-[11px] font-bold rounded-lg text-dark/50 transition-all";
+    document.getElementById('modeBtnTime').className = mode === 'time' ? "flex-1 py-2 text-[11px] font-bold rounded-lg bg-surface shadow-sm text-dark transition-all" : "flex-1 py-2 text-[11px] font-bold rounded-lg text-dark/50 transition-all";
+    
+    let step = document.getElementById('stepMaster');
+    if(mode === 'master') {
+      step.style.display = 'block'; document.getElementById('serviceLabel').innerText = "2. 選擇服務 SERVICE"; document.getElementById('dateLabel').innerText = "3. 選擇日期 DATE";
+      initServiceDropdown(globalData.services); document.getElementById('serviceSelect').disabled = true;
+    } else {
+      step.style.display = 'none'; document.getElementById('serviceLabel').innerText = "1. 選擇服務 SERVICE"; document.getElementById('dateLabel').innerText = "2. 選擇日期 DATE";
+      initServiceDropdown(globalData.services); document.getElementById('serviceSelect').disabled = false;
     }
-    container.innerHTML = finalTimes.map(t => `<button type="button" onclick="selectTime(this, '${t}')" class="bg-primary/20 border border-secondary/20 py-2.5 rounded-xl text-xs font-mono font-bold tracking-wider hover:border-dark transition-all">${t}</button>`).join('');
+    document.getElementById('calendarOverlay').className = "absolute inset-0 bg-inputbg/80 backdrop-blur-[2px] flex items-center justify-center rounded-xl z-10 opacity-100 pointer-events-auto";
+    document.getElementById('timeSlotsSection').classList.add('hidden'); document.getElementById('availableMastersSection').classList.add('hidden');
+    resetPrices();
+  }
+
+  // 4. 收折網頁解鎖線
+  function unlockServices() {
+    let m = document.getElementById('masterSelect').value; if(!m) return;
+    selectedMaster = m; selectedService = null; selectedDate = null; selectedTime = null;
+    let filtered = globalData.services.filter(s => s.teacher === '共用' || s.teacher === m || m === '共用');
+    initServiceDropdown(filtered); document.getElementById('serviceSelect').disabled = false;
+    document.getElementById('calendarOverlay').classList.remove('opacity-0','hidden');
+    document.getElementById('calendarOverlay').className = "absolute inset-0 bg-inputbg/80 backdrop-blur-[2px] flex items-center justify-center rounded-xl z-10 opacity-100 pointer-events-auto";
+    document.getElementById('timeSlotsSection').classList.add('hidden'); document.getElementById('availableMastersSection').classList.add('hidden');
+    resetPrices();
+  }
+
+  function unlockCalendar() {
+    let select = document.getElementById('serviceSelect');
+    let opt = select.options[select.selectedIndex]; if(!opt.value) return;
+    selectedService = { name: opt.value, price: parseInt(opt.dataset.price) || 0 };
+    selectedDate = null; selectedTime = null;
+    document.getElementById('calendarOverlay').className = "hidden pointer-events-none opacity-0";
+    document.getElementById('timeSlotsSection').classList.add('hidden'); document.getElementById('availableMastersSection').classList.add('hidden');
+    renderCalendar(); calculateFinalPriceSummary();
+  }
+
+  // 5. 優雅一頁式日曆渲染
+  function renderCalendar() {
+    document.getElementById('monthYearText').innerText = `${currentYear}年 ${currentMonth + 1}月`;
+    let container = document.getElementById('calendarDays'); container.innerHTML = '';
+    let firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    let totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
+    let today = new Date(); today.setHours(0,0,0,0);
+    let maxLimit = new Date(); maxLimit.setDate(maxLimit.getDate() + 30);
+
+    for (let i = 0; i < firstDay; i++) { container.appendChild(document.createElement('div')); }
+    for (let day = 1; day <= totalDays; day++) {
+      let cell = document.createElement('button'); cell.type = "button";
+      cell.className = "py-2.5 text-xs font-mono font-bold rounded-xl flex flex-col items-center justify-center transition-all bg-surface border border-secondary/10 hover:border-accent";
+      cell.innerHTML = `<b>${day}</b>`;
+      let cellDate = new Date(currentYear, currentMonth, day);
+      let dateStr = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+      
+      if (cellDate < today || cellDate > maxLimit) {
+        cell.classList.add('disabled-date'); cell.disabled = true;
+      } else {
+        cell.onclick = function() {
+          document.querySelectorAll('#calendarDays button').forEach(b => b.classList.remove('selected-btn'));
+          cell.classList.add('selected-btn'); selectedDate = dateStr; selectedTime = null;
+          document.getElementById('hiddenDate').value = dateStr;
+          if(bookingMode === 'master') fetchTimeSlotsForMaster(); else fetchAvailableMastersForTime();
+        };
+      }
+      container.appendChild(cell);
+    }
+  }
+
+  function changeMonth(dir) {
+    currentMonth += dir; if(currentMonth > 11) { currentMonth = 0; currentYear++; } if(currentMonth < 0) { currentMonth = 11; currentYear--; }
+    renderCalendar();
+  }
+
+  // 6. 撈取指定時間段的師傅與房間鎖
+  function fetchTimeSlotsForMaster() {
+    let grid = document.getElementById('timeSlotsGrid'); grid.innerHTML = '';
+    let matched = globalData.slots.filter(s => s.date === selectedDate);
+    if (selectedMaster !== '共用') { matched = matched.filter(s => s.master === selectedMaster); }
+    
+    let uniqueTimes = Array.from(new Set(matched.map(s => s.time))).sort();
+    let availableTimes = uniqueTimes.filter(t => {
+      let bookingsCount = globalData.bookings.filter(b => b.date === selectedDate && b.start === t).length;
+      return bookingsCount < globalData.maxRooms;
+    });
+
+    if(availableTimes.length === 0) {
+      document.getElementById('noTimeText').classList.remove('hidden'); document.getElementById('timeSlotsSection').classList.remove('hidden'); return;
+    }
+    document.getElementById('noTimeText').classList.add('hidden');
+    grid.innerHTML = availableTimes.map(t => `<button type="button" onclick="selectTime(this, '${t}')" class="py-3 text-xs font-mono font-bold rounded-xl bg-inputbg border border-secondary/20 hover:border-dark transition-all">${t}</button>`).join('');
+    document.getElementById('timeSlotsSection').classList.remove('hidden');
   }
 
   function selectTime(btn, time) {
-    document.querySelectorAll('#timesContainer button').forEach(b => b.classList.remove('selected-btn'));
-    btn.classList.add('selected-btn'); selectedTime = time;
+    document.querySelectorAll('#timeSlotsGrid button').forEach(b => b.classList.remove('selected-btn'));
+    btn.classList.add('selected-btn'); selectedTime = time; document.getElementById('hiddenTime').value = time;
+    if(bookingMode === 'time') renderAvailableMastersForTimeSlot();
   }
 
-  // 智慧舊客資料帶入 (改裝為 Fetch Post)
-  function triggerProfileLookup() {
-    let p = document.getElementById('userPhone').value.trim();
-    if (!p) return Swal.fire('提示', '請先輸入手機號碼再進行查詢喔！', 'warning');
-    Swal.fire({ title: '正在查詢卡片餘額...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+  function fetchAvailableMastersForTime() {
+    let grid = document.getElementById('timeSlotsGrid'); grid.innerHTML = '';
+    let matched = globalData.slots.filter(s => s.date === selectedDate);
+    let uniqueTimes = Array.from(new Set(matched.map(s => s.time))).sort();
+    if(uniqueTimes.length === 0) {
+      document.getElementById('noTimeText').classList.remove('hidden'); document.getElementById('timeSlotsSection').classList.remove('hidden'); return;
+    }
+    document.getElementById('noTimeText').classList.add('hidden');
+    grid.innerHTML = uniqueTimes.map(t => `<button type="button" onclick="selectTime(this, '${t}')" class="py-3 text-xs font-mono font-bold rounded-xl bg-inputbg border border-secondary/20 hover:border-dark transition-all">${t}</button>`).join('');
+    document.getElementById('timeSlotsSection').classList.remove('hidden'); document.getElementById('availableMastersSection').classList.add('hidden');
+  }
+
+  function renderAvailableMastersForTimeSlot() {
+    let grid = document.getElementById('availableMastersGrid'); grid.innerHTML = '';
+    let matched = globalData.slots.filter(s => s.date === selectedDate && s.time === selectedTime);
+    let html = `<button type="button" onclick="selectFinalMaster(this, '共用')" class="py-3 text-xs font-bold rounded-xl bg-inputbg border border-secondary/20 text-center">🤝 不指定 (安排)</button>`;
+    matched.forEach(s => {
+      let tObj = globalData.staff.find(st => st.id === s.master);
+      let tName = tObj ? tObj.display : s.master;
+      html += `<button type="button" onclick="selectFinalMaster(this, '${s.master}')" class="py-3 text-xs font-bold rounded-xl bg-inputbg border border-secondary/20 text-center">✨ ${tName}</button>`;
+    });
+    grid.innerHTML = html; document.getElementById('availableMastersSection').classList.remove('hidden');
+  }
+
+  function selectFinalMaster(btn, id) {
+    document.querySelectorAll('#availableMastersGrid button').forEach(b => b.classList.remove('selected-btn'));
+    btn.classList.add('selected-btn'); selectedMaster = id; document.getElementById('hiddenMaster').value = id;
+  }
+
+  // 7. 智慧個資帶入與卡片餘額查詢
+  function fetchCustomerProfile() {
+    let p = document.getElementById('userPhoneInput').value.trim();
+    if(!p) return Swal.fire('提示', '請先輸入手機號碼喔', 'warning');
+    Swal.fire({ title: '正在讀取儲值錢包...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
     
-    // 跨網域發射
     fetch(GAS_BACKEND_URL + "?action=getCustomerProfile&phone=" + p)
       .then(res => res.json())
       .then(profile => {
         Swal.close();
         if(profile.success && profile.found) {
-          document.getElementById('userName').value = profile.name;
-          document.getElementById('lineName').value = profile.line;
-          customerWalletBalance = profile.walletBalance;
+          document.getElementById('userNameInput').value = profile.name;
+          document.getElementById('lineNameInput').value = profile.line;
+          walletBalance = profile.walletBalance;
+          document.getElementById('availableWalletBalance').value = profile.walletBalance;
           document.getElementById('walletBalanceText').innerText = "NT$ " + parseInt(profile.walletBalance).toLocaleString();
-          document.getElementById('vipTag').innerText = profile.vipStatus;
-          document.getElementById('walletBox').classList.remove('hidden'); calculateFinalPriceSummary();
-          Swal.fire('成功', '已自動帶入您的個資與會員儲值錢包！', 'success');
+          document.getElementById('vipLevelText').innerText = profile.vipStatus;
+          document.getElementById('walletDisplaySection').classList.remove('hidden');
+          
+          if(profile.history && profile.history.length > 0) {
+            document.getElementById('historyList').innerHTML = profile.history.map(h => `
+              <div class="bg-surface p-2.5 rounded-xl border border-secondary/20 text-[11px] flex justify-between">
+                <span>📅 ${h.date} ${h.time} (${h.service})</span>
+                <span class="text-accent font-bold">${h.status}</span>
+              </div>
+            `).join('');
+            document.getElementById('historySection').classList.remove('hidden');
+          } else { document.getElementById('historySection').classList.add('hidden'); }
+          calculateFinalPriceSummary(); Swal.fire('成功', '已自動帶入您的個資與會員儲值錢包！', 'success');
         } else {
-          customerWalletBalance = 0; document.getElementById('walletBox').classList.add('hidden');
-          Swal.fire('歡迎新朋友', '查無歷史紀錄，請填寫下方欄位完成首約！', 'info');
+          walletBalance = 0; document.getElementById('walletDisplaySection').classList.add('hidden'); document.getElementById('historySection').classList.add('hidden');
+          Swal.fire('歡迎新朋友', '查無歷史紀錄，請填寫下方欄位預約完成首約！', 'info');
         }
       }).catch(e => { Swal.close(); });
   }
 
-  // 折扣碼驗證 (改裝為 Fetch Post)
-  function verifyCoupon() {
+  // 8. 折扣碼跨網域核銷
+  function applyCoupon() {
     let code = document.getElementById('couponCode').value.trim();
-    if (!selectedService) return Swal.fire('提示', '請先選取上方保養課程，才能套用折扣碼！', 'warning');
-    if (!code) return Swal.fire('提示', '請填入折扣碼代號', 'warning');
-    
-    Swal.fire({ title: '驗證折扣碼中...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+    if(!selectedService) return Swal.fire('提示', '請先選擇服務項目喔', 'warning');
+    if(!code) return Swal.fire('提示', '請輸入折扣碼', 'warning');
     
     fetch(GAS_BACKEND_URL + `?action=validateCouponCode&code=${code}&price=${selectedService.price}&service=${encodeURIComponent(selectedService.name)}`)
       .then(res => res.json())
       .then(res => {
-        Swal.close();
+        let msg = document.getElementById('couponMessage'); msg.classList.remove('hidden');
         if(res.success) {
-          activeCouponDiscount = res.discountAmount; calculateFinalPriceSummary();
-          Swal.fire('核銷成功', res.message, 'success');
+          couponDiscount = res.discountAmount; msg.className = "text-[11px] mt-2 font-bold text-emerald-700"; msg.innerText = "✓ " + res.message;
         } else {
-          activeCouponDiscount = 0; calculateFinalPriceSummary();
-          Swal.fire('核銷失敗', res.message, 'error');
+          couponDiscount = 0; msg.className = "text-[11px] mt-2 font-bold text-red-600"; msg.innerText = "✕ " + res.message;
         }
-      }).catch(e => { Swal.close(); });
+        calculateFinalPriceSummary();
+      });
   }
 
   function calculateFinalPriceSummary() {
     let orig = selectedService ? selectedService.price : 0;
     document.getElementById('summaryOriginalPrice').innerText = "$ " + orig.toLocaleString();
-    let subtotal = orig - activeCouponDiscount; if(subtotal < 0) subtotal = 0;
-    if (activeCouponDiscount > 0) {
-      document.getElementById('summaryDiscountPrice').innerText = "-$ " + activeCouponDiscount.toLocaleString();
-      document.getElementById('summaryDiscountRow').classList.remove('hidden');
-    } else { document.getElementById('summaryDiscountRow').classList.add('hidden'); }
-
-    let walletDeduct = 0;
-    if (document.getElementById('useWalletCheckbox') && document.getElementById('useWalletCheckbox').checked) {
-      walletDeduct = Math.min(customerWalletBalance, subtotal);
-      document.getElementById('summaryWalletPrice').innerText = "-$ " + walletDeduct.toLocaleString();
+    let subtotal = orig - couponDiscount; if(subtotal < 0) subtotal = 0;
+    if (couponDiscount > 0) { document.getElementById('summaryDiscountRow').classList.remove('hidden'); document.getElementById('summaryDiscountPrice').innerText = "-$ " + couponDiscount.toLocaleString(); } else { document.getElementById('summaryDiscountRow').classList.add('hidden'); }
+    
+    // 會員儲值金全額抵扣池邏輯 (100% 縫合移植)
+    let finalPay = subtotal;
+    if (walletBalance >= subtotal && subtotal > 0) {
       document.getElementById('summaryWalletRow').classList.remove('hidden');
+      document.getElementById('summaryWalletPrice').innerText = "-$ " + subtotal.toLocaleString();
+      finalPay = 0;
     } else { document.getElementById('summaryWalletRow').classList.add('hidden'); }
-
-    let finalPay = subtotal - walletDeduct;
     document.getElementById('summaryFinalPrice').innerText = "NT$ " + finalPay.toLocaleString();
   }
 
-  // 跨網域送單與綠界喚醒
-  function submitOrderForm() {
-    if(!selectedService || !selectedMaster || !selectedDate || !selectedTime) {
-      return Swal.fire('提示', '請確認 課程、師傅、日期、時間 皆已填選完畢！', 'warning');
-    }
-    if(!document.getElementById('userName').value.trim() || !document.getElementById('userPhone').value.trim() || !document.getElementById('lineName').value.trim()) {
-      return Swal.fire('提示', '請填寫完整的姓名、手機與 LINE 暱稱欄位！', 'warning');
-    }
+  // 9. 儲值線上手動回報
+  function openTopUpModal() { document.getElementById('topUpModal').classList.remove('hidden'); }
+  function closeTopUpModal() { document.getElementById('topUpModal').classList.add('hidden'); }
+  function openTeacherWall() { document.getElementById('teacherWallModal').classList.remove('hidden'); }
+  function closeTeacherWall() { document.getElementById('teacherWallModal').classList.add('hidden'); }
 
-    const btn = document.getElementById('submitBtn');
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 智慧鎖位對帳中，請勿關閉視窗...';
-    btn.disabled = true;
-
-    let formData = {
-      action: "processBooking", // 驅動大腦的 Webhook 分流
-      userName: document.getElementById('userName').value.trim(),
-      userPhone: document.getElementById('userPhone').value.trim(),
-      lineName: document.getElementById('lineName').value.trim(),
-      mainService: selectedService.name,
-      originalPrice: selectedService.price,
-      master: selectedMaster,
-      bookDate: selectedDate,
-      bookTime: selectedTime,
-      couponCode: document.getElementById('couponCode').value.trim(),
-      useWallet: document.getElementById('useWalletCheckbox') ? document.getElementById('useWalletCheckbox').checked : false
-    };
-
-    // 🚀 執行 GitHub 到 Google 雲端的網域跨網域跨界傳輸 (Fetch API)
+  function submitTopUp() {
+    let p = document.getElementById('tuPhone').value.trim();
+    let acc = document.getElementById('tuAccount').value.trim();
+    let amt = document.getElementById('tuAmount').value.trim();
+    let plan = document.getElementById('tuPlan').value;
+    if(!p || !acc || !amt) return Swal.fire('提示', '請填寫完整的手機、後五碼與匯款金額！', 'warning');
+    
+    let submitBtn = document.getElementById('tuSubmitBtn'); submitBtn.disabled = true; submitBtn.innerText = "傳送中...";
     fetch(GAS_BACKEND_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" }, // 避開瀏覽器 preflight 阻擋
-      body: JSON.stringify(formData)
-    })
-    .then(res => res.json())
-    .then(res => {
-      if(res.success) {
-        if (res.walletFullyPaid) {
-          Swal.fire({ icon: 'success', title: '預預約成功！', text: '已扣抵儲值金。即將為您導引至入場須知專區...', timer: 2500, showConfirmButton: false });
-          setTimeout(() => { window.location.href = res.scriptUrl + "?page=success"; }, 2000);
-          return;
-        }
-        Swal.fire({ title: '鎖位成功！導向綠界安全金流...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
-        const container = document.getElementById('ecpayContainer');
-        container.innerHTML = res.html;
-        setTimeout(() => { container.querySelector('form').submit(); }, 500);
-      } else {
-        btn.innerHTML = '確認送出並前往支付 <i class="fas fa-arrow-right text-xs opacity-70"></i>'; btn.disabled = false;
-        Swal.fire('預約失敗', res.message || '該時段已被搶先約走', 'error');
-      }
-    })
-    .catch(err => {
-      btn.innerHTML = '確認送出並前往支付 <i class="fas fa-arrow-right text-xs opacity-70"></i>'; btn.disabled = false;
-      Swal.fire('系統錯誤', 'API 連線超時，請重新送出', 'error');
+      method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "submitTopUpApplication", phone: p, account5: acc, amount: parseInt(amt), plan: plan })
+    }).then(res => res.json()).then(res => {
+      submitBtn.disabled = false; submitBtn.innerText = "送出審核";
+      if(res.success) { closeTopUpModal(); Swal.fire('成功', '回報已送出！我們將在 1-2 小時內為您審核入帳。', 'success'); }
+      else { Swal.fire('失敗', res.message, 'error'); }
     });
   }
+
+  // 10. 終極跨界 Fetch 鎖位與綠界跳轉
+  function submitOrderForm() {
+    let m = bookingMode === 'master' ? selectedMaster : document.getElementById('hiddenMaster').value;
+    if(!selectedService || !m || !selectedDate || !selectedTime) { return Swal.fire('提示', '請確認 師傅、課程、日期、時段 皆已選取完畢！', 'warning'); }
+    let name = document.getElementById('userNameInput').value.trim();
+    let phone = document.getElementById('userPhoneInput').value.trim();
+    let line = document.getElementById('lineNameInput').value.trim();
+    if(!name || !phone || !line) { return Swal.fire('提示', '請完整填寫 姓名、手機、LINE名稱！', 'warning'); }
+
+    const btn = document.getElementById('submitBtnReal');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 雲端鎖位對帳中，請勿關閉網頁...'; btn.disabled = true;
+
+    // 判斷是否符合會員卡全額扣抵條件
+    let isWalletPaid = (walletBalance >= (selectedService.price - couponDiscount));
+
+    let formData = {
+      action: "processBooking", userName: name, userPhone: phone, lineName: line,
+      mainService: selectedService.name, originalPrice: selectedService.price,
+      master: m, bookDate: selectedDate, bookTime: selectedTime,
+      couponCode: document.getElementById('couponCode').value.trim(), useWallet: isWalletPaid
+    };
+
+    fetch(GAS_BACKEND_URL, {
+      method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(formData)
+    }).then(res => res.json()).then(res => {
+      if(res.success) {
+        // 💡 錢包完全扣抵情境：原地直接跳入 success.html 頁面綁定 LINE
+        if(res.walletFullyPaid) {
+          Swal.fire({ icon: 'success', title: '預約成功！', text: '儲值金扣抵完畢，即將引導至入場指引區...', timer: 2000, showConfirmButton: false });
+          setTimeout(() => { window.location.href = res.scriptUrl + "?page=success"; }, 2000); return;
+        }
+        // 💡 綠界支付情境：拉起金流自動提交
+        Swal.fire({ title: '鎖位完成！前往綠界刷卡...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+        const ecContainer = document.getElementById('ecpayContainer'); ecContainer.innerHTML = res.html;
+        setTimeout(() => { ecContainer.querySelector('form').submit(); }, 500);
+      } else {
+        btn.innerHTML = '確認送出並前往支付 <i class="fas fa-arrow-right text-[10px]"></i>'; btn.disabled = false;
+        Swal.fire('預約失敗', res.message || '該時段剛好滿約了', 'error');
+      }
+    }).catch(err => {
+      btn.innerHTML = '確認送出並前往支付 <i class="fas fa-arrow-right text-[10px]"></i>'; btn.disabled = false;
+      Swal.fire('網路錯誤', 'API 傳輸逾時，請重新點擊送出', 'error');
+    });
+  }
+
+  function resetPrices() { couponDiscount = 0; document.getElementById('couponMessage').classList.add('hidden'); document.getElementById('couponCode').value = ''; calculateFinalPriceSummary(); }
 </script>
 </body>
 </html>
+
