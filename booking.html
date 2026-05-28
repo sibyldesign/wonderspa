@@ -2,264 +2,268 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>WONDER WANDER - 線上智慧預約系統</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght=400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
-  html, body { max-width: 100vw; overflow-x: hidden; min-height: 100%; }
-  body { font-family: 'Noto Sans TC', sans-serif; background-color: #F5F1ED; }
-  ::-webkit-scrollbar { display: none; }
-  .fade-in { animation: fadeIn 0.6s ease-in-out; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-  .history-scroll::-webkit-scrollbar { display: block; width: 4px; }
-  .history-scroll::-webkit-scrollbar-thumb { background-color: #D9C5B2; border-radius: 4px; }
-  .serif-italic { font-family: 'Times New Roman', Times, serif; font-style: italic; }
-  .glass-btn { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(8px); border: 1px solid rgba(126, 107, 90, 0.1); }
-  details > summary { list-style: none; }
-  details > summary::-webkit-details-marker { display: none; }
-  details[open] summary ~ * { animation: slideDown 0.3s ease-in-out; }
-  @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-  .disabled-date { opacity: 0.3; cursor: not-allowed !important; background-color: #f9f9f9 !important; }
-  .disabled-date b { color: #ccc !important; }
-  body > div #submitBtn { display: none !important; }
+.disabled-date { opacity: 0.3; cursor: not-allowed !important; background-color: #f9f9f9 !important; }
+.disabled-date b { color: #ccc !important; }
+html, body { max-width: 100vw; overflow-x: hidden; min-height: 100%; }
+body { font-family: 'Noto Sans TC', sans-serif; background-color: #F5F1ED; color: #7E6B5A; -webkit-tap-highlight-color: transparent; }
+::-webkit-scrollbar { display: none; }
+.fade-in { animation: fadeIn 0.6s ease-in-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.history-scroll::-webkit-scrollbar { display: block; width: 4px; }
+.history-scroll::-webkit-scrollbar-thumb { background-color: #D9C5B2; border-radius: 4px; }
+.serif-italic { font-family: 'Times New Roman', Times, serif; font-style: italic; }
+details > summary { list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
+details[open] summary ~ * { animation: slideDown 0.3s ease-in-out; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+body > div #submitBtn { display: none !important; }
 </style>
 <script>
-  tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: '#D9C5B2', dark: '#7E6B5A', accent: '#C5A059', surface: '#FFFFFF', inputbg: '#FAF9F8' }, boxShadow: { 'soft': '0 8px 30px rgba(126, 107, 90, 0.05)' } } } }
+tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: '#D9C5B2', dark: '#7E6B5A', accent: '#C5A059', surface: '#FFFFFF', inputbg: '#FAF9F8' }, boxShadow: { 'soft': '0 8px 30px rgba(126, 107, 90, 0.05)' } } } }
 </script>
 </head>
 <body class="text-dark antialiased relative">
 
+<!-- 💎 會員儲值 / 匯款回報視窗 (Modal) -->
 <div id="topUpModal" class="hidden fixed inset-0 bg-dark/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-  <div class="bg-surface w-full max-w-sm rounded-[1.5rem] p-6 shadow-2xl relative fade-in">
-    <button type="button" onclick="closeTopUpModal()" class="absolute top-4 right-4 text-dark/50 hover:text-dark"><i class="fas fa-times text-xl"></i></button>
-    <h3 class="text-dark font-bold text-sm tracking-widest mb-4 border-b border-secondary/20 pb-2"><i class="fas fa-coins text-accent mr-1"></i>  儲值回報申請 </h3>
-    <div class="space-y-4">
-      <div class="bg-[#F5EBE1] p-3 rounded-xl border border-accent/20 text-center">
-        <p class="text-[10px] text-dark/60 font-bold mb-1"> 請先匯款至下方帳戶： </p>
-        <p class="text-[13px] text-accent font-bold tracking-widest"> 國泰世華銀行 (013) </p>
-        <p class="text-[15px] text-dark font-bold tracking-widest my-0.5">0565-0605-4643</p>
-      </div>
-      <p class="text-[10px] text-accent font-bold leading-relaxed"> 請於匯款完成後填寫此表，我們將盡速為您審核入帳。 </p>
-      <div><label class="text-[10px] font-bold text-dark/60"> 手機號碼 (必填) </label><input type="tel" id="tuPhone" placeholder="請輸入手機" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-3 py-2.5 text-sm mt-1 focus:outline-none focus:border-accent"></div>
-      <div><label class="text-[10px] font-bold text-dark/60"> 轉帳後五碼 (必填) </label><input type="text" id="tuAccount" maxlength="5" placeholder="輸入後五碼" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-3 py-2.5 text-sm mt-1 focus:outline-none focus:border-accent"></div>
-      <div><label class="text-[10px] font-bold text-dark/60"> 儲值方案 </label>
-        <select id="tuPlan" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-3 py-2.5 text-sm mt-1 focus:outline-none focus:border-accent appearance-none"></select>
-      </div>
-      <div><label class="text-[10px] font-bold text-dark/60"> 匯款金額 (必填) </label><input type="number" id="tuAmount" placeholder="請輸入實際匯款金額" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-3 py-2.5 text-sm mt-1 focus:outline-none focus:border-accent"></div>
-      <button type="button" onclick="submitTopUp()" id="tuSubmitBtn" class="w-full bg-dark text-white font-bold py-3.5 rounded-xl mt-2 text-xs tracking-widest hover:bg-accent transition-all shadow-md"> 送出審核 </button>
+<div class="bg-surface w-full max-w-sm rounded-[1.5rem] p-6 shadow-2xl relative fade-in">
+  <button type="button" onclick="closeTopUpModal()" class="absolute top-4 right-4 text-dark/50 hover:text-dark"><i class="fas fa-times text-lg"></i></button>
+  <h3 class="text-dark font-bold text-sm tracking-widest mb-4 border-b border-secondary/20 pb-2"><i class="fas fa-coins text-accent mr-1"></i> 儲值回報申請</h3>
+  <div class="space-y-4">
+    <div class="bg-[#F5EBE1] p-3 rounded-xl border border-accent/20 text-center">
+      <p class="text-[10px] text-dark/60 font-bold mb-1">請先匯款至下方帳戶：</p>
+      <p class="text-[13px] text-accent font-bold tracking-widest">國泰世華銀行 (013)</p>
+      <p class="text-[15px] text-dark font-bold tracking-widest my-0.5">0565-0605-4643</p>
     </div>
+    <p class="text-[10px] text-accent font-bold leading-relaxed">請於匯款完成後填寫此表，我們將盡速為您審核入帳。</p>
+    <div><label class="text-[10px] font-bold text-dark/60">手機號碼 (必填)</label><input type="tel" id="tuPhone" placeholder="請輸入手機" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-3 py-2.5 text-sm mt-1 focus:outline-none focus:border-accent"></div>
+    <div><label class="text-[10px] font-bold text-dark/60">轉帳後五碼 (必填)</label><input type="text" id="tuAccount" maxlength="5" placeholder="輸入後五碼" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-3 py-2.5 text-sm mt-1 focus:outline-none focus:border-accent"></div>
+    <div><label class="text-[10px] font-bold text-dark/60">儲值方案</label>
+      <select id="tuPlan" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-3 py-2.5 text-sm mt-1 focus:outline-none focus:border-accent appearance-none"></select>
+    </div>
+    <div><label class="text-[10px] font-bold text-dark/60">匯款金額 (必填)</label><input type="number" id="tuAmount" placeholder="請輸入實際匯款金額" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-3 py-2.5 text-sm mt-1 focus:outline-none focus:border-accent"></div>
+    <button type="button" onclick="submitTopUp()" id="tuSubmitBtn" class="w-full bg-dark text-white font-bold py-3.5 rounded-xl mt-2 text-xs tracking-widest hover:bg-accent transition-all shadow-md">送出審核</button>
   </div>
+</div>
 </div>
 
 <header class="bg-surface shadow-sm flex flex-col justify-center items-center pt-8 pb-6 px-4">
-  <img src="https://i.postimg.cc/ZYvTKGkY/Wonder-SPA-LOGO.png" alt="WONDER WANDER" class="h-32 w-auto object-contain">
-  <div class="text-center mt-5">
-    <h1 class="text-sm font-bold tracking-[0.4em] text-dark/80">ONLINE BOOKING</h1>
-    <div class="h-px w-10 bg-accent mx-auto mt-2 opacity-50"></div>
-  </div>
+<img src="https://i.postimg.cc/ZYvTKGkY/Wonder-SPA-LOGO.png" alt="WONDER WANDER" class="h-32 w-auto object-contain">
+<div class="text-center mt-5">
+<h1 class="text-sm font-bold tracking-[0.4em] text-dark/80">ONLINE BOOKING</h1>
+<div class="h-px w-10 bg-accent mx-auto mt-2 opacity-50"></div>
+</div>
 </header>
 
 <main class="px-7 py-6 w-full max-w-[420px] mx-auto space-y-6">
 
-  <div id="announcementContainer" class="flex justify-center fade-in hidden mb-2">
-    <div class="inline-flex items-center justify-center gap-2 bg-[#F5EBE1] text-dark px-5 py-2 rounded-full text-[10px] font-bold tracking-widest shadow-sm">
-      <i class="fas fa-bullhorn text-accent"></i><span id="announcementText"></span>
-    </div>
-  </div>
+<!-- 📢 店內重要公告天線 (100% 齒輪對齊圖二試算表 `歡慶開幕！`) -->
+<div id="announcementContainer" class="flex justify-center fade-in hidden mb-2">
+<div class="inline-flex items-center justify-center gap-2 bg-[#F5EBE1] text-dark px-5 py-2 rounded-full text-[10px] font-bold tracking-widest shadow-sm">
+<i class="fas fa-bullhorn text-accent"></i><span id="announcementText"></span>
+</div>
+</div>
 
-  <section class="bg-surface p-8 rounded-[2rem] shadow-soft text-center w-full box-border border border-secondary/20 fade-in relative overflow-hidden">
-    <div class="absolute -top-2 right-4 text-[120px] leading-none text-secondary/15 font-serif font-bold italic select-none pointer-events-none">"</div>
-    <h2 class="text-[15px] font-bold tracking-[0.1em] text-dark mb-1 relative z-10">Wonder SPA</h2>
-    <p class="text-[10px] font-bold text-accent tracking-widest mb-6 relative z-10"> 仕女按摩 · 肌肉帥哥按摩師 </p>
-    <p class="text-dark/80 text-[12px] leading-[2.4] tracking-widest font-bold relative z-10">
-      指尖下的親密對話 <br> 給肌膚最溫柔的奢華呵護 <br> 嚴選肌肉帥哥，40 小時培訓才可上工 <br> 忙碌生活中的小確幸，我們為你把關
-    </p>
-    <div class="w-[80%] h-[1px] bg-secondary/30 mx-auto my-6 relative z-10"></div>
-    <p class="text-accent/80 text-[12px] tracking-widest serif-italic relative z-10 leading-relaxed">" In the sensory wander,<br>find the wonder within. "</p>
-  </section>
+<section class="bg-surface p-8 rounded-[2rem] shadow-soft text-center w-full box-border border border-secondary/20 fade-in relative overflow-hidden">
+<div class="absolute -top-2 right-4 text-[120px] leading-none text-secondary/15 font-serif font-bold italic select-none pointer-events-none">"</div>
+<h2 class="text-[15px] font-bold tracking-[0.1em] text-dark mb-1 relative z-10">Wonder SPA</h2>
+<p class="text-[10px] font-bold text-accent tracking-widest mb-6 relative z-10">仕女按摩 · 肌肉帥哥按摩師</p>
+<p class="text-dark/80 text-[12px] leading-[2.4] tracking-widest font-bold relative z-10">
+指尖下的親密對話 <br>給肌膚最溫柔的奢華呵護 <br>嚴選肌肉帥哥，40 小時培訓才可上工 <br>忙碌生活中的小確幸，我們為你把關
+</p>
+<div class="w-[80%] h-[1px] bg-secondary/30 mx-auto my-6 relative z-10"></div>
+<p class="text-accent/80 text-[12px] tracking-widest serif-italic relative z-10 leading-relaxed">" In the sensory wander,<br>find the wonder within. "</p>
+</section>
 
-  <form id="bookingForm" class="space-y-6">
+<form id="bookingForm" class="space-y-6">
 
-    <div class="bg-surface p-6 rounded-[1.5rem] shadow-soft space-y-4 w-full border border-secondary/10">
-      <h2 class="text-xs font-bold tracking-widest border-b border-secondary/10 pb-3 flex items-center">
-        <i class="fas fa-user-circle mr-2 text-accent"></i>  顧客資訊 CUSTOMER
-      </h2>
-      <div class="space-y-4">
-        <div>
-          <label class="block text-[10px] font-bold text-dark/60 mb-1.5 pl-1 flex justify-between items-end">
-            <span> 電話 PHONE </span><span id="fetchDataBtnText" class="text-accent text-[9px] font-bold"></span>
-          </label>
-          <div class="flex gap-2">
-            <input type="tel" name="userPhone" id="userPhoneInput" required placeholder="請輸入手機號碼" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent box-border">
-            <button type="button" id="fetchDataBtn" onclick="fetchCustomerProfile()" class="bg-dark text-white px-4 py-3 rounded-xl font-bold tracking-widest text-[11px] hover:bg-accent transition-colors flex-shrink-0 shadow-sm whitespace-nowrap"> 查詢帶入 </button>
-          </div>
-        </div>
+<div class="bg-surface p-6 rounded-[1.5rem] shadow-soft space-y-4 w-full border border-secondary/10">
+<h2 class="text-xs font-bold tracking-widest border-b border-secondary/10 pb-3 flex items-center">
+<i class="fas fa-user-circle mr-2 text-accent"></i>顧客資訊 CUSTOMER
+</h2>
+<div class="space-y-4">
+<div>
+<label class="block text-[10px] font-bold text-dark/60 mb-1.5 pl-1 flex justify-between items-end">
+<span>電話 PHONE</span><span id="fetchDataBtnText" class="text-accent text-[9px] font-bold"></span>
+</label>
+<div class="flex gap-2">
+<input type="tel" name="userPhone" id="userPhoneInput" required placeholder="請輸入手機號碼" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent box-border">
+<button type="button" id="fetchDataBtn" onclick="fetchCustomerProfile()" class="bg-dark text-white px-4 py-3 rounded-xl font-bold tracking-widest text-[11px] hover:bg-accent transition-colors flex-shrink-0 shadow-sm whitespace-nowrap">
+  查詢帶入
+</button>
+</div>
+</div>
 
-        <div id="walletDisplaySection" class="hidden mt-3 p-4 bg-[#F5EBE1]/50 border border-accent/20 rounded-xl shadow-sm">
-          <div class="flex justify-between items-center mb-1">
-            <span class="text-[11px] font-bold text-dark tracking-wide"><i class="fas fa-crown text-accent mr-1"></i>  會員身分 </span>
-            <span id="vipLevelText" class="text-[11px] font-bold text-accent bg-surface px-2 py-0.5 rounded shadow-sm"> 一般會員 </span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-[11px] font-bold text-dark tracking-wide"><i class="fas fa-wallet text-accent mr-1"></i>  儲值金餘額 </span>
-            <span id="walletBalanceText" class="text-[14px] font-bold text-dark">NT$ 0</span>
-          </div>
-          <input type="hidden" id="availableWalletBalance" value="0">
-        </div>
+<div id="walletDisplaySection" class="hidden mt-3 p-4 bg-[#F5EBE1]/50 border border-accent/20 rounded-xl shadow-sm">
+<div class="flex justify-between items-center mb-1">
+  <span class="text-[11px] font-bold text-dark tracking-wide"><i class="fas fa-crown text-accent mr-1"></i>會員身分</span>
+  <span id="vipLevelText" class="text-[11px] font-bold text-accent bg-surface px-2 py-0.5 rounded shadow-sm">一般會員</span>
+</div>
+<div class="flex justify-between items-center">
+  <span class="text-[11px] font-bold text-dark tracking-wide"><i class="fas fa-wallet text-accent mr-1"></i>儲值金餘額</span>
+  <span id="walletBalanceText" class="text-[14px] font-bold text-dark">NT$ 0</span>
+</div>
+<input type="hidden" id="availableWalletBalance" value="0">
+</div>
 
-        <div id="historySection" class="hidden mt-2 p-3 bg-secondary/10 rounded-xl border border-secondary/20">
-          <h3 class="text-[10px] font-bold text-dark mb-2 flex items-center gap-1"><i class="fas fa-history text-accent"></i>  您的歷史預約 </h3>
-          <div id="historyList" class="space-y-2 max-h-40 overflow-y-auto pr-1 history-scroll mt-2"></div>
-        </div>
-        <div>
-          <label class="block text-[10px] font-bold text-dark/60 mb-1.5 pl-1"> 姓名 NAME </label>
-          <input type="text" name="userName" id="userNameInput" required placeholder="請輸入姓名" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent box-border">
-        </div>
-        <div>
-          <label class="block text-[10px] font-bold text-dark/60 mb-1.5 pl-1"> LINE 名稱 LINE NAME </label>
-          <input type="text" name="lineName" id="lineNameInput" required placeholder="請輸入 Line 顯示名稱" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent box-border">
-        </div>
-      </div>
-    </div>
+<div id="historySection" class="hidden mt-2 p-3 bg-secondary/10 rounded-xl border border-secondary/20">
+<h3 class="text-[10px] font-bold text-dark mb-2 flex items-center gap-1"><i class="fas fa-history text-accent"></i>您的歷史預約</h3>
+<div id="historyList" class="space-y-2 max-h-40 overflow-y-auto pr-1 history-scroll mt-2"></div>
+</div>
+<div>
+<label class="block text-[10px] font-bold text-dark/60 mb-1.5 pl-1">姓名 NAME</label>
+<input type="text" name="userName" id="userNameInput" required placeholder="請輸入姓名" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent box-border">
+</div>
+<div>
+<label class="block text-[10px] font-bold text-dark/60 mb-1.5 pl-1">LINE 名稱 LINE NAME</label>
+<input type="text" name="lineName" id="lineNameInput" required placeholder="請輸入 Line 顯示名稱" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent box-border">
+</div>
+</div>
+</div>
 
-    <div class="flex justify-center mb-2 fade-in">
-      <button type="button" onclick="openTopUpModal()" class="w-full py-3 bg-[#F5EBE1] border border-accent/40 rounded-xl text-dark text-[11px] font-bold tracking-[0.2em] hover:bg-[#E8DFD5] transition-all shadow-sm">
-        <i class="fas fa-gem text-accent mr-1"></i>  會員儲值 / 匯款回報
-      </button>
-    </div>
+<div class="flex justify-center mb-2 fade-in">
+<button type="button" onclick="openTopUpModal()" class="w-full py-3 bg-[#F5EBE1] border border-accent/40 rounded-xl text-dark text-[11px] font-bold tracking-[0.2em] hover:bg-[#E8DFD5] transition-all shadow-sm">
+  <i class="fas fa-gem text-accent mr-1"></i>會員儲值 / 匯款回報
+</button>
+</div>
 
-    <div class="bg-surface p-6 rounded-[1.5rem] shadow-soft space-y-5 w-full relative border border-secondary/10">
-      <div id="initOverlay" class="absolute inset-0 bg-surface/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center rounded-[1.5rem]">
-        <div class="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin mb-2"></div><span class="text-xs text-dark/70 tracking-widest font-bold">  系統連線中...  </span>
-      </div>
-      <h2 class="text-xs font-bold tracking-widest border-b border-secondary/10 pb-3 flex items-center justify-between">
-        <span><i class="fas fa-calendar-alt mr-2 text-accent"></i>  預約安排 SCHEDULE  </span>
-      </h2>
+<div class="bg-surface p-6 rounded-[1.5rem] shadow-soft space-y-5 w-full relative border border-secondary/10">
+<div id="initOverlay" class="absolute inset-0 bg-surface/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center rounded-[1.5rem]">
+<div class="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin mb-2"></div><span class="text-xs text-dark/70 tracking-widest font-bold">系統連線中...</span>
+</div>
+<h2 class="text-xs font-bold tracking-widest border-b border-secondary/10 pb-3 flex items-center justify-between">
+<span><i class="fas fa-calendar-alt mr-2 text-accent"></i>預約安排 SCHEDULE</span>
+</h2>
 
-      <div class="flex p-1 bg-secondary/10 rounded-xl mb-4">
-        <button type="button" id="modeBtnMaster" onclick="switchMode('master')" class="flex-1 py-2 text-[11px] font-bold rounded-lg bg-surface shadow-sm text-dark transition-all">  選師傅  </button>
-        <button type="button" id="modeBtnTime" onclick="switchMode('time')" class="flex-1 py-2 text-[11px] font-bold rounded-lg text-dark/50 transition-all">  看空檔  </button>
-      </div>
+<div class="flex p-1 bg-secondary/10 rounded-xl mb-4">
+<button type="button" id="modeBtnMaster" onclick="switchMode('master')" class="flex-1 py-2 text-[11px] font-bold rounded-lg bg-surface shadow-sm text-dark transition-all">選師傅</button>
+<button type="button" id="modeBtnTime" onclick="switchMode('time')" class="flex-1 py-2 text-[11px] font-bold rounded-lg text-dark/50 transition-all">看空檔</button>
+</div>
 
-      <div id="stepMaster">
-        <label class="block text-[10px] font-bold text-dark/60 mb-1.5 pl-1">  1. 選擇師傅 MASTER  </label>
-        <select id="masterSelect" name="master" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent appearance-none box-border" onchange="unlockServices()">
-          <option value="" disabled selected>  請選擇師傅  </option>
-        </select>
-        <button type="button" onclick="openTeacherWall()" class="block w-full mt-3 py-3 bg-[#D9C5B2]/20 border border-secondary/30 rounded-xl text-dark text-[11px] font-bold tracking-[0.2em] hover:bg-secondary/30 transition-all shadow-sm text-center">
-          <i class="fas fa-images mr-2 text-accent"></i>  瀏覽師傅形象牆
-        </button>
-      </div>
+<div id="stepMaster">
+<label class="block text-[10px] font-bold text-dark/60 mb-1.5 pl-1">1. 選擇師傅 MASTER</label>
+<select id="masterSelect" name="master" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent appearance-none box-border" onchange="unlockServices()">
+<option value="" disabled selected>請選擇師傅</option>
+</select>
+ <a href="https://www.wonderspa.tw/" target="_blank" class="block w-full mt-3 py-3 bg-[#D9C5B2]/20 border border-secondary/30 rounded-xl text-dark text-[11px] font-bold tracking-[0.2em] hover:bg-secondary/30 transition-all shadow-sm text-center">
+<i class="fas fa-images mr-2 text-accent"></i>瀏覽師傅形象牆
+</a>
+</div>
 
-      <div class="mt-4">
-        <label id="serviceLabel" class="block text-[10px] font-bold text-dark/60 mb-1.5 pl-1">  2. 選擇服務 SERVICE  </label>
-        <select name="mainService" id="serviceSelect" onchange="unlockCalendar()" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent appearance-none box-border" disabled>
-          <option value="" disabled selected>  請先完成上方選項  </option>
-        </select>
-      </div>
+<div class="mt-4">
+<label id="serviceLabel" class="block text-[10px] font-bold text-dark/60 mb-1.5 pl-1">2. 選擇服務 SERVICE</label>
+<select name="mainService" id="serviceSelect" onchange="unlockCalendar()" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent appearance-none box-border" disabled>
+<option value="" disabled selected>請先完成上方選項</option>
+</select>
+</div>
 
-      <div class="mt-4">
-        <label id="dateLabel" class="block text-[10px] font-bold text-dark/60 mb-2 pl-1">  3. 選擇日期 DATE  </label>
-        <div id="calendarContainer" class="bg-inputbg border border-secondary/30 rounded-xl p-4 relative">
-          <div class="flex justify-between items-center mb-4 px-2">
-            <button type="button" onclick="changeMonth(-1)" class="text-dark/50 hover:text-accent font-bold p-1"><</button>
-            <div id="monthYearText" class="text-sm font-bold tracking-widest text-dark"></div>
-            <button type="button" onclick="changeMonth(1)" class="text-dark/50 hover:text-accent font-bold p-1">></button>
-          </div>
-          <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-dark/40 mb-2">
-            <div>  日  </div><div>  一  </div><div>  二  </div><div>  三  </div><div>  四  </div><div>  五  </div><div>  六  </div>
-          </div>
-          <div id="calendarDays" class="grid grid-cols-7 gap-1 text-center"></div>
-          <div id="calendarOverlay" class="absolute inset-0 bg-inputbg/80 backdrop-blur-[2px] flex items-center justify-center rounded-xl z-10 transition-opacity duration-300">
-            <span class="bg-dark text-white text-[10px] tracking-widest px-4 py-2 rounded-full shadow-sm">  請先選擇服務項目  </span>
-          </div>
-        </div>
-      </div>
+<div class="mt-4">
+<label id="dateLabel" class="block text-[10px] font-bold text-dark/60 mb-2 pl-1">3. 選擇日期 DATE</label>
+<div id="calendarContainer" class="bg-inputbg border border-secondary/30 rounded-xl p-4 relative">
+<div class="flex justify-between items-center mb-4 px-2">
+<button type="button" onclick="changeMonth(-1)" class="text-dark/50 hover:text-accent font-bold p-1"><</button>
+<div id="monthYearText" class="text-sm font-bold tracking-widest text-dark"></div>
+<button type="button" onclick="changeMonth(1)" class="text-dark/50 hover:text-accent font-bold p-1">></button>
+</div>
+<div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-dark/40 mb-2">
+<div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div>
+</div>
+<div id="calendarDays" class="grid grid-cols-7 gap-1 text-center"></div>
+<div id="calendarOverlay" class="absolute inset-0 bg-inputbg/80 backdrop-blur-[2px] flex items-center justify-center rounded-xl z-10 transition-opacity duration-300">
+<span class="bg-dark text-white text-[10px] tracking-widest px-4 py-2 rounded-full shadow-sm">請先選擇服務項目</span>
+</div>
+</div>
+</div>
 
-      <div id="timeSlotsSection" class="hidden fade-in pt-2">
-        <label id="timeLabel" class="block text-[10px] font-bold text-dark/60 mb-2 pl-1">  4. 選擇時段 TIME  </label>
-        <div id="timeSlotsGrid" class="grid grid-cols-3 gap-2"></div>
-        <p id="noTimeText" class="text-xs text-center text-red-400 hidden py-2 font-bold bg-red-50 rounded-lg">  此日期無空檔，請選擇其他日期  </p>
-      </div>
+<div id="timeSlotsSection" class="hidden fade-in pt-2">
+<label id="timeLabel" class="block text-[10px] font-bold text-dark/60 mb-2 pl-1">4. 選擇時段 TIME</label>
+<div id="timeSlotsGrid" class="grid grid-cols-3 gap-2"></div>
+<p id="noTimeText" class="text-xs text-center text-red-400 hidden py-2 font-bold bg-red-50 rounded-lg">此日期無空檔，請選擇其他日期</p>
+</div>
 
-      <div id="availableMastersSection" class="hidden fade-in pt-2 border-t border-secondary/20 mt-4">
-        <label class="block text-[10px] font-bold text-dark/60 mb-2 pl-1 mt-4">  5. 選擇師傅 MASTER  </label>
-        <div id="availableMastersGrid" class="grid grid-cols-2 gap-2"></div>
-      </div>
+<div id="availableMastersSection" class="hidden fade-in pt-2 border-t border-secondary/20 mt-4">
+<label class="block text-[10px] font-bold text-dark/60 mb-2 pl-1 mt-4">5. 選擇師傅 MASTER</label>
+<div id="availableMastersGrid" class="grid grid-cols-2 gap-2"></div>
+</div>
 
-      <input type="hidden" name="bookDate" id="hiddenDate">
-      <input type="hidden" name="bookTime" id="hiddenTime">
-      <input type="hidden" name="finalMaster" id="hiddenMaster">
+<input type="hidden" name="bookDate" id="hiddenDate">
+<input type="hidden" name="bookTime" id="hiddenTime">
+<input type="hidden" name="finalMaster" id="hiddenMaster">
 
-      <div class="pt-4 border-t border-secondary/20 mt-6">
-        <label class="block text-[10px] font-bold text-dark/60 mb-1.5 pl-1">  折扣碼 DISCOUNT CODE  </label>
-        <div class="flex gap-2">
-          <input type="text" id="couponCode" placeholder="如有代碼請輸入" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent uppercase tracking-wider box-border" oninput="this.value = this.value.toUpperCase()">
-          <button type="button" id="applyCouponBtn" onclick="applyCoupon()" class="bg-dark text-white px-5 py-3 rounded-xl font-bold tracking-widest text-[12px] hover:bg-accent transition-colors flex-shrink-0 shadow-sm">  套用  </button>
-        </div>
-        <div id="couponMessage" class="text-[11px] mt-2 hidden font-bold tracking-wide"></div>
-      </div>
-    </div>
+<div class="pt-4 border-t border-secondary/20 mt-6">
+<label class="block text-[10px] font-bold text-dark/60 mb-1.5 pl-1">折扣碼 DISCOUNT CODE</label>
+<div class="flex gap-2">
+<input type="text" id="couponCode" placeholder="如有代碼請輸入" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent uppercase tracking-wider box-border" oninput="this.value = this.value.toUpperCase()">
+<button type="button" id="applyCouponBtn" onclick="applyCoupon()" class="bg-dark text-white px-5 py-3 rounded-xl font-bold tracking-widest text-[12px] hover:bg-accent transition-colors shadow-sm">套用</button>
+</div>
+<div id="couponMessage" class="text-[11px] mt-2 hidden font-bold tracking-wide"></div>
+</div>
+</div>
 
-    <div class="bg-surface p-6 rounded-[1.5rem] shadow-soft space-y-4 w-full border border-secondary/10 fade-in">
-      <h2 class="text-xs font-bold tracking-widest border-b border-secondary/10 pb-3 flex items-center text-dark">
-        <i class="fas fa-info-circle text-accent mr-2"></i>  付款須知 PAYMENT NOTICE
-      </h2>
-      <ul class="text-[12px] text-dark/70 space-y-2.5 tracking-wider font-medium list-disc pl-4 marker:text-accent/60">
-        <li> 預約送出後，請儘速完成結帳以確保您的專屬預約時段。 </li>
-        <li> 接受 信用卡 / Apple Pay / 街口支付 / 超商代碼 / 網路 ATM。 </li>
-      </ul>
-      <div class="pt-3">
-        <label class="flex items-start gap-3 cursor-pointer bg-red-50/50 p-4 rounded-xl border border-red-100/50 hover:bg-red-50 transition-colors">
-          <input type="checkbox" id="genderConfirm" class="mt-0.5 w-4 h-4 text-accent border-secondary rounded focus:ring-accent flex-shrink-0">
-          <span class="text-[11px] text-dark/90 font-bold leading-relaxed tracking-wide">
-            我已確認為「生理女性顧客」 <br>
-            <span class="text-red-600/90 font-normal text-[10px] block mt-1.5 leading-relaxed">  ※ 本店為純生理女性專屬空間。若男性顧客任意付款下單，將不予提供服務，並不予退費。  </span>
-          </span>
-        </label>
-      </div>
-    </div>
+<!-- 完美對齊原版：付款須知、女性專屬空間勾選聲明區塊 -->
+<div class="bg-surface p-6 rounded-[1.5rem] shadow-soft space-y-4 w-full border border-secondary/10 fade-in">
+<h2 class="text-xs font-bold tracking-widest border-b border-secondary/10 pb-3 flex items-center text-dark">
+<i class="fas fa-info-circle text-accent mr-2"></i>付款須知 PAYMENT NOTICE
+</h2>
+<ul class="text-[12px] text-dark/70 space-y-2.5 tracking-wider font-medium list-disc pl-4 marker:text-accent/60">
+<li>預約送出後，請儘速完成結帳以確保您的專屬預約時段。</li>
+<li>接受 信用卡 / Apple Pay / 街口支付 / 超商代碼 / 網路 ATM。</li>
+</ul>
+<div class="pt-3">
+<label class="flex items-start gap-3 cursor-pointer bg-red-50/50 p-4 rounded-xl border border-red-100/50 hover:bg-red-50 transition-colors">
+<input type="checkbox" id="genderConfirm" class="mt-0.5 w-4 h-4 text-accent border-secondary rounded focus:ring-accent flex-shrink-0">
+<span class="text-[11px] text-dark/90 font-bold leading-relaxed tracking-wide">
+我已確認為「生理女性顧客」<br>
+<span class="text-red-600/90 font-normal text-[10px] block mt-1.5 leading-relaxed">※ 本店為純生理女性專屬空間。若男性顧客任意付款下單，將不予提供服務，並不予退費。</span>
+</span>
+</label>
+</div>
+</div>
 
-    <div class="mt-8 space-y-6 pb-4 text-center fade-in">
-      <div class="bg-surface border border-secondary/30 rounded-[1.5rem] overflow-hidden shadow-soft text-left">
-        <details class="group">
-          <summary class="p-5 font-bold text-dark flex items-center justify-between cursor-pointer outline-none bg-inputbg transition-colors">
-            <span class="flex items-center gap-2 text-xs tracking-widest"><i class="fas fa-map-marker-alt text-accent"></i>  交通與接待指引  </span>
-            <i class="fas fa-chevron-down text-dark/50 transition-transform group-open:rotate-180"></i>
-          </summary>
-          <div class="p-5 pt-2 border-t border-dashed border-secondary/30 text-dark/80 text-[11px] leading-relaxed">
-            <p class="mb-3"><span class="font-bold text-dark"><i class="fas fa-train text-accent/70 w-4"></i>  捷運：  </span>  靠近  <span class="text-accent font-bold">  雙連站  </span>  或  <span class="text-accent font-bold">  中山國小站  </span>  。 </p>
-            <p><span class="font-bold text-dark"><i class="fas fa-walking text-accent/70 w-4"></i>  接待：  </span>  由於位置較隱密，請至明顯地標  <span class="text-accent font-bold bg-accent/10 px-1 rounded">  屈臣氏 林森門市  </span>  稍候，我們將有專人前往接待入館。 </p>
-          </div>
-        </details>
-      </div>
+<!-- 🗺️ 完美對齊原版：交通導引與社群三大icon區塊 -->
+<div class="mt-8 space-y-6 pb-4 text-center fade-in">
+<div class="bg-surface border border-secondary/30 rounded-[1.5rem ] overflow-hidden shadow-soft text-left">
+<details class="group">
+<summary class="p-5 font-bold text-dark flex items-center justify-between cursor-pointer outline-none bg-inputbg transition-colors">
+  <span class="flex items-center gap-2 text-xs tracking-widest"><i class="fas fa-map-marker-alt text-accent"></i>交通與接待指引</span>
+  <i class="fas fa-chevron-down text-dark/50 transition-transform group-open:rotate-180"></i>
+</summary>
+<div class="p-5 pt-2 border-t border-dashed border-secondary/30 text-dark/80 text-[11px ] leading-relaxed">
+  <p class="mb-3"><span class="font-bold text-dark"><i class="fas fa-train text-accent/70 w-4"></i>捷運：</span> 靠近 <span class="text-accent font-bold">雙連站</span> 或 <span class="text-accent font-bold">中山國小站</span>。</p>
+  <p><span class="font-bold text-dark"><i class="fas fa-walking text-accent/70 w-4"></i>接待：</span> 由於位置較隱密，請至明顯地標 <span class="text-accent font-bold bg-accent/10 px-1 rounded">屈臣氏 林森門市</span> 稍候，我們將有專人前往接待入館。</p>
+</div>
+</details>
+</div>
 
-      <div class="flex justify-center items-center gap-4 my-5">
-        <a href="https://line.me/R/ti/p/@461szfnn" target="_blank" class="w-14 h-14 flex items-center justify-center rounded-full border border-dark/30 text-dark hover:bg-secondary/20 transition-all duration-300 shadow-sm bg-white/80"><i class="fab fa-line text-2xl"></i></a>
-        <a href="https://www.instagram.com/wonder_wander__" target="_blank" class="w-14 h-14 flex items-center justify-center rounded-full border border-dark/30 text-dark hover:bg-secondary/20 transition-all duration-300 shadow-sm bg-white/80"><i class="fab fa-instagram text-2xl"></i></a>
-        <a href="https://maps.app.goo.gl/aAHvtPYt8T9mVDKP8?g_st=ic" target="_blank" class="w-14 h-14 flex items-center justify-center rounded-full border border-dark/30 text-dark hover:bg-secondary/20 transition-all duration-300 shadow-sm bg-white/80"><i class="fas fa-map-marked-alt text-2xl"></i></a>
-      </div>
-    </div>
+<div class="flex justify-center items-center gap-4 my-5">
+<a href="https://line.me/R/ti/p/@461szfnn" target="_blank" class="w-14 h-14 flex items-center justify-center rounded-full border border-dark/30 text-dark hover:bg-secondary/20 transition-all duration-300 shadow-sm bg-white/80"><i class="fab fa-line text-2xl"></i></a>
+<a href="https://www.instagram.com/wonder_wander__" target="_blank" class="w-14 h-14 flex items-center justify-center rounded-full border border-dark/30 text-dark hover:bg-secondary/20 transition-all duration-300 shadow-sm bg-white/80"><i class="fab fa-instagram text-2xl"></i></a>
+<a href="https://maps.app.goo.gl/aAHvtPYt8T9mVDKP8?g_st=ic" target="_blank" class="w-14 h-14 flex items-center justify-center rounded-full border border-dark/30 text-dark hover:bg-secondary/20 transition-all duration-300 shadow-sm bg-white/80"><i class="fas fa-map-marked-alt text-2xl"></i></a>
+</div>
 <div class="bg-surface p-6 rounded-[1.5rem] shadow-soft space-y-3 w-full border border-secondary/10 fade-in">
       <h2 class="text-xs font-bold tracking-widest border-b border-secondary/10 pb-3 flex items-center text-dark">
-        <i class="fas fa-file-invoice-dollar mr-2 text-accent"></i> 結帳明細 SUMMARY
+        <i class="fas fa-file-invoice-dollar mr-2 text-accent"></i>結帳明細 SUMMARY
       </h2>
       <div class="space-y-2 text-xs">
         <div class="flex justify-between text-dark/70">
-          <span> 課程原價 </span><span id="summaryOriginalPrice" class="font-mono font-bold">$ 0</span>
+          <span>課程原價</span><span id="summaryOriginalPrice" class="font-mono font-bold">$ 0</span>
         </div>
         <div id="summaryDiscountRow" class="flex justify-between text-red-600 font-bold hidden">
-          <span> 折扣碼折抵 </span><span id="summaryDiscountPrice" class="font-mono">-$ 0</span>
+          <span>折扣碼折抵</span><span id="summaryDiscountPrice" class="font-mono">-$ 0</span>
         </div>
         <div id="summaryWalletRow" class="flex justify-between text-emerald-700 font-bold hidden">
-          <span> 儲值金扣抵 </span><span id="summaryWalletPrice" class="font-mono">-$ 0</span>
+          <span>儲值金扣抵</span><span id="summaryWalletPrice" class="font-mono">-$ 0</span>
         </div>
         <div class="h-[1px] bg-secondary/20 my-2"></div>
         <div class="flex justify-between items-center pt-1">
-          <span class="text-xs font-bold text-dark"> 最終應付金額 </span>
+          <span class="text-xs font-bold text-dark">最終應付金額</span>
           <span id="summaryFinalPrice" class="text-base text-accent font-mono font-bold">NT$ 0</span>
         </div>
       </div>
@@ -267,12 +271,12 @@
 
     <div class="space-y-4 fade-in">
       <button type="button" id="submitBtnReal" onclick="submitOrderForm()" class="w-full bg-dark hover:bg-accent text-white font-bold py-4 rounded-xl shadow-md transition-all tracking-[0.25em] text-xs flex items-center justify-center gap-2 transform active:scale-95 duration-150">
-        <i class="fas fa-lock text-[10px] text-secondary"></i> 確認送出並前往支付 <i class="fas fa-arrow-right text-[10px]"></i>
+        <i class="fas fa-lock text-[10px] text-secondary"></i>確認送出並前往支付 <i class="fas fa-arrow-right text-[10px]"></i>
       </button>
 
       <div class="p-3.5 bg-red-50/80 border border-red-100/50 rounded-xl text-left w-full box-border">
         <p class="text-[10px] text-red-800 font-bold tracking-wide flex items-center gap-1">
-          <i class="fas fa-exclamation-circle text-[10px]"></i> 網頁卡住轉圈圈？
+          <i class="fas fa-exclamation-circle text-[10px]"></i>網頁卡住轉圈圈？
         </p>
         <p class="text-[9px] text-dark/60 font-medium mt-1 leading-relaxed pl-4">
           如點擊遇卡住或無法跳轉，亦可稍後前往 GitHub「補付通道」輸入電話『查詢帶入』完成付款。
@@ -291,21 +295,6 @@
   </p>
 </footer>
 
-<div id="teacherWallModal" class="hidden fixed inset-0 bg-dark/95 backdrop-blur-md z-50 flex items-center justify-center p-4" onclick="closeTeacherWall()">
-  <div class="bg-surface w-full max-w-sm rounded-[2rem] p-6 shadow-2xl relative fade-in max-h-[85vh] overflow-y-auto" onclick="event.stopPropagation()">
-    <button type="button" onclick="closeTeacherWall()" class="absolute top-4 right-4 text-dark/50 hover:text-dark z-10"><i class="fas fa-times text-lg"></i></button>
-    <h3 class="text-dark font-bold text-xs tracking-widest mb-4 text-center"><i class="fas fa-images text-accent mr-1"></i> WONDER MASTER 師傅群 </h3>
-    <div class="space-y-4 text-center">
-      <div class="border border-secondary/20 p-3 rounded-2xl bg-primary/20">
-        <p class="text-xs font-bold text-dark tracking-wide">【首席男神師傅陣容】</p>
-        <p class="text-[11px] text-dark/70 leading-relaxed mt-2"> 店內皆為精選高顏值、身材精實健美之專業仕女按摩師，皆通過 40 小時內部嚴格手法與儀態考核培訓。您可以放心指定。 </p>
-      </div>
-      <img src="https://i.postimg.cc/mD8NdrM1/image.png" class="w-full h-auto rounded-xl shadow-sm object-cover" alt="形象照">
-      <p class="text-[10px] text-accent font-bold"> - 點擊任意空白處即可關閉視窗 - </p>
-    </div>
-  </div>
-</div>
-
 <script>
   // 🚀【跨網域穿透連線專用天線網址】精準鎖定妳剛剛新建立的隔離 GAS API 大腦網址
   const GAS_BACKEND_URL = "https://script.google.com/macros/s/AKfycbz1dbcGlSIxtgC7d0mO5OrM2qoerkM0bA8nrp2TYfgYh4h3mWx8FXxE-le3Dh16XncAgQ/exec";
@@ -320,14 +309,14 @@
   let walletBalance = 0;
   let currentYear, currentMonth;
 
-  // 狀態鎖防止重複送單狂按
+  // 108 原版一秒內防狂敲重複送單鎖
   let isProcessingBooking = false;
 
   // 1. 跨網域穿透抓取初始化快取資料 (對齊圖二公告)
   window.onload = function() {
     let td = new Date(); currentYear = td.getFullYear(); currentMonth = td.getMonth();
     
-    // 從 GitHub 穿透雲端資料庫大腦
+    // 穿透雲端新大腦獲取核心排班與公告
     fetch(GAS_BACKEND_URL + "?action=getInitialFrontData")
       .then(res => res.json())
       .then(res => {
@@ -363,7 +352,13 @@
     staff.forEach(t => { select.add(new Option(`✨ ${t.display}`, t.id)); });
   }
 
-  // 2. 收折模式切换邏輯 (選師傅 / 看空檔)
+  function initTopUpPlans(plans) {
+    let select = document.getElementById('tuPlan'); if(!select) return;
+    select.innerHTML = ''; select.add(new Option("自訂金額回報", "自訂金額"));
+    plans.forEach(p => { select.add(new Option(`🎁 ${p.name} (匯$${p.amount}送$${p.bonus})`, p.name)); });
+  }
+
+  // 2. 收折模式切換邏輯 (選師傅 / 看空檔)
   function switchMode(mode) {
     bookingMode = mode; selectedMaster = null; selectedService = null; selectedDate = null; selectedTime = null;
     document.getElementById('modeBtnMaster').className = mode === 'master' ? "flex-1 py-2 text-[11px] font-bold rounded-lg bg-surface shadow-sm text-dark transition-all" : "flex-1 py-2 text-[11px] font-bold rounded-lg text-dark/50 transition-all";
@@ -403,7 +398,7 @@
     renderCalendar(); calculateFinalPriceSummary();
   }
 
-  // 4. 優雅一頁式日曆引擎渲染 (對齊 108 原版)
+  // 4. 優雅一頁式日曆引擎渲染 (與 108 原版演算法完全重合)
   function renderCalendar() {
     document.getElementById('monthYearText').innerText = `${currentYear}年 ${currentMonth + 1}月`;
     let container = document.getElementById('calendarDays'); container.innerHTML = '';
@@ -439,7 +434,7 @@
     renderCalendar();
   }
 
-  // 5. 房間鎖與排班即時比對運算
+  // 5. 跨網域房間鎖與真實排班即時比對運算
   function fetchTimeSlotsForMaster() {
     let grid = document.getElementById('timeSlotsGrid'); grid.innerHTML = '';
     let matched = globalData.slots.filter(s => s.date === selectedDate);
@@ -500,7 +495,7 @@
     if(!p) return Swal.fire('提示', '請先輸入手機號碼喔', 'warning');
     Swal.fire({ title: '正在讀取會員錢包...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
     
-    // 跨網域穿透連線 Fetch GET
+    // 跨網域發射 Fetch GET
     fetch(GAS_BACKEND_URL + "?action=getCustomerProfile&phone=" + p)
       .then(res => res.json())
       .then(profile => {
@@ -568,14 +563,6 @@
   // 8. 儲值金回報 Modal 控制
   function openTopUpModal() { document.getElementById('topUpModal').classList.remove('hidden'); }
   function closeTopUpModal() { document.getElementById('topUpModal').classList.add('hidden'); }
-  function openTeacherWall() { document.getElementById('teacherWallModal').classList.remove('hidden'); }
-  function closeTeacherWall() { document.getElementById('teacherWallModal').classList.add('hidden'); }
-
-  function initTopUpPlans(plans) {
-    let select = document.getElementById('tuPlan'); if(!select) return;
-    select.innerHTML = ''; select.add(new Option("自訂金額回報", "自訂金額"));
-    plans.forEach(p => { select.add(new Option(`🎁 ${p.name} (匯$${p.amount}送$${p.bonus})`, p.name)); });
-  }
 
   function submitTopUp() {
     let p = document.getElementById('tuPhone').value.trim();
@@ -595,7 +582,7 @@
     });
   }
 
-  // 9. 終極跨域 Fetch 鎖位與金流跳轉 (強制攔截防呆鎖)
+  // 9. 終極跨域 Fetch 下單鎖位與金流跳轉 (強制攔截防呆狀態機鎖)
   function submitOrderForm() {
     if (isProcessingBooking) return; // 鎖住狀態機，不給重覆狂敲
 
@@ -613,7 +600,7 @@
 
     isProcessingBooking = true; // 開鎖機防禦
     const btn = document.getElementById('submitBtnReal');
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 雲端鎖位對帳中，請勿關閉網頁...'; btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>雲端鎖位對帳中，請勿關閉網頁...'; btn.disabled = true;
 
     let isWalletPaid = (walletBalance >= (selectedService.price - couponDiscount));
 
