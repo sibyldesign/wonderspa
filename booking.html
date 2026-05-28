@@ -222,7 +222,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 <label class="block text-[10px] font-bold text-dark/60 mb-1.5 pl-1"> 折扣碼 DISCOUNT CODE </label>
 <div class="flex gap-2">
 <input type="text" id="couponCode" placeholder="如有代碼請輸入" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent uppercase tracking-wider box-border" oninput="this.value = this.value.toUpperCase()">
-<button type="button" id="applyCouponBtn" onclick="applyCoupon()" class="bg-dark text-white px-5 py-3 rounded-xl font-bold tracking-widest text-[12px] hover:bg-accent transition-colors shadow-sm"> 套用 </button>
+<button type="button" id="applyCouponBtn" onclick="applyCoupon()" class="bg-dark text-white px-5 py-3 rounded-xl font-bold tracking-widest text-[12px] hover:bg-accent transition-colors flex-shrink-0 shadow-sm"> 套用 </button>
 </div>
 <div id="couponMessage" class="text-[11px] mt-2 hidden font-bold tracking-wide"></div>
 </div>
@@ -256,7 +256,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 <span class="flex items-center gap-2 text-xs tracking-widest"><i class="fas fa-map-marker-alt text-accent"></i> 交通與接待指引 </span>
 <i class="fas fa-chevron-down text-dark/50 transition-transform group-open:rotate-180"></i>
 </summary>
-<div class="p-5 pt-2 border-t border-dashed border-secondary/30 text-dark/80 text-[11px] leading-relaxed">
+<div class="p-5 pt-2 border-t border-dashed border-secondary/30 text-dark/80 text-[11px ] leading-relaxed">
 <p class="mb-3"><span class="font-bold text-dark"><i class="fas fa-train text-accent/70 w-4"></i> 捷運： </span> 靠近 <span class="text-accent font-bold"> 雙連站 </span> 或 <span class="text-accent font-bold"> 中山國小站 </span> 。</p>
 <p><span class="font-bold text-dark"><i class="fas fa-walking text-accent/70 w-4"></i> 接待： </span> 由於位置較隱密，請至明顯地標 <span class="text-accent font-bold bg-accent/10 px-1 rounded"> 屈臣氏 林森門市 </span> 稍候，我們將有專人前往接待入館。</p>
 </div>
@@ -269,8 +269,6 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 <a href="https://www.instagram.com/wonder_wander__" target="_blank" class="w-14 h-14 flex items-center justify-center rounded-full border border-dark/30 text-dark hover:bg-secondary/20 transition-all duration-300 shadow-sm bg-white/80"><i class="fab fa-instagram text-2xl"></i></a>
 <a href="https://maps.app.goo.gl/aAHvtPYt8T9mVDKP8?g_st=ic" target="_blank" class="w-14 h-14 flex items-center justify-center rounded-full border border-dark/30 text-dark hover:bg-secondary/20 transition-all duration-300 shadow-sm bg-white/80"><i class="fas fa-map-marked-alt text-2xl"></i></a>
 </div>
-
-
 <div class="bg-surface rounded-[1.5rem] shadow-soft w-full border border-secondary/10 overflow-hidden fade-in mt-6">
 <div class="bg-red-50/90 px-4 py-3 text-[10px] text-red-700 text-center font-bold tracking-wider border-b border-red-100 flex items-center justify-center gap-1 w-full">
 <i class="fas fa-clock"></i> 結帳後點「返回商店」加入 LINE 領入場指引
@@ -302,493 +300,460 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 </div>
 
 <div class="mt-4 pt-3 border-t border-dashed border-secondary/20 text-center">
-  <button type="button" onclick="const p = document.getElementById('userPhoneInput') ? document.getElementById('userPhoneInput').value : ''; window.open('https://2017sibyl.github.io/wonder-pay/pay_portal.html?phone=' + encodeURIComponent(p), '_blank')" class="inline-flex items-center gap-1.5 justify-center w-full py-2.5 bg-inputbg hover:bg-secondary/10 border border-accent/30 rounded-xl text-dark hover:text-accent text-[11px] font-bold tracking-widest transition-all duration-300 shadow-sm">
+  <button type="button" onclick="const p = document.getElementById('userPhoneInput') ? document.getElementById('userPhoneInput').value : ''; window.open('https://2017sibyl.github.io/wonderspa/pay_portal.html?phone=' + encodeURIComponent(p), '_blank')" class="inline-flex items-center gap-1.5 justify-center w-full py-2.5 bg-inputbg hover:bg-secondary/10 border border-accent/30 rounded-xl text-dark hover:text-accent text-[11px] font-bold tracking-widest transition-all duration-300 shadow-sm">
     <i class="fas fa-shield-alt text-accent text-[10px]"></i> 預約卡住轉圈圈？點我進入「獨立安全補付通道」
   </button>
+</div>
+
+<div class="mt-4 p-3 bg-red-50/80 border border-red-100/60 rounded-xl text-left w-full box-border">
+  <p class="text-[12px] text-red-800 font-bold leading-relaxed tracking-wide flex items-center gap-1">
+    <i class="fas fa-exclamation-circle text-[10px] opacity-90"></i> 
+    如點擊『前往支付』遇轉圈圈，亦可至上方輸入電話『查詢帶入』➔『繼續完成付款』
+  </p>
 </div>
 
 </div>
 </div>
 </form>
 
-
-<div class="mt-8 pb-12 text-center w-full fade-in">
-<a href="https://heysibyl.com" target="_blank" class="text-[10px] text-secondary hover:text-accent transition-colors font-bold tracking-[0.15em]">Designed by Sibyl數位管家</a>
-</div>
+<footer class="mt-12 mb-8 text-center w-full box-border px-4">
+  <p class="text-[10px] tracking-[0.1em] font-bold" style="color: #bca085;">
+    Designed by 
+    <a href="https://www.heysibyl.com/" target="_blank" style="color: #bca085; text-decoration: underline;" class="hover:text-accent transition-colors">
+      Sibyl | 數位管家
+    </a>
+  </p>
+</footer>
 </main>
 
-
 <script>
+// 🚀【跨網域穿透引水血管】請精準對齊妳開闢的完全獨立大腦 API 的正式網址！
+const GAS_BACKEND_URL = "https://script.google.com/macros/s/AKfycbz1dbcGlSIxtgC7d0mO5OrM2qoerkM0bA8nrp2TYfgYh4h3mWx8FXxE-le3Dh16XncAgQ/exec";
+
 let globalServices = []; let globalSlots = []; let globalBookings = []; let staffMap = {}; let globalWalletPlans = [];
 let currentDate = new Date(); let selectedDateCell = null; let selectedTimeBtn = null; let selectedMasterBtn = null;
 let bookingMode = 'master'; let timeMasterMap = {};
 let currentOriginalPrice = 0; let currentCouponDiscount = 0;
 
-
 window.addEventListener('DOMContentLoaded', () => { renderCalendar(); loadInitialData(); });
 
-
+// 1. 跨網域拉取 106 核心初始排班、規格、方案與佈告公告
 function loadInitialData() {
- google.script.run.withSuccessHandler(function(response) {
-   document.getElementById('initOverlay').style.display = 'none';
-   if(response.success) {
-     window.systemMaxRooms = response.maxRooms || 2;
-     globalWalletPlans = response.plans || [];
-     if(response.announcement && response.announcement.trim() !== '') {
-       document.getElementById('announcementText').innerText = response.announcement;
-       document.getElementById('announcementContainer').classList.remove('hidden');
-     }
-     globalServices = response.services || []; globalSlots = response.slots || []; globalBookings = response.bookings || [];
-     if(response.staff) {
-       response.staff.forEach(s => { staffMap[s.id] = s.display; });
-       const mSelect = document.getElementById('masterSelect');
-       mSelect.innerHTML = '<option value="" disabled selected>請選擇師傅</option>';
-       response.staff.forEach(s => { mSelect.appendChild(new Option(s.display, s.id)); });
-     }
-   } else { Swal.fire('載入錯誤', '系統讀取資料失敗，請重新整理頁面。', 'error'); }
- }).getInitialFrontData();
+  fetch(GAS_BACKEND_URL + "?action=getInitialFrontData")
+    .then(res => res.json())
+    .then(response => {
+      document.getElementById('initOverlay').style.display = 'none';
+      if(response.success) {
+        window.systemMaxRooms = response.maxRooms || 2;
+        globalWalletPlans = response.plans || [];
+        if(response.announcement && response.announcement.trim() !== '') {
+          document.getElementById('announcementText').innerText = response.announcement;
+          document.getElementById('announcementContainer').classList.remove('hidden');
+        }
+        globalServices = response.services || []; globalSlots = response.slots || []; globalBookings = response.bookings || [];
+        if(response.staff) {
+          response.staff.forEach(s => { staffMap[s.id] = s.display; });
+          const mSelect = document.getElementById('masterSelect');
+          mSelect.innerHTML = '<option value="" disabled selected>請選擇師傅</option>';
+          response.staff.forEach(s => { mSelect.appendChild(new Option(s.display, s.id)); });
+        }
+      } else { Swal.fire('載入錯誤', '系統讀取資料失敗，請重新整理頁面。', 'error'); }
+    }).catch(err => { console.error("API 初始化異常: ", err); });
 }
-
 
 function openTopUpModal() {
- document.getElementById('topUpModal').classList.remove('hidden');
- const planSelect = document.getElementById('tuPlan');
- planSelect.innerHTML = '<option value="">-- 請選擇方案 (或留空) --</option>';
- globalWalletPlans.forEach(p => { planSelect.appendChild(new Option(`${p.name} (實付$${p.amount} 送$${p.bonus})`, p.name)); });
+  document.getElementById('topUpModal').classList.remove('hidden');
+  const planSelect = document.getElementById('tuPlan');
+  planSelect.innerHTML = '<option value="">-- 請選擇方案 (或留空) --</option>';
+  globalWalletPlans.forEach(p => { planSelect.appendChild(new Option(`${p.name} (實付$${p.amount} 送$${p.bonus})`, p.name)); });
 }
 function closeTopUpModal() { document.getElementById('topUpModal').classList.add('hidden'); }
+
+// 2. 儲值申請跨網域回報 (Fetch POST)
 function submitTopUp() {
- const phone = document.getElementById('tuPhone').value.trim();
- const acc = document.getElementById('tuAccount').value.trim();
- const amt = document.getElementById('tuAmount').value.trim();
- if(!phone || !acc || !amt) return Swal.fire('填寫不完整', '手機、轉帳後五碼、匯款金額皆為必填！', 'warning');
- const btn = document.getElementById('tuSubmitBtn');
- btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 傳送中...'; btn.disabled = true;
- google.script.run.withSuccessHandler(res => {
-   btn.innerHTML = '送出審核'; btn.disabled = false;
-   if(res.success) { Swal.fire('送出成功', '我們已收到您的回報，待財務確認後將盡速為您入帳！', 'success').then(()=>closeTopUpModal()); }
-   else { Swal.fire('送出失敗', res.message, 'error'); }
- }).submitTopUpApplication({ phone: phone, account5: acc, plan: document.getElementById('tuPlan').value, amount: amt });
+  const phone = document.getElementById('tuPhone').value.trim();
+  const acc = document.getElementById('tuAccount').value.trim();
+  const amt = document.getElementById('tuAmount').value.trim();
+  if(!phone || !acc || !amt) return Swal.fire('填寫不完整', '手機、轉帳後五碼、匯款金額皆為必填！', 'warning');
+  const btn = document.getElementById('tuSubmitBtn');
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 傳送中...'; btn.disabled = true;
+
+  fetch(GAS_BACKEND_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({
+      action: "submitTopUpApplication",
+      phone: phone, account5: acc, plan: document.getElementById('tuPlan').value, amount: amt
+    })
+  }).then(res => res.json()).then(res => {
+    btn.innerHTML = '送出審核'; btn.disabled = false;
+    if(res.success) { Swal.fire('送出成功', '我們已收到您的回報，待財務確認後將盡速為您入帳！', 'success').then(()=>closeTopUpModal()); }
+    else { Swal.fire('送出失敗', res.message, 'error'); }
+  }).catch(err => { btn.disabled = false; btn.innerHTML = '送出審核'; });
 }
 
-
+// 3. 106 一頁式選師傅 / 看空檔收折模式切換
 function switchMode(mode) {
- bookingMode = mode; document.getElementById('hiddenMaster').value = ''; document.getElementById('hiddenDate').value = ''; document.getElementById('hiddenTime').value = '';
- currentOriginalPrice = 0; currentCouponDiscount = 0; calculateFinalPrice(); resetCouponUI();
- document.getElementById('calendarOverlay').style.display = 'flex'; document.getElementById('calendarOverlay').style.opacity = '1';
- document.getElementById('timeSlotsSection').classList.add('hidden'); document.getElementById('availableMastersSection').classList.add('hidden');
- if(selectedDateCell) selectedDateCell.classList.remove('bg-accent', 'text-white');
+  bookingMode = mode; document.getElementById('hiddenMaster').value = ''; document.getElementById('hiddenDate').value = ''; document.getElementById('hiddenTime').value = '';
+  currentOriginalPrice = 0; currentCouponDiscount = 0; calculateFinalPrice(); resetCouponUI();
+  document.getElementById('calendarOverlay').style.display = 'flex'; document.getElementById('calendarOverlay').style.opacity = '1';
+  document.getElementById('timeSlotsSection').classList.add('hidden'); document.getElementById('availableMastersSection').classList.add('hidden');
+  if(selectedDateCell) selectedDateCell.classList.remove('bg-accent', 'text-white');
 
-
- if (mode === 'master') {
-   document.getElementById('modeBtnMaster').classList.replace('text-dark/50', 'text-dark'); document.getElementById('modeBtnMaster').classList.add('bg-surface', 'shadow-sm');
-   document.getElementById('modeBtnTime').classList.replace('text-dark', 'text-dark/50'); document.getElementById('modeBtnTime').classList.remove('bg-surface', 'shadow-sm');
-   document.getElementById('stepMaster').classList.remove('hidden');
-   document.getElementById('serviceLabel').innerText = "2. 選擇服務 SERVICE"; document.getElementById('dateLabel').innerText = "3. 選擇日期 DATE";
-   document.getElementById('timeLabel').innerText = "4. 選擇時段 TIME";
-   const sSelect = document.getElementById('serviceSelect'); sSelect.innerHTML = '<option value="" disabled selected>請先完成上方選項</option>'; sSelect.disabled = true;
-   document.getElementById('masterSelect').value = "";
- } else {
-   document.getElementById('modeBtnTime').classList.replace('text-dark/50', 'text-dark'); document.getElementById('modeBtnTime').classList.add('bg-surface', 'shadow-sm');
-   document.getElementById('modeBtnMaster').classList.replace('text-dark', 'text-dark/50'); document.getElementById('modeBtnMaster').classList.remove('bg-surface', 'shadow-sm');
-   document.getElementById('stepMaster').classList.add('hidden');
-   document.getElementById('serviceLabel').innerText = "1. 選擇服務 SERVICE"; document.getElementById('dateLabel').innerText = "2. 選擇日期 DATE";
-   document.getElementById('timeLabel').innerText = "3. 選擇時段 TIME";
-   const sSelect = document.getElementById('serviceSelect'); sSelect.disabled = false; sSelect.innerHTML = '<option value="" disabled selected>請選擇服務項目</option>';
-   let uniqueServices = Array.from(new Set(globalServices.map(s => s.name)));
-   uniqueServices.forEach(name => { let item = globalServices.find(s => s.name === name); sSelect.appendChild(new Option(`${item.name} - NT$ ${item.price}`, item.name)); });
- }
+  if (mode === 'master') {
+    document.getElementById('modeBtnMaster').className = "flex-1 py-2 text-[11px] font-bold rounded-lg bg-surface shadow-sm text-dark transition-all";
+    document.getElementById('modeBtnTime').className = "flex-1 py-2 text-[11px] font-bold rounded-lg text-dark/50 transition-all";
+    document.getElementById('stepMaster').classList.remove('hidden');
+    document.getElementById('serviceLabel').innerText = "2. 選擇服務 SERVICE"; document.getElementById('dateLabel').innerText = "3. 選擇日期 DATE"; document.getElementById('timeLabel').innerText = "4. 選擇時段 TIME";
+    const sSelect = document.getElementById('serviceSelect'); sSelect.innerHTML = '<option value="" disabled selected>請先完成上方選項</option>'; sSelect.disabled = true;
+    document.getElementById('masterSelect').value = "";
+  } else {
+    document.getElementById('modeBtnTime').className = "flex-1 py-2 text-[11px] font-bold rounded-lg bg-surface shadow-sm text-dark transition-all";
+    document.getElementById('modeBtnMaster').className = "flex-1 py-2 text-[11px] font-bold rounded-lg text-dark/50 transition-all";
+    document.getElementById('stepMaster').classList.add('hidden');
+    document.getElementById('serviceLabel').innerText = "1. 選擇服務 SERVICE"; document.getElementById('dateLabel').innerText = "2. 選擇日期 DATE"; document.getElementById('timeLabel').innerText = "3. 選擇時段 TIME";
+    const sSelect = document.getElementById('serviceSelect'); sSelect.disabled = false; sSelect.innerHTML = '<option value="" disabled selected>請選擇服務項目</option>';
+    let uniqueServices = Array.from(new Set(globalServices.map(s => s.name)));
+    uniqueServices.forEach(name => { let item = globalServices.find(s => s.name === name); sSelect.appendChild(new Option(`${item.name} - NT$ ${item.price}`, item.name)); });
+  }
 }
 
-
-// ✨ 修正：落實做法 B，新朋友不中斷預約、不強制彈跳
+// 4. 舊客個資與儲值餘額卡片查詢帶入 (做法 B：不彈跳、不打斷預約流程)
 function fetchCustomerProfile() {
- const phoneInput = document.getElementById('userPhoneInput'); if(!phoneInput) return;
- const phone = phoneInput.value.replace(/\D/g, ''); if(phone.length < 8) { Swal.fire('請輸入完整電話','','warning'); return; }
- const btn = document.getElementById('fetchDataBtn');
- btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; btn.disabled = true;
+  const phoneInput = document.getElementById('userPhoneInput'); if(!phoneInput) return;
+  const phone = phoneInput.value.replace(/\D/g, ''); if(phone.length < 8) { Swal.fire('請輸入完整電話','','warning'); return; }
+  const btn = document.getElementById('fetchDataBtn');
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; btn.disabled = true;
 
-
- google.script.run.withSuccessHandler(res => {
-   btn.innerHTML = '查詢帶入'; btn.disabled = false;
-   if(res.success && res.found) {
-     document.getElementById('userNameInput').value = res.name || ''; document.getElementById('lineNameInput').value = res.line || '';
-     if (res.walletBalance > 0) {
-       document.getElementById('walletDisplaySection').classList.remove('hidden');
-       document.getElementById('walletCheckoutOption').classList.remove('hidden');
-       document.getElementById('walletBalanceText').innerText = "NT$ " + res.walletBalance.toLocaleString();
-       document.getElementById('availableWalletBalance').value = res.walletBalance;
-       document.getElementById('vipLevelText').innerText = res.vipStatus || '一般會員';
-     } else {
-       document.getElementById('walletDisplaySection').classList.add('hidden'); document.getElementById('walletCheckoutOption').classList.add('hidden');
-       document.getElementById('availableWalletBalance').value = "0";
-     }
-     document.getElementById('historySection').classList.remove('hidden');
-     document.getElementById('historyList').innerHTML = res.history.map(h => {
-       let statusColor = h.status === '已完成' ? 'text-green-600' : (h.status === '已取消' ? 'text-red-400' : (h.status === '未付款' ? 'text-orange-500' : 'text-accent'));
-       let repayBtn = h.status === '未付款' ? `<button type="button" onclick="repayOrder(event, '${h.orderId}')" class="mt-2 w-full bg-dark/90 text-white font-bold py-2 rounded-lg text-[11px] hover:bg-accent transition-all shadow-sm flex justify-center items-center gap-1.5 tracking-widest border border-dark"><i class="fas fa-credit-card"></i> 繼續完成付款</button>` : '';
-       return `<div class="bg-surface p-3 rounded-xl border border-secondary/20 text-xs mb-2 shadow-sm flex flex-col gap-1.5"><div class="flex justify-between font-bold text-dark border-b border-secondary/10 pb-1.5"><span>📅 ${h.date} ${h.time}</span><span class="${statusColor}">${h.status}</span></div><div class="flex justify-between text-dark/70 items-center mt-1"><span class="truncate pr-2">${h.service} <span class="bg-secondary/20 px-1 rounded">${h.teacher}</span></span><span class="font-bold text-dark whitespace-nowrap">💰 $${h.price}</span></div>${repayBtn}</div>`;
-     }).join('');
-     Swal.fire({toast:true, position:'top', icon:'success', title: '已載入舊客資料', showConfirmButton:false, timer:1500});
-   } else {
-     document.getElementById('historySection').classList.add('hidden');
-     document.getElementById('walletDisplaySection').classList.add('hidden'); document.getElementById('walletCheckoutOption').classList.add('hidden');
-     document.getElementById('availableWalletBalance').value = "0";
-     // ✨ 做法 B：不跳開，只用微小的字眼提示，完全不破壞預約體驗
-     document.getElementById('fetchDataBtnText').innerText = "歡迎新朋友✨請填寫下方欄位";
-   }
- }).getCustomerProfile(phone);
+  fetch(GAS_BACKEND_URL + "?action=getCustomerProfile&phone=" + phone)
+    .then(res => res.json())
+    .then(res => {
+      btn.innerHTML = '查詢帶入'; btn.disabled = false;
+      if(res.success && res.found) {
+        document.getElementById('userNameInput').value = res.name || ''; document.getElementById('lineNameInput').value = res.line || '';
+        if (res.walletBalance > 0) {
+          document.getElementById('walletDisplaySection').classList.remove('hidden');
+          document.getElementById('walletCheckoutOption').classList.remove('hidden');
+          document.getElementById('walletBalanceText').innerText = "NT$ " + res.walletBalance.toLocaleString();
+          document.getElementById('availableWalletBalance').value = res.walletBalance;
+          document.getElementById('vipLevelText').innerText = res.vipStatus || '一般會員';
+        } else {
+          document.getElementById('walletDisplaySection').classList.add('hidden'); document.getElementById('walletCheckoutOption').classList.add('hidden');
+          document.getElementById('availableWalletBalance').value = "0";
+        }
+        document.getElementById('historySection').classList.remove('hidden');
+        document.getElementById('historyList').innerHTML = res.history.map(h => {
+          let statusColor = h.status === '已完成' ? 'text-green-600' : (h.status === '已取消' ? 'text-red-400' : (h.status === '未付款' ? 'text-orange-500' : 'text-accent'));
+          let repayBtn = h.status === '未付款' ? `<button type="button" onclick="repayOrder(event, '${h.orderId}')" class="mt-2 w-full bg-dark/90 text-white font-bold py-2 rounded-lg text-[11px] hover:bg-accent transition-all shadow-sm flex justify-center items-center gap-1.5 tracking-widest border border-dark"><i class="fas fa-credit-card"></i> 繼續完成付款</button>` : '';
+          return `<div class="bg-surface p-3 rounded-xl border border-secondary/20 text-xs mb-2 shadow-sm flex flex-col gap-1.5"><div class="flex justify-between font-bold text-dark border-b border-secondary/10 pb-1.5"><span>📅 ${h.date} ${h.time}</span><span class="${statusColor}">${h.status}</span></div><div class="flex justify-between text-dark/70 items-center mt-1"><span class="truncate pr-2">${h.service} <span class="bg-secondary/20 px-1 rounded">${h.teacher}</span></span><span class="font-bold text-dark whitespace-nowrap">💰 $${h.price}</span></div>${repayBtn}</div>`;
+        }).join('');
+        Swal.fire({toast:true, position:'top', icon:'success', title: '已載入舊客資料', showConfirmButton:false, timer:1500});
+      } else {
+        document.getElementById('historySection').classList.add('hidden');
+        document.getElementById('walletDisplaySection').classList.add('hidden'); document.getElementById('walletCheckoutOption').classList.add('hidden');
+        document.getElementById('availableWalletBalance').value = "0";
+        document.getElementById('fetchDataBtnText').innerText = "歡迎新朋友✨請填寫下方欄位";
+      }
+    }).catch(err => { btn.disabled = false; btn.innerHTML = '查詢帶入'; });
 }
-
 
 function unlockServices() {
- if(bookingMode !== 'master') return;
- document.getElementById('hiddenMaster').value = document.getElementById('masterSelect').value;
- document.getElementById('calendarOverlay').style.display = 'flex'; document.getElementById('calendarOverlay').style.opacity = '1';
- const sSelect = document.getElementById('serviceSelect'); sSelect.disabled = false;
- sSelect.innerHTML = '<option value="" disabled selected>請選擇服務項目</option>';
- currentOriginalPrice = 0; currentCouponDiscount = 0; calculateFinalPrice(); resetCouponUI();
- let filtered = globalServices.filter(s => s.teacher === document.getElementById('masterSelect').value || s.teacher === '共用');
- filtered.forEach(item => { sSelect.appendChild(new Option(`${item.name} - NT$ ${item.price}`, item.name)); });
- resetSelection(); renderCalendar();
+  if(bookingMode !== 'master') return;
+  document.getElementById('hiddenMaster').value = document.getElementById('masterSelect').value;
+  document.getElementById('calendarOverlay').style.display = 'flex'; document.getElementById('calendarOverlay').style.opacity = '1';
+  const sSelect = document.getElementById('serviceSelect'); sSelect.disabled = false;
+  sSelect.innerHTML = '<option value="" disabled selected>請選擇服務項目</option>';
+  currentOriginalPrice = 0; currentCouponDiscount = 0; calculateFinalPrice(); resetCouponUI();
+  let filtered = globalServices.filter(s => s.teacher === document.getElementById('masterSelect').value || s.teacher === '共用');
+  filtered.forEach(item => { sSelect.appendChild(new Option(`${item.name} - NT$ ${item.price}`, item.name)); });
+  resetSelection(); renderCalendar();
 }
-
 
 function unlockCalendar() {
- const selectedName = document.getElementById('serviceSelect').value;
- const service = globalServices.find(s => s.name === selectedName);
- if(service) currentOriginalPrice = parseInt(service.price);
- currentCouponDiscount = 0; calculateFinalPrice(); resetCouponUI();
- document.getElementById('calendarOverlay').style.opacity = '0'; setTimeout(() => document.getElementById('calendarOverlay').style.display = 'none', 300);
- resetSelection(); renderCalendar();
+  const selectedName = document.getElementById('serviceSelect').value;
+  const service = globalServices.find(s => s.name === selectedName);
+  if(service) currentOriginalPrice = parseInt(service.price);
+  currentCouponDiscount = 0; calculateFinalPrice(); resetCouponUI();
+  document.getElementById('calendarOverlay').style.opacity = '0'; setTimeout(() => document.getElementById('calendarOverlay').style.display = 'none', 300);
+  resetSelection(); renderCalendar();
 }
-
 
 function resetSelection() {
- document.getElementById('hiddenDate').value = ''; document.getElementById('hiddenTime').value = '';
- if (selectedDateCell) selectedDateCell.classList.remove('bg-accent', 'text-white');
- document.getElementById('timeSlotsSection').classList.add('hidden'); document.getElementById('availableMastersSection').classList.add('hidden');
+  document.getElementById('hiddenDate').value = ''; document.getElementById('hiddenTime').value = '';
+  if (selectedDateCell) selectedDateCell.classList.remove('bg-accent', 'text-white');
+  document.getElementById('timeSlotsSection').classList.add('hidden'); document.getElementById('availableMastersSection').classList.add('hidden');
 }
-
 
 function resetCouponUI() { document.getElementById('couponCode').value = ''; document.getElementById('couponMessage').classList.add('hidden'); document.getElementById('discountDetail').classList.add('hidden'); }
 
-
 function calculateFinalPrice() {
- let finalPrice = currentOriginalPrice - currentCouponDiscount; if(finalPrice < 0) finalPrice = 0;
- const useWallet = document.getElementById('useWalletBtn') ? document.getElementById('useWalletBtn').checked : false;
- const availableWallet = parseInt(document.getElementById('availableWalletBalance').value) || 0;
- let deductAmount = 0;
- if (useWallet && availableWallet > 0) { deductAmount = Math.min(availableWallet, finalPrice); finalPrice -= deductAmount; }
+  let finalPrice = currentOriginalPrice - currentCouponDiscount; if(finalPrice < 0) finalPrice = 0;
+  const useWallet = document.getElementById('useWalletBtn') ? document.getElementById('useWalletBtn').checked : false;
+  const availableWallet = parseInt(document.getElementById('availableWalletBalance').value) || 0;
+  let deductAmount = 0;
+  if (useWallet && availableWallet > 0) { deductAmount = Math.min(availableWallet, finalPrice); finalPrice -= deductAmount; }
 
+  document.getElementById('priceDisplay').innerText = "NT$ " + finalPrice.toLocaleString();
+  const submitBtn = document.getElementById('submitBtn');
+  if (finalPrice === 0 && currentOriginalPrice > 0) { submitBtn.innerHTML = '全額抵扣・確認預約 <i class="fas fa-check-circle ml-2"></i>'; submitBtn.className = "bg-[#2e7d32] hover:bg-[#1b5e20] text-white font-bold py-3.5 px-7 rounded-xl shadow-xl transition-all tracking-[0.2em] text-xs flex items-center group"; }
+  else { submitBtn.className = "bg-dark hover:bg-accent text-white font-bold py-3.5 px-7 rounded-xl shadow-xl shadow-dark/20 transition-all tracking-[0.2em] text-xs flex items-center group"; submitBtn.innerHTML = '前往支付 <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>'; }
 
- document.getElementById('priceDisplay').innerText = "NT$ " + finalPrice.toLocaleString();
- const submitBtn = document.getElementById('submitBtn');
- if (finalPrice === 0 && currentOriginalPrice > 0) { submitBtn.innerHTML = '全額抵扣・確認預約 <i class="fas fa-check-circle ml-2"></i>'; submitBtn.classList.replace('bg-dark', 'bg-[#2e7d32]'); }
- else { submitBtn.innerHTML = '前往支付 <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>'; submitBtn.classList.replace('bg-[#2e7d32]', 'bg-dark'); }
-
-
- if (currentCouponDiscount > 0 || deductAmount > 0) {
-   document.getElementById('discountDetail').classList.remove('hidden'); document.getElementById('discountDetail').classList.add('flex');
-   document.getElementById('originalPriceText').innerText = "原價 $" + currentOriginalPrice.toLocaleString();
-   let discountStr = []; if(currentCouponDiscount > 0) discountStr.push(`券折 $${currentCouponDiscount.toLocaleString()}`); if(deductAmount > 0) discountStr.push(`儲值抵 $${deductAmount.toLocaleString()}`);
-   document.getElementById('discountText').innerText = discountStr.join(' | ');
- } else { document.getElementById('discountDetail').classList.add('hidden'); document.getElementById('discountDetail').classList.remove('flex'); }
+  if (currentCouponDiscount > 0 || deductAmount > 0) {
+    document.getElementById('discountDetail').className = "flex flex-col ml-1";
+    document.getElementById('originalPriceText').innerText = "原價 $" + currentOriginalPrice.toLocaleString();
+    let discountStr = []; if(currentCouponDiscount > 0) discountStr.push(`券折 $${currentCouponDiscount.toLocaleString()}`); if(deductAmount > 0) discountStr.push(`儲值抵 $${deductAmount.toLocaleString()}`);
+    document.getElementById('discountText').innerText = discountStr.join(' | ');
+  } else { document.getElementById('discountDetail').className = "hidden flex-col ml-1"; }
 }
 
-
+// 5. 折扣碼與特定課程限制跨網域核銷 (Fetch GET)
 function applyCoupon() {
- const code = document.getElementById('couponCode').value.trim();
- const msgDiv = document.getElementById('couponMessage');
- const applyBtn = document.getElementById('applyCouponBtn');
- const selectedService = document.getElementById('serviceSelect').value; // ✨ 取得當前選擇的課程
+  const code = document.getElementById('couponCode').value.trim();
+  const msgDiv = document.getElementById('couponMessage');
+  const applyBtn = document.getElementById('applyCouponBtn');
+  const selectedService = document.getElementById('serviceSelect').value;
 
+  if (currentOriginalPrice <= 0) { msgDiv.innerHTML = "⚠️ 請先選擇服務項目"; msgDiv.className = "text-[11px] mt-2 text-red-700 block font-bold"; return; }
+  if (!code) { msgDiv.innerHTML = "⚠️ 請輸入折扣碼"; msgDiv.className = "text-[11px] mt-2 text-red-700 block font-bold"; currentCouponDiscount = 0; calculateFinalPrice(); resetCouponUI(); return; }
 
- if (currentOriginalPrice <= 0) {
-   msgDiv.innerHTML = "⚠️ 請先選擇服務項目";
-   msgDiv.className = "text-[11px] mt-2 text-red-700 block font-bold";
-   return;
- }
- if (!code) {
-   msgDiv.innerHTML = "⚠️ 請輸入折扣碼";
-   msgDiv.className = "text-[11px] mt-2 text-red-700 block font-bold";
-   currentCouponDiscount = 0; calculateFinalPrice(); resetCouponUI();
-   return;
- }
+  applyBtn.innerText = "驗證中"; applyBtn.disabled = true; applyBtn.classList.add('opacity-70');
 
-
- applyBtn.innerText = "驗證中"; applyBtn.disabled = true; applyBtn.classList.add('opacity-70');
-
-
- google.script.run.withSuccessHandler(function(res) {
-   applyBtn.innerText = "套用"; applyBtn.disabled = false; applyBtn.classList.remove('opacity-70');
-   if (res.success) {
-     msgDiv.innerHTML = "✅ " + res.message;
-     msgDiv.className = "text-[11px] mt-2 text-red-700 block font-bold tracking-wide";
-     currentCouponDiscount = res.discountAmount; calculateFinalPrice();
-   } else {
-     msgDiv.innerHTML = "❌ " + res.message;
-     msgDiv.className = "text-[11px] mt-2 text-red-700 block font-bold tracking-wide";
-     currentCouponDiscount = 0; calculateFinalPrice();
-   }
- }).validateCouponCode(code, currentOriginalPrice, selectedService); // ✨ 將選擇的課程傳入後端
+  fetch(GAS_BACKEND_URL + `?action=validateCouponCode&code=${code}&price=${currentOriginalPrice}&service=${encodeURIComponent(selectedService)}`)
+    .then(res => res.json())
+    .then(res => {
+      applyBtn.innerText = "套用"; applyBtn.disabled = false; applyBtn.classList.remove('opacity-70');
+      if (res.success) {
+        msgDiv.innerHTML = "✅ " + res.message; msgDiv.className = "text-[11px] mt-2 text-emerald-700 block font-bold tracking-wide";
+        currentCouponDiscount = res.discountAmount; calculateFinalPrice();
+      } else {
+        msgDiv.innerHTML = "❌ " + res.message; msgDiv.className = "text-[11px] mt-2 text-red-700 block font-bold tracking-wide";
+        currentCouponDiscount = 0; calculateFinalPrice();
+      }
+    }).catch(err => { applyBtn.disabled = false; applyBtn.innerText = "套用"; });
 }
 
-
+// 6. 106 原創日曆排班、空檔房間鎖比對核心算法 (平移至前端完全體)
 function hasAvailableTime(dateStr, serviceName) {
- const requiredDuration = getServiceTotalMinutes(serviceName);
- const dayBookings = globalBookings.filter(b => b.date === dateStr);
- const bookedIntervals = dayBookings.map(b => ({ start: timeToMinutes(b.start), end: timeToMinutes(b.start) + getServiceTotalMinutes(b.service), teacher: b.teacher }));
- const MAX_ROOMS = window.systemMaxRooms || 2;
- if (bookingMode === 'master') {
-   const master = document.getElementById('masterSelect').value; if (!master) return false;
-   const mySlots = globalSlots.filter(s => s.date === dateStr && s.master === master).map(s => s.time);
-   for (let i = 0; i < mySlots.length; i++) {
-     let reqStart = timeToMinutes(mySlots[i]); let reqEnd = reqStart + requiredDuration; let isValid = true;
-     for (let min = reqStart; min < reqEnd; min += 10) {
-       let overlapCount = 0; let masterBusy = false;
-       for (let j = 0; j < bookedIntervals.length; j++) { if (min >= bookedIntervals[j].start && min < bookedIntervals[j].end) { overlapCount++; if (bookedIntervals[j].teacher === master) masterBusy = true; } }
-       if (overlapCount >= MAX_ROOMS || masterBusy) { isValid = false; break; }
-     }
-     if (isValid) return true;
-   }
-   return false;
- } else {
-   let validMastersForService = globalServices.filter(s => s.name === serviceName).map(s => s.teacher);
-   if(validMastersForService.includes('共用')) validMastersForService = Array.from(new Set(globalServices.map(s=>s.teacher)));
-   let allSlotsToday = globalSlots.filter(s => s.date === dateStr);
-   for (let i = 0; i < allSlotsToday.length; i++) {
-     let slot = allSlotsToday[i]; if(!validMastersForService.includes(slot.master) && !validMastersForService.includes('共用')) continue;
-     let reqStart = timeToMinutes(slot.time); let reqEnd = reqStart + requiredDuration; let isValid = true;
-     for (let min = reqStart; min < reqEnd; min += 10) {
-       let overlapCount = 0; let masterBusy = false;
-       for (let j = 0; j < bookedIntervals.length; j++) { if (min >= bookedIntervals[j].start && min < bookedIntervals[j].end) { overlapCount++; if (bookedIntervals[j].teacher === slot.master) masterBusy = true; } }
-       if (overlapCount >= MAX_ROOMS || masterBusy) { isValid = false; break; }
-     }
-     if (isValid) return true;
-   }
-   return false;
- }
+  const requiredDuration = getServiceTotalMinutes(serviceName);
+  const dayBookings = globalBookings.filter(b => b.date === dateStr);
+  const bookedIntervals = dayBookings.map(b => ({ start: timeToMinutes(b.start), end: timeToMinutes(b.start) + getServiceTotalMinutes(b.service), teacher: b.teacher }));
+  const MAX_ROOMS = window.systemMaxRooms || 2;
+  if (bookingMode === 'master') {
+    const master = document.getElementById('masterSelect').value; if (!master) return false;
+    const mySlots = globalSlots.filter(s => s.date === dateStr && s.master === master).map(s => s.time);
+    for (let i = 0; i < mySlots.length; i++) {
+      let reqStart = timeToMinutes(mySlots[i]); let reqEnd = reqStart + requiredDuration; let isValid = true;
+      for (let min = reqStart; min < reqEnd; min += 10) {
+        let overlapCount = 0; let masterBusy = false;
+        for (let j = 0; j < bookedIntervals.length; j++) { if (min >= bookedIntervals[j].start && min < bookedIntervals[j].end) { overlapCount++; if (bookedIntervals[j].teacher === master) masterBusy = true; } }
+        if (overlapCount >= MAX_ROOMS || masterBusy) { isValid = false; break; }
+      }
+      if (isValid) return true;
+    }
+    return false;
+  } else {
+    let validMastersForService = globalServices.filter(s => s.name === serviceName).map(s => s.teacher);
+    if(validMastersForService.includes('共用')) validMastersForService = Array.from(new Set(globalServices.map(s=>s.teacher)));
+    let allSlotsToday = globalSlots.filter(s => s.date === dateStr);
+    for (let i = 0; i < allSlotsToday.length; i++) {
+      let slot = allSlotsToday[i]; if(!validMastersForService.includes(slot.master) && !validMastersForService.includes('共用')) continue;
+      let reqStart = timeToMinutes(slot.time); let reqEnd = reqStart + requiredDuration; let isValid = true;
+      for (let min = reqStart; min < reqEnd; min += 10) {
+        let overlapCount = 0; let masterBusy = false;
+        for (let j = 0; j < bookedIntervals.length; j++) { if (min >= bookedIntervals[j].start && min < bookedIntervals[j].end) { overlapCount++; if (bookedIntervals[j].teacher === slot.master) masterBusy = true; } }
+        if (overlapCount >= MAX_ROOMS || masterBusy) { isValid = false; break; }
+      }
+      if (isValid) return true;
+    }
+    return false;
+  }
 }
-
 
 function renderCalendar() {
- const year = currentDate.getFullYear(); const month = currentDate.getMonth();
- document.getElementById('monthYearText').textContent = `${year} 年 ${month + 1} 月`;
- const firstDay = new Date(year, month, 1).getDay(); const lastDate = new Date(year, month + 1, 0).getDate();
- const today = new Date(); today.setHours(0,0,0,0);
- const container = document.getElementById('calendarDays'); container.innerHTML = '';
- for (let i = 0; i < firstDay; i++) container.innerHTML += `<div></div>`;
- const serviceName = document.getElementById('serviceSelect').value;
- for (let i = 1; i <= lastDate; i++) {
-   const cellDate = new Date(year, month, i); const isPast = cellDate < today;
-   const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-   let isAvailable = true; if (!isPast && serviceName) { isAvailable = hasAvailableTime(dateStr, serviceName); }
-   if (isPast || (!isAvailable && serviceName)) { container.innerHTML += `<div class="py-1.5 text-sm text-dark/20 bg-gray-50 rounded-lg disabled-date">${i}</div>`; }
-   else { container.innerHTML += `<div class="day-btn py-1.5 text-sm text-dark cursor-pointer rounded-lg hover:bg-secondary/20 transition-all font-bold" data-date="${dateStr}" onclick="selectDate(this, '${dateStr}')">${i}</div>`; }
- }
+  const year = currentDate.getFullYear(); const month = currentDate.getMonth();
+  document.getElementById('monthYearText').textContent = `${year} 年 ${month + 1} 月`;
+  const firstDay = new Date(year, month, 1).getDay(); const lastDate = new Date(year, month + 1, 0).getDate();
+  const today = new Date(); today.setHours(0,0,0,0);
+  const container = document.getElementById('calendarDays'); container.innerHTML = '';
+  for (let i = 0; i < firstDay; i++) container.innerHTML += `<div></div>`;
+  const serviceName = document.getElementById('serviceSelect').value;
+  for (let i = 1; i <= lastDate; i++) {
+    const cellDate = new Date(year, month, i); const isPast = cellDate < today;
+    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+    let isAvailable = true; if (!isPast && serviceName) { isAvailable = hasAvailableTime(dateStr, serviceName); }
+    if (isPast || (!isAvailable && serviceName)) { container.innerHTML += `<div class="py-1.5 text-sm text-dark/20 bg-gray-50 rounded-lg disabled-date">${i}</div>`; }
+    else { container.innerHTML += `<div class="day-btn py-1.5 text-sm text-dark cursor-pointer rounded-lg hover:bg-secondary/20 transition-all font-bold" data-date="${dateStr}" onclick="selectDate(this, '${dateStr}')">${i}</div>`; }
+  }
 }
-
 
 function changeMonth(dir) { currentDate.setMonth(currentDate.getMonth() + dir); renderCalendar(); }
 function getServiceTotalMinutes(serviceName) { if (!serviceName) return 150; if (serviceName.includes('120')) return 150; if (serviceName.includes('90')) return 120; return 120; }
 function timeToMinutes(timeStr) { let parts = timeStr.split(':'); return parseInt(parts[0]) * 60 + parseInt(parts[1]); }
 
-
 function selectDate(element, dateStr) {
- const serviceName = document.getElementById('serviceSelect').value; if(!serviceName) return;
- if (selectedDateCell) selectedDateCell.classList.remove('bg-accent', 'text-white');
- element.classList.add('bg-accent', 'text-white'); selectedDateCell = element;
- document.getElementById('hiddenDate').value = dateStr; document.getElementById('hiddenTime').value = '';
- if(bookingMode === 'time') document.getElementById('hiddenMaster').value = '';
- document.getElementById('timeSlotsSection').classList.remove('hidden'); document.getElementById('availableMastersSection').classList.add('hidden'); document.getElementById('noTimeText').classList.add('hidden');
+  const serviceName = document.getElementById('serviceSelect').value; if(!serviceName) return;
+  if (selectedDateCell) selectedDateCell.classList.remove('bg-accent', 'text-white');
+  element.classList.add('bg-accent', 'text-white'); selectedDateCell = element;
+  document.getElementById('hiddenDate').value = dateStr; document.getElementById('hiddenTime').value = '';
+  if(bookingMode === 'time') document.getElementById('hiddenMaster').value = '';
+  document.getElementById('timeSlotsSection').classList.remove('hidden'); document.getElementById('availableMastersSection').classList.add('hidden'); document.getElementById('noTimeText').classList.add('hidden');
 
+  const requiredDuration = getServiceTotalMinutes(serviceName);
+  const dayBookings = globalBookings.filter(b => b.date === dateStr);
+  const bookedIntervals = dayBookings.map(b => ({ start: timeToMinutes(b.start), end: timeToMinutes(b.start) + getServiceTotalMinutes(b.service), teacher: b.teacher }));
+  const MAX_ROOMS = window.systemMaxRooms || 2;
+  let validSlots = []; timeMasterMap = {};
 
- const requiredDuration = getServiceTotalMinutes(serviceName);
- const dayBookings = globalBookings.filter(b => b.date === dateStr);
- const bookedIntervals = dayBookings.map(b => ({ start: timeToMinutes(b.start), end: timeToMinutes(b.start) + getServiceTotalMinutes(b.service), teacher: b.teacher }));
- const MAX_ROOMS = window.systemMaxRooms || 2;
- let validSlots = []; timeMasterMap = {};
-
-
- if (bookingMode === 'master') {
-   const master = document.getElementById('masterSelect').value;
-   const mySlots = globalSlots.filter(s => s.date === dateStr && s.master === master).map(s => s.time);
-   validSlots = mySlots.filter(slotTime => {
-     let reqStart = timeToMinutes(slotTime); let reqEnd = reqStart + requiredDuration;
-     for (let min = reqStart; min < reqEnd; min += 10) {
-       let overlapCount = 0; let masterBusy = false;
-       for (let i = 0; i < bookedIntervals.length; i++) { if (min >= bookedIntervals[i].start && min < bookedIntervals[i].end) { overlapCount++; if (bookedIntervals[i].teacher === master) masterBusy = true; } }
-       if (overlapCount >= MAX_ROOMS || masterBusy) return false;
-     }
-     return true;
-   });
- } else {
-   let validMastersForService = globalServices.filter(s => s.name === serviceName).map(s => s.teacher);
-   if(validMastersForService.includes('共用')) validMastersForService = Array.from(new Set(globalServices.map(s=>s.teacher)));
-   let allSlotsToday = globalSlots.filter(s => s.date === dateStr);
-   allSlotsToday.forEach(slot => {
-     if(!validMastersForService.includes(slot.master) && !validMastersForService.includes('共用')) return;
-     let reqStart = timeToMinutes(slot.time); let reqEnd = reqStart + requiredDuration; let isValid = true;
-     for (let min = reqStart; min < reqEnd; min += 10) {
-       let overlapCount = 0; let masterBusy = false;
-       for (let i = 0; i < bookedIntervals.length; i++) { if (min >= bookedIntervals[i].start && min < bookedIntervals[i].end) { overlapCount++; if (bookedIntervals[i].teacher === slot.master) masterBusy = true; } }
-       if (overlapCount >= MAX_ROOMS || masterBusy) { isValid = false; break; }
-     }
-     if (isValid) { if(!timeMasterMap[slot.time]) timeMasterMap[slot.time] = []; if(!timeMasterMap[slot.time].includes(slot.master)) timeMasterMap[slot.time].push(slot.master); }
-   });
-   validSlots = Object.keys(timeMasterMap);
- }
- if(validSlots.length > 0) renderAvailableSlots(validSlots);
- else { document.getElementById('timeSlotsGrid').innerHTML = ''; document.getElementById('noTimeText').classList.remove('hidden'); }
+  if (bookingMode === 'master') {
+    const master = document.getElementById('masterSelect').value;
+    const mySlots = globalSlots.filter(s => s.date === dateStr && s.master === master).map(s => s.time);
+    validSlots = mySlots.filter(slotTime => {
+      let reqStart = timeToMinutes(slotTime); let reqEnd = reqStart + requiredDuration;
+      for (let min = reqStart; min < reqEnd; min += 10) {
+        let overlapCount = 0; let masterBusy = false;
+        for (let i = 0; i < bookedIntervals.length; i++) { if (min >= bookedIntervals[i].start && min < bookedIntervals[i].end) { overlapCount++; if (bookedIntervals[i].teacher === master) masterBusy = true; } }
+        if (overlapCount >= MAX_ROOMS || masterBusy) return false;
+      }
+      return true;
+    });
+  } else {
+    let validMastersForService = globalServices.filter(s => s.name === serviceName).map(s => s.teacher);
+    if(validMastersForService.includes('共用')) validMastersForService = Array.from(new Set(globalServices.map(s=>s.teacher)));
+    let allSlotsToday = globalSlots.filter(s => s.date === dateStr);
+    allSlotsToday.forEach(slot => {
+      if(!validMastersForService.includes(slot.master) && !validMastersForService.includes('共用')) return;
+      let reqStart = timeToMinutes(slot.time); let reqEnd = reqStart + requiredDuration; let isValid = true;
+      for (let min = reqStart; min < reqEnd; min += 10) {
+        let overlapCount = 0; let masterBusy = false;
+        for (let i = 0; i < bookedIntervals.length; i++) { if (min >= bookedIntervals[i].start && min < bookedIntervals[i].end) { overlapCount++; if (bookedIntervals[i].teacher === slot.master) masterBusy = true; } }
+        if (overlapCount >= MAX_ROOMS || masterBusy) { isValid = false; break; }
+      }
+      if (isValid) { if(!timeMasterMap[slot.time]) timeMasterMap[slot.time] = []; if(!timeMasterMap[slot.time].includes(slot.master)) timeMasterMap[slot.time].push(slot.master); }
+    });
+    validSlots = Object.keys(timeMasterMap);
+  }
+  if(validSlots.length > 0) renderAvailableSlots(validSlots);
+  else { document.getElementById('timeSlotsGrid').innerHTML = ''; document.getElementById('noTimeText').classList.remove('hidden'); }
 }
 
+function Math_round(val) { return Math.round(val); }
 
 function renderAvailableSlots(slots) {
- const container = document.getElementById('timeSlotsGrid'); container.innerHTML = '';
- slots.sort().forEach(time => {
-   const btn = document.createElement('button'); btn.type = 'button';
-   btn.className = "time-btn bg-inputbg border border-secondary/30 rounded-xl py-2 text-sm text-dark transition-all font-bold"; btn.innerText = time;
-   btn.onclick = function() {
-     if (selectedTimeBtn) { selectedTimeBtn.classList.remove('bg-accent', 'text-white', 'border-accent'); selectedTimeBtn.classList.add('bg-inputbg', 'text-dark', 'border-secondary/30'); }
-     this.classList.remove('bg-inputbg', 'text-dark', 'border-secondary/30'); this.classList.add('bg-accent', 'text-white', 'border-accent');
-     selectedTimeBtn = this; document.getElementById('hiddenTime').value = this.textContent;
-     if (bookingMode === 'time') renderAvailableMasters(this.textContent);
-   };
-   container.appendChild(btn);
- });
+  const container = document.getElementById('timeSlotsGrid'); container.innerHTML = '';
+  slots.sort().forEach(time => {
+    const btn = document.createElement('button'); btn.type = 'button';
+    btn.className = "time-btn bg-inputbg border border-secondary/30 rounded-xl py-2 text-sm text-dark transition-all font-bold"; btn.innerText = time;
+    btn.onclick = function() {
+      if (selectedTimeBtn) { selectedTimeBtn.className = "time-btn bg-inputbg border border-secondary/30 rounded-xl py-2 text-sm text-dark transition-all font-bold"; }
+      this.className = "time-btn bg-accent text-white border border-accent rounded-xl py-2 text-sm transition-all font-bold";
+      selectedTimeBtn = this; document.getElementById('hiddenTime').value = this.textContent;
+      if (bookingMode === 'time') renderAvailableMasters(this.textContent);
+    };
+    container.appendChild(btn);
+  });
 }
-
 
 function renderAvailableMasters(time) {
- const section = document.getElementById('availableMastersSection'); const container = document.getElementById('availableMastersGrid');
- section.classList.remove('hidden'); container.innerHTML = ''; document.getElementById('hiddenMaster').value = '';
- const masters = timeMasterMap[time] || [];
- masters.forEach(m => {
-   const btn = document.createElement('button'); btn.type = 'button'; let displayName = staffMap[m] || m;
-   btn.className = "master-btn bg-inputbg border border-secondary/30 rounded-xl py-2 text-sm text-dark transition-all font-bold"; btn.innerText = displayName;
-   btn.onclick = function() {
-     if (selectedMasterBtn) { selectedMasterBtn.classList.remove('bg-accent', 'text-white', 'border-accent'); selectedMasterBtn.classList.add('bg-inputbg', 'text-dark', 'border-secondary/30'); }
-     this.classList.remove('bg-inputbg', 'text-dark', 'border-secondary/30'); this.classList.add('bg-accent', 'text-white', 'border-accent');
-     selectedMasterBtn = this; document.getElementById('hiddenMaster').value = m;
-   };
-   container.appendChild(btn);
- });
+  const section = document.getElementById('availableMastersSection'); const container = document.getElementById('availableMastersGrid');
+  section.classList.remove('hidden'); container.innerHTML = ''; document.getElementById('hiddenMaster').value = '';
+  const masters = timeMasterMap[time] || [];
+  masters.forEach(m => {
+    const btn = document.createElement('button'); btn.type = 'button'; let displayName = staffMap[m] || m;
+    btn.className = "master-btn bg-inputbg border border-secondary/30 rounded-xl py-2 text-sm text-dark transition-all font-bold"; btn.innerText = displayName;
+    btn.onclick = function() {
+      if (selectedMasterBtn) { selectedMasterBtn.className = "master-btn bg-inputbg border border-secondary/30 rounded-xl py-2 text-sm text-dark transition-all font-bold"; }
+      this.className = "master-btn bg-accent text-white border border-accent rounded-xl py-2 text-sm transition-all font-bold";
+      selectedMasterBtn = this; document.getElementById('hiddenMaster').value = m;
+    };
+    container.appendChild(btn);
+  });
 }
 
-
-// ✨ 金流與狀態機防禦：阻擋 1 秒內多次狂按送出
+// 7. 送單鎖位與 106 狀態機防重複送單鎖 (CORS Fetch POST)
 function submitForm() {
- const btn = document.getElementById('submitBtn');
-  // 【狀態機防禦】如果按鈕已經標記為處理中，直接阻擋執行，完全不發送請求！
- if (btn.classList.contains('is-processing')) {
-   return;
- }
+  const btn = document.getElementById('submitBtn');
+  if (btn.classList.contains('is-processing')) return; 
 
+  try {
+    const isFemale = document.getElementById('genderConfirm').checked;
+    if(!isFemale) { Swal.fire({ title: '溫馨提醒', text: '為維護館內隱私，本店僅接待女性顧客。請勾選確認聲明後再進行支付！', icon: 'warning', confirmButtonColor: '#C5A059' }); return; }
 
- try {
-   const isFemale = document.getElementById('genderConfirm').checked;
-   if(!isFemale) { Swal.fire({ title: '溫馨提醒', text: '為維護館內隱私，本店僅接待女性顧客。請勾選確認聲明後再進行支付！', icon: 'warning', confirmButtonColor: '#C5A059' }); return; }
-  
-   const useWallet = document.getElementById('useWalletBtn') ? document.getElementById('useWalletBtn').checked : false;
-   const formData = {
-     userPhone: document.querySelector('input[name="userPhone"]').value, userName: document.querySelector('input[name="userName"]').value,
-     lineName: document.querySelector('input[name="lineName"]').value, master: document.getElementById('hiddenMaster').value || document.getElementById('masterSelect').value,
-     bookDate: document.getElementById('hiddenDate').value, bookTime: document.getElementById('hiddenTime').value,
-     mainService: document.getElementById('serviceSelect').value, originalPrice: currentOriginalPrice, couponCode: document.getElementById('couponCode').value.trim(),
-     useWallet: useWallet
-   };
-  
-   if(!formData.userPhone || !formData.userName || !formData.lineName || !formData.master || !formData.bookDate || !formData.bookTime || !formData.mainService) {
-     Swal.fire('請先填寫資料', '請確認已完整選擇師傅、時段與必填欄位！', 'warning'); return;
-   }
+    const useWallet = document.getElementById('useWalletBtn') ? document.getElementById('useWalletBtn').checked : false;
+    const formData = {
+      userPhone: document.querySelector('input[name="userPhone"]').value, userName: document.querySelector('input[name="userName"]').value,
+      lineName: document.querySelector('input[name="lineName"]').value, master: document.getElementById('hiddenMaster').value || document.getElementById('masterSelect').value,
+      bookDate: document.getElementById('hiddenDate').value, bookTime: document.getElementById('hiddenTime').value,
+      mainService: document.getElementById('serviceSelect').value, originalPrice: currentOriginalPrice, couponCode: document.getElementById('couponCode').value.trim(),
+      useWallet: useWallet
+    };
 
+    if(!formData.userPhone || !formData.userName || !formData.lineName || !formData.master || !formData.bookDate || !formData.bookTime || !formData.mainService) {
+      Swal.fire('請先填寫資料', '請確認已完整選擇師傅、時段與必填欄位！', 'warning'); return;
+    }
 
-   // 【啟動狀態機鎖】鎖死按鈕，文字改為處理中
-   btn.classList.add('is-processing');
-   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 訂單建立與金流連線中...';
-   btn.disabled = true;
-   btn.classList.add('opacity-50', 'cursor-not-allowed');
+    btn.classList.add('is-processing');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 訂單建立與金流連線中...';
+    btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed');
 
-
-   // 發送至後端 (這裡後端已經實作了金流拆分，會先寫入「未付款」訂單再取綠界表單)
-   google.script.run.withSuccessHandler(function(response) {
-     if(response.success) {
-       if (response.walletFullyPaid) {
-         window.location.href = response.scriptUrl + "?page=success";
-       } else {
-         const div = document.createElement('div'); 
-         div.style.display = 'none'; // 🚀【就是這一行】讓這個裝表單的臨時容器在網頁最底下完全不佔空間、不撐開版面！
-         div.innerHTML = response.html; document.body.appendChild(div);
-         const ecpayForm = document.getElementById('ecpayForm');
-         if(ecpayForm) {
-            ecpayForm.submit();
-         } else {
-            alert('找不到金流表單，但訂單可能已建立，請聯繫客服。');
-            btn.innerHTML = '前往支付'; btn.disabled = false; btn.classList.remove('is-processing', 'opacity-50', 'cursor-not-allowed');
-         }
-       }
-     } else {
-       alert('處理訂單失敗：' + response.message);
-       btn.innerHTML = '前往支付'; btn.disabled = false; btn.classList.remove('is-processing', 'opacity-50', 'cursor-not-allowed');
-     }
-   }).withFailureHandler(function(err) {
-       alert('伺服器連線過載，請稍後重試：' + err.toString());
-       btn.innerHTML = '前往支付'; btn.disabled = false; btn.classList.remove('is-processing', 'opacity-50', 'cursor-not-allowed');
-   }).processBooking(formData);
-  
- } catch (e) {
-   alert('發生預期外錯誤：' + e.message);
-   btn.innerHTML = '前往支付'; btn.disabled = false; btn.classList.remove('is-processing', 'opacity-50', 'cursor-not-allowed');
- }
+    // 跨網域發射至 API 新大腦
+    fetch(GAS_BACKEND_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "processBooking", ...formData })
+    }).then(res => res.json()).then(response => {
+      if(response.success) {
+        if (response.walletFullyPaid) {
+          window.location.href = response.scriptUrl + "?page=success";
+        } else {
+          const div = document.createElement('div'); div.style.display = 'none'; 
+          div.innerHTML = response.html; document.body.appendChild(div);
+          const ecpayForm = document.getElementById('ecpayForm');
+          if(ecpayForm) { ecpayForm.submit(); }
+          else { alert('找不到金流表單，但訂單可能已建立，請聯繫客服。'); btn.innerHTML = '前往支付'; btn.disabled = false; btn.classList.remove('is-processing', 'opacity-50', 'cursor-not-allowed'); }
+        }
+      } else { alert('處理訂單失敗：' + response.message); btn.innerHTML = '前往支付'; btn.disabled = false; btn.classList.remove('is-processing', 'opacity-50', 'cursor-not-allowed'); }
+    }).catch(err => {
+      btn.innerHTML = '前往支付'; btn.disabled = false; btn.classList.remove('is-processing', 'opacity-50', 'cursor-not-allowed');
+      alert('雲端伺服器連線過載，請重試。');
+    });
+  } catch (e) { alert('發生預期外錯誤：' + e.message); btn.innerHTML = '前往支付'; btn.disabled = false; btn.classList.remove('is-processing', 'opacity-50', 'cursor-not-allowed'); }
 }
 
-
+// 8. 補付通道與重啟訂單付款功能 (Fetch GET)
 window.repayOrder = function(event, orderId) {
- event.preventDefault(); const btn = event.currentTarget; const originalText = btn.innerHTML;
- btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 連結金流中...'; btn.disabled = true; btn.classList.add('opacity-70');
- google.script.run.withSuccessHandler(function(response) {
-   if(response.success) {
-     const div = document.createElement('div'); div.innerHTML = response.html; document.body.appendChild(div);
-     const ecpayForm = document.getElementById('ecpayForm');
-     if(ecpayForm) ecpayForm.submit(); else { alert('找不到表單'); btn.innerHTML = originalText; btn.disabled = false; btn.classList.remove('opacity-70'); }
-   } else { alert('重啟付款失敗：' + response.message); btn.innerHTML = originalText; btn.disabled = false; btn.classList.remove('opacity-70'); }
- }).getPaymentFormForExistingOrder(orderId);
+  event.preventDefault(); const btn = event.currentTarget; const originalText = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 連結金流中...'; btn.disabled = true; btn.classList.add('opacity-70');
+
+  fetch(GAS_BACKEND_URL + `?action=getPaymentFormForExistingOrder&orderId=${orderId.trim()}`)
+    .then(res => res.json())
+    .then(response => {
+      if(response.success) {
+        const div = document.createElement('div'); div.style.display = 'none';
+        div.innerHTML = response.html; document.body.appendChild(div);
+        const ecpayForm = document.getElementById('ecpayForm');
+        if(ecpayForm) ecpayForm.submit(); else { alert('找不到表單'); btn.innerHTML = originalText; btn.disabled = false; btn.classList.remove('opacity-70'); }
+      } else { alert('重啟付款失敗：' + response.message); btn.innerHTML = originalText; btn.disabled = false; btn.classList.remove('opacity-70'); }
+    }).catch(err => { btn.disabled = false; btn.innerHTML = originalText; btn.classList.remove('opacity-70'); });
 };
-
-
 </script>
+
 <div id="teacherWallModal" class="hidden fixed inset-0 bg-dark/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
  <div class="bg-surface w-full max-w-sm rounded-[1.5rem] p-6 shadow-2xl relative fade-in h-[80vh] overflow-y-auto">
    <button onclick="document.getElementById('teacherWallModal').classList.add('hidden')" class="absolute top-4 right-4 text-dark/50 hover:text-dark"><i class="fas fa-times text-xl"></i></button>
    <h3 class="text-dark font-bold text-sm mb-4 border-b pb-2">師傅形象牆</h3>
-   <div id="teacherWallGrid" class="grid grid-cols-2 gap-4">
-     </div>
+   <div id="teacherWallGrid" class="grid grid-cols-2 gap-4"></div>
  </div>
 </div>
 
-
 <script>
-// ✨ 開啟師傅牆函式
 function openTeacherWall() {
- const modal = document.getElementById('teacherWallModal');
- const grid = document.getElementById('teacherWallGrid');
+ const modal = document.getElementById('teacherWallModal'); const grid = document.getElementById('teacherWallGrid');
  grid.innerHTML = '<div class="col-span-2 text-center text-xs text-dark/50 py-10">載入師傅資料中...</div>';
- modal.classList.remove('hidden');
-
-
- // 直接從您前台已有的 staffMap 讀取師傅資料
- grid.innerHTML = '';
+ modal.classList.remove('hidden'); grid.innerHTML = '';
  Object.keys(staffMap).forEach(key => {
-   let name = staffMap[key];
-   let card = document.createElement('div');
+   let name = staffMap[key]; let card = document.createElement('div');
    card.className = "bg-inputbg p-3 rounded-xl shadow-sm text-center border border-secondary/20";
-   card.innerHTML = `
-     <div class="w-full aspect-square bg-secondary/20 rounded-lg mb-2 flex items-center justify-center text-dark/40 overflow-hidden">
-       <i class="fas fa-user-tie text-3xl"></i>
-     </div>
-     <p class="text-[11px] font-bold text-dark">${name}</p>
-   `;
+   card.innerHTML = `<div class="w-full aspect-square bg-secondary/20 rounded-lg mb-2 flex items-center justify-center text-dark/40 overflow-hidden"><i class="fas fa-user-tie text-3xl"></i></div><p class="text-[11px] font-bold text-dark">${name}</p>`;
    grid.appendChild(card);
  });
 }
