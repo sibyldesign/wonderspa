@@ -75,7 +75,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 <h2 class="text-[15px] font-bold tracking-[0.1em] text-dark mb-1 relative z-10">Wonder SPA</h2>
 <p class="text-[10px] font-bold text-accent tracking-widest mb-6 relative z-10">仕女按摩 · 肌肉帥哥按摩師</p>
 <p class="text-dark/80 text-[12px] leading-[2.4] tracking-widest font-bold relative z-10">
-指尖下的親密對話 <br>給肌膚最溫柔的奢華呵護 <br>嚴選肌肉帥哥，40 小時培訓才可上工 <br>忙碌生活中的小確幸，我們為情把關
+指尖下的親密對話 <br>給肌膚最溫柔的奢華呵護 <br>嚴選肌肉帥哥，40 小時培訓才可上工 <br>忙碌生活中的小確幸，我們為你把關
 </p>
 <div class="w-[80%] h-[1px] bg-secondary/30 mx-auto my-6 relative z-10"></div>
 <p class="text-accent/80 text-[12px] tracking-widest serif-italic relative z-10 leading-relaxed">" In the sensory wander,<br>find the wonder within. "</p>
@@ -232,7 +232,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
   <span class="flex items-center gap-2 text-xs tracking-widest"><i class="fas fa-map-marker-alt text-accent"></i>交通與接待指引</span>
   <i class="fas fa-chevron-down text-dark/50 transition-transform group-open:rotate-180"></i>
 </summary>
-<div class="p-5 pt-2 border-t border-dashed border-secondary/30 text-dark/80 text-[11px] leading-relaxed">
+<div class="p-5 pt-2 border-t border-dashed border-secondary/30 text-dark/80 text-[11px ] leading-relaxed">
   <p class="mb-3"><span class="font-bold text-dark"><i class="fas fa-train text-accent/70 w-4"></i>捷運：</span> 靠近 <span class="text-accent font-bold">雙連站</span> 或 <span class="text-accent font-bold">中山國小站</span>。</p>
   <p><span class="font-bold text-dark"><i class="fas fa-walking text-accent/70 w-4"></i>接待：</span> 由於位置較隱密，請至明顯地標 <span class="text-accent font-bold bg-accent/10 px-1 rounded">屈臣氏 林森門市</span> 稍候，我們將有專人前往接待入館。</p>
 </div>
@@ -306,10 +306,10 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
   let walletBalance = 0;
   let currentYear, currentMonth;
 
-  // 108 原版一秒內防狂敲重複送單鎖
+  // 76 原版一秒內防狂敲重複送單鎖
   let isProcessingBooking = false;
 
-  // 1. 跨網域穿透抓取初始化快取資料 (對齊試算表公告)
+  // 1. 跨網域穿透抓取初始化快取資料 (對齊圖二公告)
   window.onload = function() {
     let td = new Date(); currentYear = td.getFullYear(); currentMonth = td.getMonth();
     
@@ -324,7 +324,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
           initMasterDropdown(res.staff);
           initTopUpPlans(res.plans);
           
-          // ✨ 完美接引公告：由雲端試算表 Config 設定直接渲染到最上方
+          // ✨ 完美接引圖二公告：由雲端試算表 Config 設定直接渲染到最上方
           if(res.announcement) {
             document.getElementById('announcementText').innerText = res.announcement;
             document.getElementById('announcementContainer').classList.remove('hidden');
@@ -395,7 +395,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
     renderCalendar(); calculateFinalPriceSummary();
   }
 
-  // 4. 優雅一頁式日曆引擎渲染 (與 108 原版演算法完全重合)
+  // 4. 優雅一頁式日曆引擎渲染 (與 76 原版演算法 100% 完全重合)
   function renderCalendar() {
     document.getElementById('monthYearText').innerText = `${currentYear}年 ${currentMonth + 1}月`;
     let container = document.getElementById('calendarDays'); container.innerHTML = '';
@@ -431,7 +431,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
     renderCalendar();
   }
 
-  // 5. 跨網域房間鎖與真實排班即時比對運算
+  // 5. 房間鎖與排班比對核心運算
   function fetchTimeSlotsForMaster() {
     let grid = document.getElementById('timeSlotsGrid'); grid.innerHTML = '';
     let matched = globalData.slots.filter(s => s.date === selectedDate);
@@ -486,13 +486,12 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
     btn.classList.add('selected-btn'); selectedMaster = id; document.getElementById('hiddenMaster').value = id;
   }
 
-  // 6. 跨網域智慧個資帶入與卡片餘額查詢
+  // 6. 跨網域智慧個資帶入與卡片餘額查詢 (Fetch GET)
   function fetchCustomerProfile() {
     let p = document.getElementById('userPhoneInput').value.trim();
     if(!p) return Swal.fire('提示', '請先輸入手機號碼喔', 'warning');
     Swal.fire({ title: '正在讀取會員錢包...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
     
-    // 跨網域發射 Fetch GET
     fetch(GAS_BACKEND_URL + "?action=getCustomerProfile&phone=" + p)
       .then(res => res.json())
       .then(profile => {
@@ -523,7 +522,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
       }).catch(e => { Swal.close(); });
   }
 
-  // 7. 折扣碼限制核銷 (Fetch GET)
+  // 7. 折扣碼核銷 (Fetch GET)
   function applyCoupon() {
     let code = document.getElementById('couponCode').value.trim();
     if(!selectedService) return Swal.fire('提示', '請先選擇服務項目喔', 'warning');
@@ -557,7 +556,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
     document.getElementById('summaryFinalPrice').innerText = "NT$ " + finalPay.toLocaleString();
   }
 
-  // 8. 儲值金回報 Modal 控制
+  // 8. 儲值金回報彈窗控制
   function openTopUpModal() { document.getElementById('topUpModal').classList.remove('hidden'); }
   function closeTopUpModal() { document.getElementById('topUpModal').classList.add('hidden'); }
 
@@ -579,9 +578,9 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
     });
   }
 
-  // 9. 終極跨域 Fetch 下單鎖位與金流跳轉 (強制攔截防呆狀態機鎖)
+  // 9. 終極跨域 Fetch 下單鎖位與金流跳轉 (防呆防重按)
   function submitOrderForm() {
-    if (isProcessingBooking) return; // 鎖住狀態機，不給重覆狂敲
+    if (isProcessingBooking) return;
 
     let m = bookingMode === 'master' ? selectedMaster : document.getElementById('hiddenMaster').value;
     if(!selectedService || !m || !selectedDate || !selectedTime) { return Swal.fire('提示', '請確認 師傅、課程、日期、時段 皆已選取完畢！', 'warning'); }
@@ -590,12 +589,11 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
     let line = document.getElementById('lineNameInput').value.trim();
     if(!name || !phone || !line) { return Swal.fire('提示', '請完整填寫 姓名、手機、LINE名稱！', 'warning'); }
 
-    // 🎯 縫合強制驗證：生理女性確認核取方塊
     if (!document.getElementById('genderConfirm').checked) {
-      return Swal.fire('預約提示', '請先閱讀並勾選「我已確認為生理女性顧客」承諾框。', 'warning');
+      return Swal.fire('預約提示', '請先閱讀並勾選「我已確認為生理女性顧客」承諾方塊。', 'warning');
     }
 
-    isProcessingBooking = true; // 開鎖機防禦
+    isProcessingBooking = true; 
     const btn = document.getElementById('submitBtnReal');
     btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>雲端鎖位對帳中，請勿關閉網頁...'; btn.disabled = true;
 
@@ -619,7 +617,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
         }
         Swal.fire({ title: '鎖位完成！前往綠界刷卡...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
         
-        // 🚀 建立一個隱藏表單承載器並自動提交
+        // 🚀 在背景動態生成隱藏表單並自動發射
         const ecContainer = document.createElement('div');
         ecContainer.style.display = 'none';
         ecContainer.innerHTML = res.html;
