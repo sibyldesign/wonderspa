@@ -38,7 +38,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
       <label class="text-[11px] font-bold text-dark/70 tracking-wider">輸入預約的手機號碼查詢「未付款」項目：</label>
       <div class="flex gap-2">
         <input type="tel" id="queryPhone" placeholder="例如：0912345678" class="flex-1 bg-primary/50 border border-secondary/30 rounded-xl px-3.5 py-2.5 text-xs font-medium text-dark placeholder-dark/30 focus:outline-none focus:border-accent transition-colors">
-        <button type="button" onclick="searchOrderByPhone()" class="bg-dark hover:bg-accent text-white text-xs font-bold px-4 rounded-xl shadow-md transition-colors tracking-wider whitespace-nowrap">
+        <button type="button" id="queryBtn" onclick="searchOrderByPhone()" class="bg-dark hover:bg-accent text-white text-xs font-bold px-4 rounded-xl shadow-md transition-colors tracking-wider whitespace-nowrap">
           查詢帶入
         </button>
       </div>
@@ -58,19 +58,19 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 
     <div class="w-full space-y-3.5 pt-2">
       <div id="paymentActionArea" class="hidden">
-        <button type="button" onclick="executePay()" class="w-full bg-[#7E6B5A] hover:bg-[#C5A059] text-white font-bold py-4 px-6 rounded-xl shadow-xl shadow-dark/10 transition-all tracking-[0.2em] text-xs flex items-center justify-center gap-2 group transform active:scale-95 duration-200">
+        <button type="button" id="payBtn" onclick="executePay()" class="w-full bg-[#7E6B5A] hover:bg-[#C5A059] text-white font-bold py-4 px-6 rounded-xl shadow-xl shadow-dark/10 transition-all tracking-[0.2em] text-xs flex items-center justify-center gap-2 group transform active:scale-95 duration-200">
           <i class="fas fa-credit-card text-xs text-secondary group-hover:text-white transition-colors"></i>
           繼續完成付款
           <i class="fas fa-arrow-right text-xs opacity-70 group-hover:translate-x-1 transition-transform"></i>
         </button>
       </div>
 
-      <a href="https://www.wonderspa.tw/" class="w-full bg-[#FFFFFF] hover:bg-[#7E6B5A]/5 border border-accent/40 text-[#7E6B5A] hover:text-[#C5A059] font-bold py-3 px-6 rounded-xl shadow-sm transition-all duration-300 tracking-[0.12em] text-[12px] flex items-center justify-center gap-2 transform active:scale-95">
+      <a href="https://www.wonderspa.tw/" target="_blank" class="w-full bg-[#FFFFFF] hover:bg-[#7E6B5A]/5 border border-accent/40 text-[#7E6B5A] hover:text-[#C5A059] font-bold py-3 px-6 rounded-xl shadow-sm transition-all duration-300 tracking-[0.12em] text-[12px] flex items-center justify-center gap-2 transform active:scale-95">
         <i class="fas fa-images text-accent text-xs"></i>
         返回 WONDER SPA 官網師傅牆
       </a>
 
-      <a href="https://script.google.com/macros/s/AKfycbwIGY8L774iM-U50uniLROYu_2I-T-osoV6xOYVk99CaQZt6kMRJmgnBhWhxvS35A5r/exec" class="w-full bg-[#FFFFFF] hover:bg-[#7E6B5A]/5 border border-[#7E6B5A]/40 text-[#7E6B5A] font-bold py-3 px-6 rounded-xl shadow-sm transition-all duration-300 tracking-[0.15em] text-[12px] flex items-center justify-center gap-2 transform active:scale-95">
+      <a id="backToBookingBtn" href="https://script.google.com/macros/s/AKfycbwIGY8L774iM-U50uniLROYu_2I-T-osoV6xOYVk99CaQZt6kMRJmgnBhWhxvS35A5r/exec" target="_blank" class="w-full bg-[#FFFFFF] hover:bg-[#7E6B5A]/5 border border-[#7E6B5A]/40 text-[#7E6B5A] font-bold py-3 px-6 rounded-xl shadow-sm transition-all duration-300 tracking-[0.15em] text-[12px] flex items-center justify-center gap-2 transform active:scale-95">
         <i class="fas fa-undo-alt text-[11px] opacity-70"></i>
         返回線上預約入口
       </a>
@@ -86,12 +86,16 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 </footer>
 
 <script>
+// 已自動更新為您提供的新版 Web App 網址
 const GAS_BACKEND_URL = "https://script.google.com/macros/s/AKfycbwIGY8L774iM-U50uniLROYu_2I-T-osoV6xOYVk99CaQZt6kMRJmgnBhWhxvS35A5r/exec";
 let cachedFormHtml = "";
 
 window.onload = function() {
+  // 自動將網址設定給返回預約按鈕
+  document.getElementById('backToBookingBtn').href = GAS_BACKEND_URL;
+  
   const urlParams = new URLSearchParams(window.location.search);
-  const phoneParam = urlParams.get('phone') || urlParams.get('orderId'); 
+  let phoneParam = urlParams.get('phone') || urlParams.get('orderId'); 
   if (phoneParam) {
     document.getElementById('queryPhone').value = phoneParam;
     searchOrderByPhone();
@@ -107,73 +111,61 @@ function searchOrderByPhone() {
   
   Swal.fire({ title: '正在安全通道中對帳...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
   
-  var requestPayload = "action=getPaymentForm&phone=" + encodeURIComponent(phoneVal);
+  // 🚀【核心調整】全面重構為跨網域相容性最高的 GET 請求串接機制
+  const queryParams = new URLSearchParams({
+    action: 'getPaymentFormForExistingOrder',
+    orderId: phoneVal, // 傳送手機或特定單號供後台解析
+    phone: phoneVal
+  }).toString();
 
-  var xhr = new XMLHttpRequest();
-  xhr.open("POST", GAS_BACKEND_URL, true);
-  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-  
-  xhr.onload = function() {
-    Swal.close();
-    if (xhr.status >= 200 && xhr.status < 400) {
-      try {
-        var res = JSON.parse(xhr.responseText);
-        if(res.success && res.html) {
-          
-          // 🚀【核心抗噪防摔解碼】
-          // 自動辨識後台傳過來的是否為 Base64 壓縮編碼，如果是，秒速解碼還原 HTML！
-          let rawHtml = res.html.trim();
-          if (rawHtml.indexOf('<form') === -1) {
-            try {
-              // 進行 Base64 解碼 (處理中文字元安全解碼)
-              rawHtml = decodeURIComponent(atob(rawHtml).split('').map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-              }).join(''));
-            } catch(b64err) {
-              rawHtml = res.html; // 降級容錯
-            }
+  fetch(`${GAS_BACKEND_URL}?${queryParams}`)
+    .then(res => res.json())
+    .then(res => {
+      Swal.close();
+      if(res.success && res.html) {
+        
+        // 自動辨識與還原可能經過編碼處理的 HTML 字串
+        let rawHtml = res.html.trim();
+        if (rawHtml.indexOf('<form') === -1) {
+          try {
+            rawHtml = decodeURIComponent(atob(rawHtml).split('').map(function(c) {
+              return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+          } catch(b64err) {
+            rawHtml = res.html;
           }
-          
-          cachedFormHtml = rawHtml;
-          
-          // 智慧拆解金額顯示
-          const tempDiv = document.createElement('div');
-          tempDiv.innerHTML = rawHtml;
-          const amtInput = tempDiv.querySelector('input[name="TotalAmount"]');
-          const finalAmt = amtInput ? parseInt(amtInput.value).toLocaleString() : "--";
-          
-          document.getElementById('displayOrderId').innerText = res.orderId || "最新預約項目";
-          document.getElementById('displayAmountText').innerText = "NT$ " + finalAmt;
-          document.getElementById('orderStatusBox').classList.remove('hidden');
-          document.getElementById('paymentActionArea').classList.remove('hidden');
-          
-          Swal.fire({ icon: 'success', title: '查詢成功！已帶入未付款訂單', text: '請點擊「繼續完成付款」前往結帳。', confirmButtonColor: '#7E6B5A' });
-        } else {
-          hideStatusBox();
-          Swal.fire({ icon: 'info', title: '目前查無未付款預約', text: res.message || '該手機號碼目前沒有尚待付款的預約項目喔！', confirmButtonColor: '#7E6B5A' });
         }
-      } catch(e) {
+        
+        cachedFormHtml = rawHtml;
+        
+        // 拆解出金額顯示於前端介面上
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = rawHtml;
+        const amtInput = tempDiv.querySelector('input[name="TotalAmount"]');
+        const finalAmt = amtInput ? parseInt(amtInput.value).toLocaleString() : "--";
+        
+        document.getElementById('displayOrderId').innerText = res.orderId || "最新未支付項目";
+        document.getElementById('displayAmountText').innerText = "NT$ " + finalAmt;
+        document.getElementById('orderStatusBox').classList.remove('hidden');
+        document.getElementById('paymentActionArea').classList.remove('hidden');
+        
+        Swal.fire({ icon: 'success', title: '查詢成功！已帶入未付款訂單', text: '請點擊下方「繼續完成付款」按鈕前往綠界結帳。', confirmButtonColor: '#7E6B5A' });
+      } else {
         hideStatusBox();
-        Swal.fire({ icon: 'error', title: '格式連線錯誤', text: '後台回傳解析失敗，請確認後台是否已成功重新部署建立新版本。', confirmButtonColor: '#7E6B5A' });
+        Swal.fire({ icon: 'info', title: '目前查無未付款預約', text: res.message || '該手機號碼目前沒有尚待付款的預約項目喔！', confirmButtonColor: '#7E6B5A' });
       }
-    } else {
+    })
+    .catch(err => {
+      Swal.close();
       hideStatusBox();
-      Swal.fire({ icon: 'error', title: '安全通道未響應', text: '伺服器代碼 500，請聯繫管家。', confirmButtonColor: '#7E6B5A' });
-    }
-  };
-  
-  xhr.onerror = function() {
-    Swal.close();
-    hideStatusBox();
-    Swal.fire({ icon: 'error', title: '安全通道連線失敗', text: '請檢查網路連線。', confirmButtonColor: '#7E6B5A' });
-  };
-  
-  xhr.send(requestPayload);
+      Swal.fire({ icon: 'error', title: '安全通道連線失敗', text: '後端未響應或發生格式錯誤，請確認後台部署設定是否開放給「所有人」。', confirmButtonColor: '#7E6B5A' });
+    });
 }
 
 function hideStatusBox() {
   document.getElementById('orderStatusBox').classList.add('hidden');
   document.getElementById('paymentActionArea').classList.add('hidden');
+  cachedFormHtml = "";
 }
 
 function executePay() {
@@ -186,7 +178,7 @@ function executePay() {
   setTimeout(() => {
     const form = container.querySelector('form');
     if(form) {
-      form.submit();
+      form.submit(); // 🚀 直接自動提交綠界加密表單跳轉
     } else {
       Swal.close();
       Swal.fire({ icon: 'error', title: '金流表單拉起失敗', text: '無法自動提交安全表單，請重新查詢。', confirmButtonColor: '#7E6B5A' });
@@ -196,3 +188,4 @@ function executePay() {
 </script>
 </body>
 </html>
+
