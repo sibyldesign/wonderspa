@@ -70,7 +70,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
         返回 WONDER SPA 官網師傅牆
       </a>
 
-      <a id="backToBookingBtn" href="https://script.google.com/macros/s/AKfycbwIGY8L774iM-U50uniLROYu_2I-T-osoV6xOYVk99CaQZt6kMRJmgnBhWhxvS35A5r/exec" target="_blank" class="w-full bg-[#FFFFFF] hover:bg-[#7E6B5A]/5 border border-[#7E6B5A]/40 text-[#7E6B5A] font-bold py-3 px-6 rounded-xl shadow-sm transition-all duration-300 tracking-[0.15em] text-[12px] flex items-center justify-center gap-2 transform active:scale-95">
+      <a id="backToBookingBtn" href="#" target="_blank" class="w-full bg-[#FFFFFF] hover:bg-[#7E6B5A]/5 border border-[#7E6B5A]/40 text-[#7E6B5A] font-bold py-3 px-6 rounded-xl shadow-sm transition-all duration-300 tracking-[0.15em] text-[12px] flex items-center justify-center gap-2 transform active:scale-95">
         <i class="fas fa-undo-alt text-[11px] opacity-70"></i>
         返回線上預約入口
       </a>
@@ -86,12 +86,10 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 </footer>
 
 <script>
-// 已自動更新為您提供的新版 Web App 網址
 const GAS_BACKEND_URL = "https://script.google.com/macros/s/AKfycbwIGY8L774iM-U50uniLROYu_2I-T-osoV6xOYVk99CaQZt6kMRJmgnBhWhxvS35A5r/exec";
 let cachedFormHtml = "";
 
 window.onload = function() {
-  // 自動將網址設定給返回預約按鈕
   document.getElementById('backToBookingBtn').href = GAS_BACKEND_URL;
   
   const urlParams = new URLSearchParams(window.location.search);
@@ -111,11 +109,10 @@ function searchOrderByPhone() {
   
   Swal.fire({ title: '正在安全通道中對帳...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
   
-  // 🚀【核心調整】全面重構為跨網域相容性最高的 GET 請求串接機制
+  // 🚀【Action 對齊修正】與後台主入口對接，改為調用 'getPaymentFormForExistingOrder'
   const queryParams = new URLSearchParams({
-    action: 'getPaymentForm',
-    orderId: phoneVal, // 傳送手機或特定單號供後台解析
-    phone: phoneVal
+    action: 'getPaymentFormForExistingOrder',
+    orderId: phoneVal
   }).toString();
 
   fetch(`${GAS_BACKEND_URL}?${queryParams}`)
@@ -123,8 +120,6 @@ function searchOrderByPhone() {
     .then(res => {
       Swal.close();
       if(res.success && res.html) {
-        
-        // 自動辨識與還原可能經過編碼處理的 HTML 字串
         let rawHtml = res.html.trim();
         if (rawHtml.indexOf('<form') === -1) {
           try {
@@ -138,7 +133,6 @@ function searchOrderByPhone() {
         
         cachedFormHtml = rawHtml;
         
-        // 拆解出金額顯示於前端介面上
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = rawHtml;
         const amtInput = tempDiv.querySelector('input[name="TotalAmount"]');
@@ -158,7 +152,7 @@ function searchOrderByPhone() {
     .catch(err => {
       Swal.close();
       hideStatusBox();
-      Swal.fire({ icon: 'error', title: '安全通道連線失敗', text: '後端未響應或發生格式錯誤，請確認後台部署設定是否開放給「所有人」。', confirmButtonColor: '#7E6B5A' });
+      Swal.fire({ icon: 'error', title: '安全通道連線失敗', text: '伺服器響應錯誤，請確認後台是否已正確完成建立新版本的部署。', confirmButtonColor: '#7E6B5A' });
     });
 }
 
@@ -178,7 +172,7 @@ function executePay() {
   setTimeout(() => {
     const form = container.querySelector('form');
     if(form) {
-      form.submit(); // 🚀 直接自動提交綠界加密表單跳轉
+      form.submit();
     } else {
       Swal.close();
       Swal.fire({ icon: 'error', title: '金流表單拉起失敗', text: '無法自動提交安全表單，請重新查詢。', confirmButtonColor: '#7E6B5A' });
@@ -188,4 +182,3 @@ function executePay() {
 </script>
 </body>
 </html>
-
