@@ -113,7 +113,7 @@ function searchOrderByPhone() {
   
   // 🚀【核心調整】全面重構為跨網域相容性最高的 GET 請求串接機制
   const queryParams = new URLSearchParams({
-    action: 'getPaymentFormForExistingOrder',
+    action: 'getPaymentForm',
     orderId: phoneVal, // 傳送手機或特定單號供後台解析
     phone: phoneVal
   }).toString();
