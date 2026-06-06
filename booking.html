@@ -52,6 +52,25 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 </div>
 </div>
 
+<div id="remitReportModal" class="hidden fixed inset-0 bg-dark/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+<div class="bg-surface w-full max-w-sm rounded-[1.5rem] p-6 shadow-2xl relative fade-in">
+<button type="button" onclick="closeRemitModal()" class="absolute top-4 right-4 text-dark/50 hover:text-dark"><i class="fas fa-times text-lg"></i></button>
+<h3 class="text-dark font-bold text-sm tracking-widest mb-4 border-b border-secondary/20 pb-2"><i class="fas fa-university text-accent mr-1"></i> 轉帳匯款後五碼回報 </h3>
+<div class="space-y-4">
+<div class="bg-[#F5EBE1] p-3 rounded-xl border border-accent/20 text-xs text-dark/80 space-y-1">
+<p class="font-bold text-dark">📌 匯款資訊核對：</p>
+<p>訂單編號：<span id="remitTargetOrderId" class="font-mono font-bold text-accent"></span></p>
+<p>預約內容：<span id="remitTargetDetail" class="font-bold"></span></p>
+</div>
+<div>
+<label class="text-[10px] font-bold text-dark/60"> 請輸入轉帳帳號後五碼 (必填) </label>
+<input type="text" id="remitFiveCode" maxlength="5" placeholder="請填寫末 5 碼數字" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-3 py-2.5 text-sm mt-1 focus:outline-none focus:border-accent">
+</div>
+<button type="button" onclick="submitRemitFiveCode()" id="remitSubmitBtn" class="w-full bg-[#accent] bg-dark text-white font-bold py-3.5 rounded-xl mt-2 text-xs tracking-widest hover:bg-accent transition-all shadow-md"> 提交核對 </button>
+</div>
+</div>
+</div>
+
 <header class="bg-surface shadow-sm flex flex-col justify-center items-center pt-8 pb-6 px-4">
 <img src="https://i.postimg.cc/ZYvTKGkY/Wonder-SPA-LOGO.png" alt="WONDER WANDER" class="h-32 w-auto object-contain">
 <div class="text-center mt-5">
@@ -72,7 +91,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 <h2 class="text-[15px] font-bold tracking-[0.1em] text-dark mb-1 relative z-10">Wonder SPA</h2>
 <p class="text-[10px] font-bold text-accent tracking-widest mb-6 relative z-10">  仕女按摩 · 肌肉帥哥按摩師  </p>
 <p class="text-dark/80 text-[12px] leading-[2.4] tracking-widest font-bold relative z-10">
-指尖下的親密對話  <br> 給肌膚最溫柔的奢華呵護  <br> 嚴選肌肉帥哥，40 小時培訓才可上工  <br> 忙碌生活中的小確幸，我們為你把關
+指尖下的親密對話 <br> 給肌膚最溫柔的奢華呵護 <br> 嚴選肌肉帥哥，40 小時培訓才可上工 <br> 忙碌生活中的小確幸，我們為你把關
 </p>
 <div class="w-[80%] h-[1px] bg-secondary/30 mx-auto my-6 relative z-10"></div>
 <p class="text-accent/80 text-[12px] tracking-widest serif-italic relative z-10 leading-relaxed">" In the sensory wander,<br>find the wonder within. "</p>
@@ -145,7 +164,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 <div id="stepMaster">
 <label class="block text-[10px] font-bold text-dark/60 mb-1.5 pl-1">  1. 選擇師傅 MASTER  </label>
 <select id="masterSelect" name="master" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent appearance-none box-border" onchange="unlockServices()">
-<option value="" disabled selected>  請選擇師傅  </option>
+<option value="" disabled selected> 請選擇師傅 </option>
 </select>
 <a href="https://www.wonderspa.tw/" target="_blank" class="block w-full mt-3 py-3 bg-[#D9C5B2]/20 border border-secondary/30 rounded-xl text-dark text-[11px] font-bold tracking-[0.2em] hover:bg-secondary/30 transition-all shadow-sm text-center">
 <i class="fas fa-images mr-2 text-accent"></i>  瀏覽師傅形象牆
@@ -155,7 +174,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 <div class="mt-4">
 <label id="serviceLabel" class="block text-[10px] font-bold text-dark/60 mb-1.5 pl-1">  2. 選擇服務 SERVICE  </label>
 <select name="mainService" id="serviceSelect" onchange="unlockCalendar()" class="w-full bg-inputbg border border-secondary/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent appearance-none box-border" disabled>
-<option value="" disabled selected>  請先完成上方選項  </option>
+<option value="" disabled selected> 請先完成上方選項 </option>
 </select>
 </div>
 
@@ -172,7 +191,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 </div>
 <div id="calendarDays" class="grid grid-cols-7 gap-1 text-center"></div>
 <div id="calendarOverlay" class="absolute inset-0 bg-inputbg/80 backdrop-blur-[2px] flex items-center justify-center rounded-xl z-10 transition-opacity duration-300">
-<span class="bg-dark text-white text-[10px] tracking-widest px-4 py-2 rounded-full shadow-sm">  請先選擇服務項目  </span>
+<span class="bg-dark text-white text-[10px] tracking-widest px-4 py-2 rounded-full shadow-sm"> 請先選擇服務項目 </span>
 </div>
 </div>
 </div>
@@ -180,7 +199,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 <div id="timeSlotsSection" class="hidden fade-in pt-2">
 <label id="timeLabel" class="block text-[10px] font-bold text-dark/60 mb-2 pl-1">  4. 選擇時段 TIME  </label>
 <div id="timeSlotsGrid" class="grid grid-cols-3 gap-2"></div>
-<p id="noTimeText" class="text-xs text-center text-red-400 hidden py-2 font-bold bg-red-50 rounded-lg">  此日期無空檔，請選擇其他日期  </p>
+<p id="noTimeText" class="text-xs text-center text-red-400 hidden py-2 font-bold bg-red-50 rounded-lg"> 此日期無空檔，請選擇其他日期 </p>
 </div>
 
 <div id="availableMastersSection" class="hidden fade-in pt-2 border-t border-secondary/20 mt-4">
@@ -196,7 +215,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 <label class="block text-[10px] font-bold text-dark/60 mb-1.5 pl-1">  折扣碼 DISCOUNT CODE  </label>
 <div class="flex gap-2">
 <input type="text" id="couponCode" placeholder= "如有代碼請輸入"  class="w-full bg-inputbg border border-secondary/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent uppercase tracking-wider box-border" oninput="this.value = this.value.toUpperCase()">
-<button type="button" id="applyCouponBtn" onclick="applyCoupon()" class="bg-dark text-white px-5 py-3 rounded-xl font-bold tracking-widest text-[12px] hover:bg-accent transition-colors shadow-sm">  套用  </button>
+<button type="button" id="applyCouponBtn" onclick="applyCoupon()" class="bg-dark text-white px-5 py-3 rounded-xl font-bold tracking-widest text-[12px] hover:bg-accent transition-colors shadow-sm"> 套用 </button>
 </div>
 <div id="couponMessage" class="text-[11px] mt-2 hidden font-bold tracking-wide"></div>
 </div>
@@ -204,18 +223,37 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 
 <div class="bg-surface p-6 rounded-[1.5rem] shadow-soft space-y-4 w-full border border-secondary/10 fade-in">
 <h2 class="text-xs font-bold tracking-widest border-b border-secondary/10 pb-3 flex items-center text-dark">
-<i class="fas fa-info-circle text-accent mr-2"></i>  付款須知 PAYMENT NOTICE
+<i class="fas fa-info-circle text-accent mr-2"></i>  付款方式與須知 PAYMENT NOTICE
 </h2>
-<ul class="text-[12px] text-dark/70 space-y-2.5 tracking-wider font-medium list-disc pl-4 marker:text-accent/60">
-<li>  預約送出後，請儘速完成結帳以確保您的專屬預約時段。  </li>
-<li>  接受 信用卡 / Apple Pay / 街口支付 / 超商代碼 / 網路 ATM。  </li>
+
+<div class="bg-inputbg p-3.5 rounded-xl border border-secondary/30 space-y-3">
+  <label class="flex items-center gap-2.5 cursor-pointer font-bold text-xs text-dark">
+    <input type="radio" name="paymentGateway" value="ECPAY" checked onchange="togglePaymentNotice()" class="w-4 h-4 text-accent focus:ring-accent">
+    <span>線上支付 (信用卡 / Apple Pay / 街口 / 網路ATM)</span>
+  </label>
+  <label class="flex items-center gap-2.5 cursor-pointer font-bold text-xs text-dark border-t border-secondary/10 pt-2.5">
+    <input type="radio" name="paymentGateway" value="REMIT" onchange="togglePaymentNotice()" class="w-4 h-4 text-accent focus:ring-accent">
+    <span class="text-accent"><i class="fas fa-university"></i> 銀行轉帳匯款 (自主對帳·100%零漏單風險)</span>
+  </label>
+</div>
+
+<ul id="ecpayNoticeList" class="text-[12px] text-dark/70 space-y-2.5 tracking-wider font-medium list-disc pl-4 marker:text-accent/60">
+<li> 預約送出後，請儘速完成結帳以確保您的專屬預約時段。 </li>
+<li> 結帳完成後，請務必點擊「返回商店」以利系統綁定 LINE 通知。 </li>
 </ul>
+
+<div id="remitNoticeBlock" class="hidden bg-[#F5EBE1] p-3.5 rounded-xl border border-accent/30 text-[11px] text-dark/90 leading-relaxed space-y-1">
+  <p class="font-bold text-accent"><i class="fas fa-info-circle"></i> 轉帳匯款說明：</p>
+  <p>請於下單後 <b>30分鐘內</b> 完款，並至本頁最上方「查詢帶入」您的歷史紀錄中，點擊<b>【回報後五碼】</b>按鈕，管理團隊核對後會發送通知至您的 LINE。</p>
+  <p class="font-bold text-center border-t border-dashed border-secondary/30 pt-1 mt-1 text-dark">國泰世華 (013) 帳號：0565-0605-4643</p>
+</div>
+
 <div class="pt-3">
 <label class="flex items-start gap-3 cursor-pointer bg-red-50/50 p-4 rounded-xl border border-red-100/50 hover:bg-red-50 transition-colors">
 <input type="checkbox" id="genderConfirm" class="mt-0.5 w-4 h-4 text-accent border-secondary rounded focus:ring-accent flex-shrink-0">
 <span class="text-[11px] text-dark/90 font-bold leading-relaxed tracking-wide">
-我已確認為「生理女性顧客」  <br>
-<span class="text-red-600/90 font-normal text-[10px] block mt-1.5 leading-relaxed">  ※ 本店為純生理女性專屬空間。若男性顧客任意付款下單，將不予提供服務，並不予退費。  </span>
+我已確認為「生理女性顧客」 <br>
+<span class="text-red-600/90 font-normal text-[10px] block mt-1.5 leading-relaxed"> ※ 本店為純生理女性專屬空間。若男性顧客任意付款下單，將不予提供服務，並不予退費。 </span>
 </span>
 </label>
 </div>
@@ -229,8 +267,8 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 <i class="fas fa-chevron-down text-dark/50 transition-transform group-open:rotate-180"></i>
 </summary>
 <div class="p-5 pt-2 border-t border-dashed border-secondary/30 text-dark/80 text-[11px] leading-relaxed">
-<p class="mb-3"><span class="font-bold text-dark"><i class="fas fa-train text-accent/70 w-4"></i>  捷運：  </span>  靠近  <span class="text-accent font-bold">  雙連站  </span>  或  <span class="text-accent font-bold">  中山國小站  </span>  。 </p>
-<p><span class="font-bold text-dark"><i class="fas fa-walking text-accent/70 w-4"></i>  接待：  </span>  由於位置較隱密，請至明顯地標  <span class="text-accent font-bold bg-accent/10 px-1 rounded">  屈臣氏 林森門市  </span>  稍候，我們將有專人前往接待入館。 </p>
+<p class="mb-3"><span class="font-bold text-dark"><i class="fas fa-train text-accent/70 w-4"></i>  捷運：  </span> 靠近 <span class="text-accent font-bold">  雙連站  </span> 或 <span class="text-accent font-bold">  中山國小站  </span> 。 </p>
+<p><span class="font-bold text-dark"><i class="fas fa-walking text-accent/70 w-4"></i>  接待：  </span> 由於位置較隱密，請至明顯地標 <span class="text-accent font-bold bg-accent/10 px-1 rounded">  屈臣氏 林森門市  </span> 稍候，我們將有專人前往接待入館。 </p>
 </div>
 </details>
 </div>
@@ -272,7 +310,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 </div>
 
 <div class="mt-4 pt-3 border-t border-dashed border-secondary/20 text-center">
-<button type="button" onclick="const p = document.getElementById('userPhoneInput') ? document.getElementById('userPhoneInput').value : ''; window.open('https://sibyldesign.github.io/wonderspa/pay_portal.html?phone=' + encodeURIComponent(p), '_blank')" class="inline-flex items-center gap-1.5 justify-center w-full py-2.5 bg-inputbg hover:bg-secondary/10 border border-accent/30 rounded-xl text-dark hover:text-accent text-[11px] font-bold tracking-widest transition-all duration-300 shadow-sm">
+<button type="button" onclick="const p = document.getElementById('userPhoneInput') ? document.getElementById('userPhoneInput').value : ''; window.open('https://2017sibyl.github.io/wonder-pay/pay_portal.html?phone=' + encodeURIComponent(p), '_blank')" class="inline-flex items-center gap-1.5 justify-center w-full py-2.5 bg-inputbg hover:bg-secondary/10 border border-accent/30 rounded-xl text-dark hover:text-accent text-[11px] font-bold tracking-widest transition-all duration-300 shadow-sm">
 <i class="fas fa-shield-alt text-accent text-[10px]"></i>  預約卡住轉圈圈？點我進入「獨立安全補付通道」
 </button>
 </div>
@@ -294,8 +332,6 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 </main>
 
 <script>
-// 🚀【核心設定：跨網域 GAS 母體連接天線】
-// 請將此處網址替換為您在 Main.gs 檔案中所看到佈署出來的「網頁應用程式網址 (exec)」
 const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwIGY8L774iM-U50uniLROYu_2I-T-osoV6xOYVk99CaQZt6kMRJmgnBhWhxvS35A5r/exec";
 
 let globalServices = []; let globalSlots = []; let globalBookings = []; let staffMap = {}; let globalWalletPlans = [];
@@ -305,13 +341,11 @@ let currentOriginalPrice = 0; let currentCouponDiscount = 0;
 
 window.addEventListener('DOMContentLoaded', () => { renderCalendar(); loadInitialData(); });
 
-// 跨網域封裝專用：GET 請求
 function fetchFromGAS(action, params = {}) {
   const queryParams = new URLSearchParams({ action, ...params }).toString();
   return fetch(`${GAS_WEB_APP_URL}?${queryParams}`).then(res => res.json());
 }
 
-// 跨網域封裝專用：POST 請求
 function postToGAS(action, data = {}) {
   return fetch(GAS_WEB_APP_URL, {
     method: "POST",
@@ -376,6 +410,57 @@ function submitTopUp() {
     });
 }
 
+// 🚀【純匯款對帳模組功能】：控制前台提示區塊切換
+function togglePaymentNotice() {
+  const selectedGateway = document.querySelector('input[name="paymentGateway"]:checked').value;
+  if(selectedGateway === 'REMIT') {
+    document.getElementById('ecpayNoticeList').classList.add('hidden');
+    document.getElementById('remitNoticeBlock').classList.remove('hidden');
+    document.getElementById('submitBtn').innerHTML = '確認提交預約 (轉帳匯款) <i class="fas fa-university ml-1"></i>';
+  } else {
+    document.getElementById('ecpayNoticeList').classList.remove('hidden');
+    document.getElementById('remitNoticeBlock').classList.add('hidden');
+    calculateFinalPrice(); // 恢復應付金額與文字判斷
+  }
+}
+
+// 🚀【純匯款對帳模組功能】：開啟回報五碼視窗
+window.openRemitReportModal = function(orderId, date, time, teacher) {
+  document.getElementById('remitTargetOrderId').innerText = orderId;
+  document.getElementById('remitTargetDetail').innerText = `${date} ${time} [${teacher}]`;
+  document.getElementById('remitFiveCode').value = '';
+  document.getElementById('remitReportModal').classList.remove('hidden');
+}
+
+window.closeRemitModal = function() {
+  document.getElementById('remitReportModal').classList.add('hidden');
+}
+
+// 🚀【純匯款對帳模組功能】：傳送五碼到雲端 GAS
+window.submitRemitFiveCode = function() {
+  const orderId = document.getElementById('remitTargetOrderId').innerText;
+  const fiveCode = document.getElementById('remitFiveCode').value.trim();
+  if(!/^\d{5}$/.test(fiveCode)) return Swal.fire('格式錯誤', '請輸入精確的5碼轉帳數字！', 'warning');
+  
+  const btn = document.getElementById('remitSubmitBtn');
+  btn.innerText = '正在回報...'; btn.disabled = true;
+  
+  postToGAS('reportRemittanceFiveCode', { orderId: orderId, account5: fiveCode })
+    .then(res => {
+      btn.innerText = '提交核對'; btn.disabled = false;
+      if(res.success) {
+        Swal.fire('回報成功', '已通知店家核帳，確認後將發送 LINE 通知！', 'success').then(()=>{
+          closeRemitModal();
+          fetchCustomerProfile(); // 刷新歷史卡片狀態
+        });
+      } else { Swal.fire('回報失敗', res.message, 'error'); }
+    })
+    .catch(() => {
+      btn.innerText = '提交核對'; btn.disabled = false;
+      Swal.fire('連線失敗', '伺服器通訊異常', 'error');
+    });
+}
+
 function switchMode(mode) {
   bookingMode = mode; document.getElementById('hiddenMaster').value = ''; document.getElementById('hiddenDate').value = ''; document.getElementById('hiddenTime').value = '';
   currentOriginalPrice = 0; currentCouponDiscount = 0; calculateFinalPrice(); resetCouponUI();
@@ -426,9 +511,13 @@ function fetchCustomerProfile() {
         }
         document.getElementById('historySection').classList.remove('hidden');
         document.getElementById('historyList').innerHTML = res.history.map(h => {
-          let statusColor = h.status === '已完成' ? 'text-green-600' : (h.status === '已取消' ? 'text-red-400' : (h.status === '未付款' ? 'text-orange-500' : 'text-accent'));
-          let repayBtn = h.status === '未付款' ? `<button type="button" onclick="repayOrder(event, '${h.orderId}')" class="mt-2 w-full bg-dark/90 text-white font-bold py-2 rounded-lg text-[11px] hover:bg-accent transition-all shadow-sm flex justify-center items-center gap-1.5 tracking-widest border border-dark"><i class="fas fa-credit-card"></i> 繼續完成付款</button>` : '';
-          return `<div class="bg-surface p-3 rounded-xl border border-secondary/20 text-xs mb-2 shadow-sm flex flex-col gap-1.5"><div class="flex justify-between font-bold text-dark border-b border-secondary/10 pb-1.5"><span>📅 ${h.date} ${h.time}</span><span class="${statusColor}">${h.status}</span></div><div class="flex justify-between text-dark/70 items-center mt-1"><span class="truncate pr-2">${h.service} <span class="bg-secondary/20 px-1 rounded">${h.teacher}</span></span><span class="font-bold text-dark whitespace-nowrap">💰 $${h.price}</span></div>${repayBtn}</div>`;
+          let statusColor = h.status === '已完成' ? 'text-green-600' : (h.status === '已取消' ? 'text-red-400' : (h.status.includes('未付款') || h.status.includes('待核對') ? 'text-orange-500' : 'text-accent'));
+          
+          // 🚀【純匯款對帳模組前台配合】：如果大類包含轉帳或未付款，亮出回報後五碼按鈕
+          let remitBtn = (h.status === '未付款' || h.status === '未付款(銀行轉帳)') ? `<button type="button" onclick="openRemitReportModal('${h.orderId}', '${h.date}', '${h.time}', '${h.teacher}')" class="mt-2 w-full bg-[#accent] bg-amber-600 text-white font-bold py-1.5 rounded-lg text-[11px] hover:bg-amber-700 transition-all flex justify-center items-center gap-1"><i class="fas fa-university"></i> 回報轉帳後五碼</button>` : '';
+          let repayBtn = (h.status === '未付款') ? `<button type="button" onclick="repayOrder(event, '${h.orderId}')" class="mt-1 w-full bg-dark/90 text-white font-bold py-1.5 rounded-lg text-[11px] hover:bg-accent transition-all shadow-sm flex justify-center items-center gap-1.5 tracking-widest border border-dark"><i class="fas fa-credit-card"></i> 繼續線上信用卡付款</button>` : '';
+          
+          return `<div class="bg-surface p-3 rounded-xl border border-secondary/20 text-xs mb-2 shadow-sm flex flex-col gap-1.5"><div class="flex justify-between font-bold text-dark border-b border-secondary/10 pb-1.5"><span>📅 ${h.date} ${h.time}</span><span class="${statusColor}">${h.status}</span></div><div class="flex justify-between text-dark/70 items-center mt-1"><span class="truncate pr-2">${h.service} <span class="bg-secondary/20 px-1 rounded">${h.teacher}</span></span><span class="font-bold text-dark whitespace-nowrap">💰 $${h.price}</span></div>${remitBtn}${repayBtn}</div>`;
         }).join('');
         Swal.fire({toast:true, position:'top', icon:'success', title: '已載入舊客資料', showConfirmButton:false, timer:1500});
       } else {
@@ -479,6 +568,15 @@ function calculateFinalPrice() {
 
   document.getElementById('priceDisplay').innerText = "NT$ " + finalPrice.toLocaleString();
   const submitBtn = document.getElementById('submitBtn');
+  
+  // 如果選銀行匯款，字眼保持轉帳
+  const payWay = document.querySelector('input[name="paymentGateway"]:checked').value;
+  if(payWay === 'REMIT') {
+     submitBtn.innerHTML = '確認提交預約 (轉帳匯款) <i class="fas fa-university ml-1"></i>';
+     submitBtn.classList.replace('bg-[#2e7d32]', 'bg-dark');
+     return;
+  }
+
   if (finalPrice === 0 && currentOriginalPrice > 0) { 
     submitBtn.innerHTML = '全額抵扣・確認預約 <i class="fas fa-check-circle ml-2"></i>'; submitBtn.classList.replace('bg-dark', 'bg-[#2e7d32]');
   } else { 
@@ -666,7 +764,6 @@ function renderAvailableMasters(time) {
   });
 }
 
-// 🚀【修正點：前往支付金流跳轉核心】
 function submitForm() {
   const btn = document.getElementById('submitBtn');
   if (btn.classList.contains('is-processing')) return;
@@ -674,39 +771,43 @@ function submitForm() {
   try {
     const isFemale = document.getElementById('genderConfirm').checked;
     if(!isFemale) { Swal.fire({ title: '溫馨提醒', text: '為維護館內隱私，本店僅接待女性顧客。請勾選確認聲明後再進行支付！', icon: 'warning', confirmButtonColor: '#C5A059' }); return; }
+    
     const useWallet = document.getElementById('useWalletBtn') ? document.getElementById('useWalletBtn').checked : false;
+    const payWay = document.querySelector('input[name="paymentGateway"]:checked').value;
+    
     const formData = {
       userPhone: document.querySelector('input[name="userPhone"]').value, userName: document.querySelector('input[name="userName"]').value,
       lineName: document.querySelector('input[name="lineName"]').value, master: document.getElementById('hiddenMaster').value || document.getElementById('masterSelect').value,
       bookDate: document.getElementById('hiddenDate').value, bookTime: document.getElementById('hiddenTime').value,
       mainService: document.getElementById('serviceSelect').value, originalPrice: currentOriginalPrice, couponCode: document.getElementById('couponCode').value.trim(),
-      useWallet: useWallet
+      useWallet: useWallet,
+      paymentMethod: payWay // 🚀【傳入新旗標】：告知後端是線上支付還是純匯款
     };
+    
     if(!formData.userPhone || !formData.userName || !formData.lineName || !formData.master || !formData.bookDate || !formData.bookTime || !formData.mainService) {
       Swal.fire('請先填寫資料', '請確認已完整選擇師傅、時段與必填欄位！', 'warning'); return;
     }
 
     btn.classList.add('is-processing');
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 訂單建立與金流連線中...';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 預約處理中...';
     btn.disabled = true;
     btn.classList.add('opacity-50', 'cursor-not-allowed');
 
-    // 改採跨網域 POST 機制提交下單
     postToGAS('processBooking', formData)
       .then(response => {
         if(response.success) {
-          if (response.walletFullyPaid) {
-            // 儲值金全額扣抵時，直接重導向至成功頁
+          if (response.walletFullyPaid || response.isRemittance) {
+            // 儲值金全額扣抵 或 選擇銀行轉帳匯款時，一律直接導向成功頁
             window.location.href = response.scriptUrl + "?page=success";
           } else {
-            // 綠界科技付款模組跳轉機制建立
+            // 綠界科技付款模組跳轉機制
             const div = document.createElement('div');
             div.style.display = 'none'; 
             div.innerHTML = response.html; 
             document.body.appendChild(div);
             const ecpayForm = document.getElementById('ecpayForm');
             if(ecpayForm) {
-              ecpayForm.submit(); // 🚀 觸發表單直接送出並跳轉至綠界官方收銀台
+              ecpayForm.submit();
             } else {
               alert('找不到金流表單，但訂單可能已建立，請聯繫客服。');
               resetSubmitBtn();
@@ -729,7 +830,8 @@ function submitForm() {
 
 function resetSubmitBtn() {
   const btn = document.getElementById('submitBtn');
-  btn.innerHTML = '前往支付'; btn.disabled = false; btn.classList.remove('is-processing', 'opacity-50', 'cursor-not-allowed');
+  calculateFinalPrice();
+  btn.disabled = false; btn.classList.remove('is-processing', 'opacity-50', 'cursor-not-allowed');
 }
 
 window.repayOrder = function(event, orderId) {
