@@ -150,7 +150,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 
 <div class="bg-surface p-6 rounded-[1.5rem] shadow-soft space-y-5 w-full relative border border-secondary/10">
 <div id="initOverlay" class="absolute inset-0 bg-surface/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center rounded-[1.5rem]">
-<div class="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin mb-2"></div><span class="text-xs text-dark/70 tracking-widest font-bold">  系統連線中...  </span>
+<div class="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin mb-2"></div><span class="text-xs text-dark/70 tracking-widest font-bold">  系統連線中...   </span>
 </div>
 <h2 class="text-xs font-bold tracking-widest border-b border-secondary/10 pb-3 flex items-center justify-between">
 <span><i class="fas fa-calendar-alt mr-2 text-accent"></i>  預約安排 SCHEDULE  </span>
@@ -294,7 +294,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 
 <div class="flex justify-between items-end w-full">
 <div class="flex flex-col">
-<span class="text-[10px] text-dark/50 font-bold uppercase tracking-widest mb-1">  應付金額  </span>
+<span class="text-[10px] text-dark/50 font-bold uppercase tracking-widest mb-1">  應付金額   </span>
 <div class="flex items-baseline gap-2">
 <span id="priceDisplay" class="text-[22px] font-bold text-dark tracking-tight">NT$ 0</span>
 <div id="discountDetail" class="hidden flex-col ml-1">
@@ -355,12 +355,13 @@ function postToGAS(action, data = {}) {
   }).then(res => res.json());
 }
 
-function loadInitialData() {
-  fetchFromGAS('getInitialFrontData')
-    .then(response => {
-      document.getElementById('initOverlay').style.display = 'none';
-      if(response.success) {
-        window.systemMaxRooms = response.maxRooms || 2;
+function loadInitialData() { 
+  fetchFromGAS('getInitialFrontData') 
+    .then(response => { 
+      document.getElementById('initOverlay').style.display = 'none'; 
+      if(response.success) { 
+        window.systemMaxRooms = response.maxRooms || 2; 
+        window.leadTimeLimitMinutes = response.leadTimeLimit || 0; 
         globalWalletPlans = response.plans || [];
         if(response.announcement && response.announcement.trim() !== '') {
           document.getElementById('announcementText').innerText = response.announcement;
@@ -589,7 +590,7 @@ function calculateFinalPrice() {
     document.getElementById('discountDetail').classList.add('hidden'); 
     document.getElementById('discountDetail').classList.remove('flex'); 
   }
-} // 🎯 修正核心死結：補上原本遺漏的大括號，徹底打通網頁執行天線
+}
 
 function applyCoupon() {
   const code = document.getElementById('couponCode').value.trim();
@@ -634,6 +635,7 @@ function hasAvailableTime(dateStr, serviceName) {
   const dayBookings = globalBookings.filter(b => b.date === dateStr);
   const bookedIntervals = dayBookings.map(b => ({ start: timeToMinutes(b.start), end: timeToMinutes(b.start) + getServiceTotalMinutes(b.service), teacher: b.teacher }));
   const MAX_ROOMS = window.systemMaxRooms || 2;
+  
   if (bookingMode === 'master') {
     const master = document.getElementById('masterSelect').value; if (!master) return false;
     const mySlots = globalSlots.filter(s => s.date === dateStr && s.master === master).map(s => s.time);
@@ -698,12 +700,38 @@ function selectDate(element, dateStr) {
   const dayBookings = globalBookings.filter(b => b.date === dateStr);
   const bookedIntervals = dayBookings.map(b => ({ start: timeToMinutes(b.start), end: timeToMinutes(b.start) + getServiceTotalMinutes(b.service), teacher: b.teacher }));
   const MAX_ROOMS = window.systemMaxRooms || 2;
+  
+  const now = new Date();
+  const nowTimestamp = now.getTime();
+  const todayFormatted = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  
+  let leadTimeLimitMinutes = 0; 
+  try {
+    // 串接後端拋出的設定參數
+  } catch(e){}
+
   let validSlots = []; timeMasterMap = {};
 
   if (bookingMode === 'master') {
     const master = document.getElementById('masterSelect').value;
     const mySlots = globalSlots.filter(s => s.date === dateStr && s.master === master).map(s => s.time);
     validSlots = mySlots.filter(slotTime => {
+      
+      // 🛑【選師傅模式：精準阻擋 60/90 分鐘臨近預約防線】
+      if (dateStr === todayFormatted) {
+        let cleanDateStr = dateStr.replace(/-/g, '/');
+        let slotDateTime = new Date(cleanDateStr + ' ' + slotTime);
+        if (!isNaN(slotDateTime.getTime())) {
+          // 1. 過去的時間按鈕直接過濾
+          if (slotDateTime.getTime() <= nowTimestamp) return false;
+          
+          // 2. 超強效防線：距離目前時間不足 60 分鐘，前台直接砍掉！
+          let currentLimit = window.leadTimeLimitMinutes || 60; 
+          let timeDiffMinutes = (slotDateTime.getTime() - nowTimestamp) / (1000 * 60);
+          if (timeDiffMinutes < currentLimit) return false;
+        }
+      }
+
       let reqStart = timeToMinutes(slotTime); let reqEnd = reqStart + requiredDuration;
       for (let min = reqStart; min < reqEnd; min += 10) {
         let overlapCount = 0; let masterBusy = false;
@@ -718,6 +746,22 @@ function selectDate(element, dateStr) {
     let allSlotsToday = globalSlots.filter(s => s.date === dateStr);
     allSlotsToday.forEach(slot => {
       if(!validMastersForService.includes(slot.master) && !validMastersForService.includes('共用')) return;
+      
+      // 🛑【看空檔模式：精準阻擋 60/90 分鐘臨近預約防線】
+      if (dateStr === todayFormatted) {
+        let cleanDateStr = dateStr.replace(/-/g, '/');
+        let slotDateTime = new Date(cleanDateStr + ' ' + slot.time);
+        if (!isNaN(slotDateTime.getTime())) {
+          // 1. 過去的時間按鈕直接過濾
+          if (slotDateTime.getTime() <= nowTimestamp) return;
+          
+          // 2. 距離目前時間不足 60 分鐘，直接蒸發！
+          let currentLimit = window.leadTimeLimitMinutes || 60; 
+          let timeDiffMinutes = (slotDateTime.getTime() - nowTimestamp) / (1000 * 60);
+          if (timeDiffMinutes < currentLimit) return;
+        }
+      }
+
       let reqStart = timeToMinutes(slot.time); let reqEnd = reqStart + requiredDuration; let isValid = true;
       for (let min = reqStart; min < reqEnd; min += 10) {
         let overlapCount = 0; let masterBusy = false;
@@ -728,6 +772,7 @@ function selectDate(element, dateStr) {
     });
     validSlots = Object.keys(timeMasterMap);
   }
+
   if(validSlots.length > 0) renderAvailableSlots(validSlots);
   else { document.getElementById('timeSlotsGrid').innerHTML = ''; document.getElementById('noTimeText').classList.remove('hidden'); }
 }
@@ -882,4 +927,3 @@ window.repayOrder = function(event, orderId) {
 </script>
 </body>
 </html>
-
