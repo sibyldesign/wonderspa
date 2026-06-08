@@ -150,7 +150,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 
 <div class="bg-surface p-6 rounded-[1.5rem] shadow-soft space-y-5 w-full relative border border-secondary/10">
 <div id="initOverlay" class="absolute inset-0 bg-surface/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center rounded-[1.5rem]">
-<div class="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin mb-2"></div><span class="text-xs text-dark/70 tracking-widest font-bold">  系統連線中...  </span>
+<div class="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin mb-2"></div><span class="text-xs text-dark/70 tracking-widest font-bold">  系統連線中...   </span>
 </div>
 <h2 class="text-xs font-bold tracking-widest border-b border-secondary/10 pb-3 flex items-center justify-between">
 <span><i class="fas fa-calendar-alt mr-2 text-accent"></i>  預約安排 SCHEDULE  </span>
@@ -294,7 +294,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 
 <div class="flex justify-between items-end w-full">
 <div class="flex flex-col">
-<span class="text-[10px] text-dark/50 font-bold uppercase tracking-widest mb-1">  應付金額  </span>
+<span class="text-[10px] text-dark/50 font-bold uppercase tracking-widest mb-1">  應付金額   </span>
 <div class="flex items-baseline gap-2">
 <span id="priceDisplay" class="text-[22px] font-bold text-dark tracking-tight">NT$ 0</span>
 <div id="discountDetail" class="hidden flex-col ml-1">
@@ -355,7 +355,14 @@ function postToGAS(action, data = {}) {
   }).then(res => res.json());
 }
 
-function loadInitialData() { fetchFromGAS('getInitialFrontData') .then(response => { document.getElementById('initOverlay').style.display = 'none'; if(response.success) { window.systemMaxRooms = response.maxRooms || 2; window.leadTimeLimitMinutes = response.leadTimeLimit || 0; // ➕ 補上這行，前台大腦正式與後台對齊同步！ globalWalletPlans = response.plans || [];
+function loadInitialData() { 
+  fetchFromGAS('getInitialFrontData') 
+    .then(response => { 
+      document.getElementById('initOverlay').style.display = 'none'; 
+      if(response.success) { 
+        window.systemMaxRooms = response.maxRooms || 2; 
+        window.leadTimeLimitMinutes = response.leadTimeLimit || 0; 
+        globalWalletPlans = response.plans || [];
         if(response.announcement && response.announcement.trim() !== '') {
           document.getElementById('announcementText').innerText = response.announcement;
           document.getElementById('announcementContainer').classList.remove('hidden');
@@ -583,7 +590,7 @@ function calculateFinalPrice() {
     document.getElementById('discountDetail').classList.add('hidden'); 
     document.getElementById('discountDetail').classList.remove('flex'); 
   }
-} // 🎯 修正核心死結：補上原本遺漏的大括號，徹底打通網頁執行天線
+}
 
 function applyCoupon() {
   const code = document.getElementById('couponCode').value.trim();
@@ -628,6 +635,7 @@ function hasAvailableTime(dateStr, serviceName) {
   const dayBookings = globalBookings.filter(b => b.date === dateStr);
   const bookedIntervals = dayBookings.map(b => ({ start: timeToMinutes(b.start), end: timeToMinutes(b.start) + getServiceTotalMinutes(b.service), teacher: b.teacher }));
   const MAX_ROOMS = window.systemMaxRooms || 2;
+  
   if (bookingMode === 'master') {
     const master = document.getElementById('masterSelect').value; if (!master) return false;
     const mySlots = globalSlots.filter(s => s.date === dateStr && s.master === master).map(s => s.time);
@@ -693,16 +701,13 @@ function selectDate(element, dateStr) {
   const bookedIntervals = dayBookings.map(b => ({ start: timeToMinutes(b.start), end: timeToMinutes(b.start) + getServiceTotalMinutes(b.service), teacher: b.teacher }));
   const MAX_ROOMS = window.systemMaxRooms || 2;
   
-  // ⏰【前台精密計時器】獲取當前台灣時間、日期，以及設定的臨近禁約分鐘數
   const now = new Date();
   const nowTimestamp = now.getTime();
   const todayFormatted = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
   
-  // 智慧撈取：前台讀取後端回傳的 slots 時，若有攜帶 leadTimeLimit 或者是預設
   let leadTimeLimitMinutes = 0; 
   try {
-    // 從後台同步過來的設定（若有的話），這裡預設防禦值亦可直接在網頁硬性雙重防護（例如寫死 60 或 90）
-    // 或者我們直接抓取，這裡為了百分之百安全，我們在前台也直接連動
+    // 串接後端拋出的設定參數
   } catch(e){}
 
   let validSlots = []; timeMasterMap = {};
@@ -712,7 +717,20 @@ function selectDate(element, dateStr) {
     const mySlots = globalSlots.filter(s => s.date === dateStr && s.master === master).map(s => s.time);
     validSlots = mySlots.filter(slotTime => {
       
-      // 🛑【前台 HTML 內部 selectDate 更改項目】 if (dateStr === todayFormatted) { let cleanDateStr = dateStr.replace(/-/g, '/'); let slotDateTime = new Date(cleanDateStr + ' ' + slotTime); if (!isNaN(slotDateTime.getTime())) { // 1. 過去的時間直接過濾 if (slotDateTime.getTime() <= nowTimestamp) return false; // 2. 超強效防線：若後台快取異常，前台硬焊強制防禦 60 分鐘 (如需 90 分鐘請將 60 改為 90) let currentLimit = window.leadTimeLimitMinutes || 60; let timeDiffMinutes = (slotDateTime.getTime() - nowTimestamp) / (1000 * 60); if (timeDiffMinutes < currentLimit) return false; // 2. 超強效防線：距離目前時間不足 60 或 90 分鐘，前台直接蒸發！ let currentLimit = window.leadTimeLimitMinutes || 60; // 如需硬性 90 分鐘請在此將 60 改為 90 let timeDiffMinutes = (slotDateTime.getTime() - nowTimestamp) / (1000 * 60); if (timeDiffMinutes < currentLimit) return; } }
+      // 🛑【選師傅模式：精準阻擋 60/90 分鐘臨近預約防線】
+      if (dateStr === todayFormatted) {
+        let cleanDateStr = dateStr.replace(/-/g, '/');
+        let slotDateTime = new Date(cleanDateStr + ' ' + slotTime);
+        if (!isNaN(slotDateTime.getTime())) {
+          // 1. 過去的時間按鈕直接過濾
+          if (slotDateTime.getTime() <= nowTimestamp) return false;
+          
+          // 2. 超強效防線：距離目前時間不足 60 分鐘，前台直接砍掉！
+          let currentLimit = window.leadTimeLimitMinutes || 60; 
+          let timeDiffMinutes = (slotDateTime.getTime() - nowTimestamp) / (1000 * 60);
+          if (timeDiffMinutes < currentLimit) return false;
+        }
+      }
 
       let reqStart = timeToMinutes(slotTime); let reqEnd = reqStart + requiredDuration;
       for (let min = reqStart; min < reqEnd; min += 10) {
@@ -729,19 +747,18 @@ function selectDate(element, dateStr) {
     allSlotsToday.forEach(slot => {
       if(!validMastersForService.includes(slot.master) && !validMastersForService.includes('共用')) return;
       
-      // 🎯【局部更改：完美補齊看空檔模式下的 60/90 分鐘臨近禁約防線】
+      // 🛑【看空檔模式：精準阻擋 60/90 分鐘臨近預約防線】
       if (dateStr === todayFormatted) {
         let cleanDateStr = dateStr.replace(/-/g, '/');
         let slotDateTime = new Date(cleanDateStr + ' ' + slot.time);
         if (!isNaN(slotDateTime.getTime())) {
-          // 🛑 防禦一：過去的時間按鈕直接蒸發
+          // 1. 過去的時間按鈕直接過濾
           if (slotDateTime.getTime() <= nowTimestamp) return;
           
-          // 🛑 防禦二：小於試算表規定的臨近預約緩衝時間（60/90分鐘），也直接蒸發！
+          // 2. 距離目前時間不足 60 分鐘，直接蒸發！
+          let currentLimit = window.leadTimeLimitMinutes || 60; 
           let timeDiffMinutes = (slotDateTime.getTime() - nowTimestamp) / (1000 * 60);
-          if (timeDiffMinutes < (window.leadTimeLimitMinutes || 0)) {
-            return; 
-          }
+          if (timeDiffMinutes < currentLimit) return;
         }
       }
 
@@ -910,5 +927,3 @@ window.repayOrder = function(event, orderId) {
 </script>
 </body>
 </html>
-
-
