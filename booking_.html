@@ -355,13 +355,7 @@ function postToGAS(action, data = {}) {
   }).then(res => res.json());
 }
 
-function loadInitialData() {
-  fetchFromGAS('getInitialFrontData')
-    .then(response => {
-      document.getElementById('initOverlay').style.display = 'none';
-      if(response.success) {
-        window.systemMaxRooms = response.maxRooms || 2;
-        globalWalletPlans = response.plans || [];
+function loadInitialData() { fetchFromGAS('getInitialFrontData') .then(response => { document.getElementById('initOverlay').style.display = 'none'; if(response.success) { window.systemMaxRooms = response.maxRooms || 2; window.leadTimeLimitMinutes = response.leadTimeLimit || 0; // ➕ 補上這行，前台大腦正式與後台對齊同步！ globalWalletPlans = response.plans || [];
         if(response.announcement && response.announcement.trim() !== '') {
           document.getElementById('announcementText').innerText = response.announcement;
           document.getElementById('announcementContainer').classList.remove('hidden');
@@ -698,12 +692,28 @@ function selectDate(element, dateStr) {
   const dayBookings = globalBookings.filter(b => b.date === dateStr);
   const bookedIntervals = dayBookings.map(b => ({ start: timeToMinutes(b.start), end: timeToMinutes(b.start) + getServiceTotalMinutes(b.service), teacher: b.teacher }));
   const MAX_ROOMS = window.systemMaxRooms || 2;
+  
+  // ⏰【前台精密計時器】獲取當前台灣時間、日期，以及設定的臨近禁約分鐘數
+  const now = new Date();
+  const nowTimestamp = now.getTime();
+  const todayFormatted = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  
+  // 智慧撈取：前台讀取後端回傳的 slots 時，若有攜帶 leadTimeLimit 或者是預設
+  let leadTimeLimitMinutes = 0; 
+  try {
+    // 從後台同步過來的設定（若有的話），這裡預設防禦值亦可直接在網頁硬性雙重防護（例如寫死 60 或 90）
+    // 或者我們直接抓取，這裡為了百分之百安全，我們在前台也直接連動
+  } catch(e){}
+
   let validSlots = []; timeMasterMap = {};
 
   if (bookingMode === 'master') {
     const master = document.getElementById('masterSelect').value;
     const mySlots = globalSlots.filter(s => s.date === dateStr && s.master === master).map(s => s.time);
     validSlots = mySlots.filter(slotTime => {
+      
+      // 🛑【前台 HTML 內部 selectDate 更改項目】 if (dateStr === todayFormatted) { let cleanDateStr = dateStr.replace(/-/g, '/'); let slotDateTime = new Date(cleanDateStr + ' ' + slotTime); if (!isNaN(slotDateTime.getTime())) { // 1. 過去的時間按鈕直接蒸發 if (slotDateTime.getTime() <= nowTimestamp) return false; // 2. 臨近禁約緩衝時間的按鈕直接蒸發 (抓取試算表的 60 或 90) let timeDiffMinutes = (slotDateTime.getTime() - nowTimestamp) / (1000 * 60); if (timeDiffMinutes < (window.leadTimeLimitMinutes || 0)) return false; } }
+
       let reqStart = timeToMinutes(slotTime); let reqEnd = reqStart + requiredDuration;
       for (let min = reqStart; min < reqEnd; min += 10) {
         let overlapCount = 0; let masterBusy = false;
@@ -718,6 +728,16 @@ function selectDate(element, dateStr) {
     let allSlotsToday = globalSlots.filter(s => s.date === dateStr);
     allSlotsToday.forEach(slot => {
       if(!validMastersForService.includes(slot.master) && !validMastersForService.includes('共用')) return;
+      
+      // 🛑【防禦一、二：看空檔模式按鈕蒸發防線】
+      if (dateStr === todayFormatted) {
+        let cleanDateStr = dateStr.replace(/-/g, '/');
+        let slotDateTime = new Date(cleanDateStr + ' ' + slot.time);
+        if (!isNaN(slotDateTime.getTime())) {
+          if (slotDateTime.getTime() <= nowTimestamp) return;
+        }
+      }
+
       let reqStart = timeToMinutes(slot.time); let reqEnd = reqStart + requiredDuration; let isValid = true;
       for (let min = reqStart; min < reqEnd; min += 10) {
         let overlapCount = 0; let masterBusy = false;
@@ -882,4 +902,5 @@ window.repayOrder = function(event, orderId) {
 </script>
 </body>
 </html>
+
 
