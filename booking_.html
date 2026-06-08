@@ -729,12 +729,19 @@ function selectDate(element, dateStr) {
     allSlotsToday.forEach(slot => {
       if(!validMastersForService.includes(slot.master) && !validMastersForService.includes('共用')) return;
       
-      // 🛑【防禦一、二：看空檔模式按鈕蒸發防線】
+      // 🎯【局部更改：完美補齊看空檔模式下的 60/90 分鐘臨近禁約防線】
       if (dateStr === todayFormatted) {
         let cleanDateStr = dateStr.replace(/-/g, '/');
         let slotDateTime = new Date(cleanDateStr + ' ' + slot.time);
         if (!isNaN(slotDateTime.getTime())) {
+          // 🛑 防禦一：過去的時間按鈕直接蒸發
           if (slotDateTime.getTime() <= nowTimestamp) return;
+          
+          // 🛑 防禦二：小於試算表規定的臨近預約緩衝時間（60/90分鐘），也直接蒸發！
+          let timeDiffMinutes = (slotDateTime.getTime() - nowTimestamp) / (1000 * 60);
+          if (timeDiffMinutes < (window.leadTimeLimitMinutes || 0)) {
+            return; 
+          }
         }
       }
 
@@ -748,6 +755,7 @@ function selectDate(element, dateStr) {
     });
     validSlots = Object.keys(timeMasterMap);
   }
+
   if(validSlots.length > 0) renderAvailableSlots(validSlots);
   else { document.getElementById('timeSlotsGrid').innerHTML = ''; document.getElementById('noTimeText').classList.remove('hidden'); }
 }
