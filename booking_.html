@@ -570,26 +570,34 @@ function calculateFinalPrice() {
   const submitBtn = document.getElementById('submitBtn');
   
   // 如果選銀行匯款，字眼保持轉帳
-  const payWay = document.querySelector('input[name="paymentGateway"]:checked').value;
-  if(payWay === 'REMIT') {
-     submitBtn.innerHTML = '確認提交預約 (轉帳匯款) <i class="fas fa-university ml-1"></i>';
-     submitBtn.classList.replace('bg-[#2e7d32]', 'bg-dark');
-     return;
-  }
+const payWay = document.querySelector('input[name="paymentGateway"]:checked').value;
+if(payWay === 'REMIT') {
+   submitBtn.innerHTML = '確認提交預約 (轉帳匯款) <i class="fas fa-university ml-1"></i>';
+   submitBtn.classList.replace('bg-[#2e7d32]', 'bg-dark');
+   // 確保點擊事件是原本的送出邏輯
+   return;
+}
 
-  if (finalPrice === 0 && currentOriginalPrice > 0) { 
-    submitBtn.innerHTML = '全額抵扣・確認預約 <i class="fas fa-check-circle ml-2"></i>'; submitBtn.classList.replace('bg-dark', 'bg-[#2e7d32]');
-  } else { 
-    submitBtn.innerHTML = '前往支付 <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>';
-    submitBtn.classList.replace('bg-[#2e7d32]', 'bg-dark'); 
-  }
+if (finalPrice === 0 && currentOriginalPrice > 0) { 
+  submitBtn.innerHTML = '全額抵扣・確認預約 <i class="fas fa-check-circle ml-2"></i>'; 
+  submitBtn.classList.replace('bg-dark', 'bg-[#2e7d32]');
+} else { 
+  // 正常的「前往支付」按鈕，此時不需要任何 spinner 轉圈圈元素
+  submitBtn.innerHTML = '前往支付 <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>';
+  submitBtn.classList.replace('bg-[#2e7d32]', 'bg-dark'); 
+}
 
-  if (currentCouponDiscount > 0 || deductAmount > 0) {
-    document.getElementById('discountDetail').classList.remove('hidden'); document.getElementById('discountDetail').classList.add('flex');
-    document.getElementById('originalPriceText').innerText = "原價 $" + currentOriginalPrice.toLocaleString();
-    let discountStr = []; if(currentCouponDiscount > 0) discountStr.push(`券折  $${currentCouponDiscount.toLocaleString()}`); if(deductAmount > 0) discountStr.push(`儲值抵  $${deductAmount.toLocaleString()}`);
-    document.getElementById('discountText').innerText = discountStr.join(' | ');
-  } else { document.getElementById('discountDetail').classList.add('hidden'); document.getElementById('discountDetail').classList.remove('flex'); }
+if (currentCouponDiscount > 0 || deductAmount > 0) {
+  document.getElementById('discountDetail').classList.remove('hidden'); 
+  document.getElementById('discountDetail').classList.add('flex');
+  document.getElementById('originalPriceText').innerText = "原價 $" + currentOriginalPrice.toLocaleString();
+  let discountStr = []; 
+  if(currentCouponDiscount > 0) discountStr.push(`券折  $${currentCouponDiscount.toLocaleString()}`); 
+  if(deductAmount > 0) discountStr.push(`儲值抵  $${deductAmount.toLocaleString()}`);
+  document.getElementById('discountText').innerText = discountStr.join(' | ');
+} else { 
+  document.getElementById('discountDetail').classList.add('hidden'); 
+  document.getElementById('discountDetail').classList.remove('flex'); 
 }
 
 function applyCoupon() {
@@ -802,17 +810,53 @@ function submitForm() {
           } else {
             // 綠界科技付款模組跳轉機制
             const div = document.createElement('div');
+            div.id = 'ecpayFormContainer'; // ➕ 加上 ID 方便後續抓取
             div.style.display = 'none'; 
             div.innerHTML = response.html; 
             document.body.appendChild(div);
+            
             const ecpayForm = document.getElementById('ecpayForm');
             if(ecpayForm) {
-              ecpayForm.submit();
+              // 1. 🚀 改用 window.open 嘗試開啟新分頁（綠界原本表單也是 target="_blank"）
+              const paymentWindow = window.open('', '_blank');
+              if (paymentWindow) {
+                ecpayForm.target = '_blank';
+                ecpayForm.submit();
+              }
+              
+              // 2. 🎯【核心進化】：解鎖按鈕，立刻把原本的「預約處理中...」轉圈按鈕變成紅色亮眼自救鈕！
+              btn.disabled = false;
+              btn.classList.remove('is-processing', 'opacity-50', 'cursor-not-allowed', 'bg-dark');
+              // 換成搶眼的紅色、大字體、並加上吸引注意的閃爍/呼吸動畫效果
+              btn.className = "bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-6 rounded-xl shadow-xl transition-all tracking-wider text-sm flex items-center justify-center animate-pulse cursor-pointer w-full sm:w-auto";
+              btn.innerHTML = '⚠️ 沒跳出綠界？請點此前往支付 <i class="fas fa-external-link-alt ml-2"></i>';
+              
+              // 3. 🎯 綁定二次救回點擊：如果客人剛剛沒跳出視窗，點這個新按鈕，直接在原分頁強制開啟綠界！
+              btn.onclick = function(e) {
+                e.preventDefault();
+                const retryForm = document.getElementById('ecpayForm');
+                if (retryForm) {
+                  retryForm.target = '_self'; // 這裡強制在「原分頁」跳轉，100% 免疫彈出視窗攔截！
+                  retryForm.submit();
+                }
+              };
+
+              // 4. 貼心彈窗提示 (SweetAlert2)
+              Swal.fire({
+                title: '🎉 預約時段已鎖定！',
+                html: `我們正嘗試開啟綠界安全支付分頁...<br><br>
+                       <span class="text-red-600 font-bold text-xs leading-relaxed">⚠️ 若您的手機「卡住轉圈」或「沒有彈出刷卡畫面」，請立刻點擊下方按鈕：<br><b>【⚠️ 沒跳出綠界？請點此前往支付】</b> 完成付款喔！</span>`,
+                icon: 'success',
+                confirmButtonColor: '#7E6B5A',
+                confirmButtonText: '我知道了'
+              });
+
             } else {
               alert('找不到金流表單，但訂單可能已建立，請聯繫客服。');
               resetSubmitBtn();
             }
           }
+
         } else {
           alert('處理訂單失敗：' + response.message);
           resetSubmitBtn();
@@ -830,8 +874,10 @@ function submitForm() {
 
 function resetSubmitBtn() {
   const btn = document.getElementById('submitBtn');
+  btn.onclick = function() { submitForm(); }; // 恢復原本提交表單的點擊功能
   calculateFinalPrice();
-  btn.disabled = false; btn.classList.remove('is-processing', 'opacity-50', 'cursor-not-allowed');
+  btn.disabled = false; 
+  btn.classList.remove('is-processing', 'opacity-50', 'cursor-not-allowed');
 }
 
 window.repayOrder = function(event, orderId) {
@@ -852,3 +898,5 @@ window.repayOrder = function(event, orderId) {
 </script>
 </body>
 </html>
+
+
