@@ -712,7 +712,7 @@ function selectDate(element, dateStr) {
     const mySlots = globalSlots.filter(s => s.date === dateStr && s.master === master).map(s => s.time);
     validSlots = mySlots.filter(slotTime => {
       
-      // 🛑【前台 HTML 內部 selectDate 更改項目】 if (dateStr === todayFormatted) { let cleanDateStr = dateStr.replace(/-/g, '/'); let slotDateTime = new Date(cleanDateStr + ' ' + slotTime); if (!isNaN(slotDateTime.getTime())) { // 1. 過去的時間按鈕直接蒸發 if (slotDateTime.getTime() <= nowTimestamp) return false; // 2. 臨近禁約緩衝時間的按鈕直接蒸發 (抓取試算表的 60 或 90) let timeDiffMinutes = (slotDateTime.getTime() - nowTimestamp) / (1000 * 60); if (timeDiffMinutes < (window.leadTimeLimitMinutes || 0)) return false; } }
+      // 🛑【前台 HTML 內部 selectDate 更改項目】 if (dateStr === todayFormatted) { let cleanDateStr = dateStr.replace(/-/g, '/'); let slotDateTime = new Date(cleanDateStr + ' ' + slotTime); if (!isNaN(slotDateTime.getTime())) { // 1. 過去的時間直接過濾 if (slotDateTime.getTime() <= nowTimestamp) return false; // 2. 超強效防線：若後台快取異常，前台硬焊強制防禦 60 分鐘 (如需 90 分鐘請將 60 改為 90) let currentLimit = window.leadTimeLimitMinutes || 60; let timeDiffMinutes = (slotDateTime.getTime() - nowTimestamp) / (1000 * 60); if (timeDiffMinutes < currentLimit) return false; // 2. 超強效防線：距離目前時間不足 60 或 90 分鐘，前台直接蒸發！ let currentLimit = window.leadTimeLimitMinutes || 60; // 如需硬性 90 分鐘請在此將 60 改為 90 let timeDiffMinutes = (slotDateTime.getTime() - nowTimestamp) / (1000 * 60); if (timeDiffMinutes < currentLimit) return; } }
 
       let reqStart = timeToMinutes(slotTime); let reqEnd = reqStart + requiredDuration;
       for (let min = reqStart; min < reqEnd; min += 10) {
