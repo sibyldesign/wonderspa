@@ -313,7 +313,6 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 <button type="button" onclick="const p = document.getElementById('userPhoneInput') ? document.getElementById('userPhoneInput').value : ''; window.open('https://sibyldesign.github.io/wonderspa/pay_portal.html?phone=' + encodeURIComponent(p), '_blank')" class="inline-flex items-center gap-1.5 justify-center w-full py-2.5 bg-inputbg hover:bg-secondary/10 border border-accent/30 rounded-xl text-dark hover:text-accent text-[11px] font-bold tracking-widest transition-all duration-300 shadow-sm">
 <i class="fas fa-shield-alt text-accent text-[10px]"></i>  預約卡住轉圈圈？點我進入「獨立安全補付通道」
 </button>
-
 </div>
 
 <div class="mt-4 p-3 bg-red-50/80 border border-red-100/60 rounded-xl text-left w-full box-border">
@@ -411,7 +410,6 @@ function submitTopUp() {
     });
 }
 
-// 🚀【純匯款對帳模組功能】：控制前台提示區塊切換
 function togglePaymentNotice() {
   const selectedGateway = document.querySelector('input[name="paymentGateway"]:checked').value;
   if(selectedGateway === 'REMIT') {
@@ -421,11 +419,10 @@ function togglePaymentNotice() {
   } else {
     document.getElementById('ecpayNoticeList').classList.remove('hidden');
     document.getElementById('remitNoticeBlock').classList.add('hidden');
-    calculateFinalPrice(); // 恢復應付金額與文字判斷
+    calculateFinalPrice();
   }
 }
 
-// 🚀【純匯款對帳模組功能】：開啟回報五碼視窗
 window.openRemitReportModal = function(orderId, date, time, teacher) {
   document.getElementById('remitTargetOrderId').innerText = orderId;
   document.getElementById('remitTargetDetail').innerText = `${date} ${time} [${teacher}]`;
@@ -437,7 +434,6 @@ window.closeRemitModal = function() {
   document.getElementById('remitReportModal').classList.add('hidden');
 }
 
-// 🚀【純匯款對帳模組功能】：傳送五碼到雲端 GAS
 window.submitRemitFiveCode = function() {
   const orderId = document.getElementById('remitTargetOrderId').innerText;
   const fiveCode = document.getElementById('remitFiveCode').value.trim();
@@ -452,7 +448,7 @@ window.submitRemitFiveCode = function() {
       if(res.success) {
         Swal.fire('回報成功', '已通知店家核帳，確認後將發送 LINE 通知！', 'success').then(()=>{
           closeRemitModal();
-          fetchCustomerProfile(); // 刷新歷史卡片狀態
+          fetchCustomerProfile();
         });
       } else { Swal.fire('回報失敗', res.message, 'error'); }
     })
@@ -513,11 +509,8 @@ function fetchCustomerProfile() {
         document.getElementById('historySection').classList.remove('hidden');
         document.getElementById('historyList').innerHTML = res.history.map(h => {
           let statusColor = h.status === '已完成' ? 'text-green-600' : (h.status === '已取消' ? 'text-red-400' : (h.status.includes('未付款') || h.status.includes('待核對') ? 'text-orange-500' : 'text-accent'));
-          
-          // 🚀【純匯款對帳模組前台配合】：如果大類包含轉帳或未付款，亮出回報後五碼按鈕
           let remitBtn = (h.status === '未付款' || h.status === '未付款(銀行轉帳)') ? `<button type="button" onclick="openRemitReportModal('${h.orderId}', '${h.date}', '${h.time}', '${h.teacher}')" class="mt-2 w-full bg-[#accent] bg-amber-600 text-white font-bold py-1.5 rounded-lg text-[11px] hover:bg-amber-700 transition-all flex justify-center items-center gap-1"><i class="fas fa-university"></i> 回報轉帳後五碼</button>` : '';
           let repayBtn = (h.status === '未付款') ? `<button type="button" onclick="repayOrder(event, '${h.orderId}')" class="mt-1 w-full bg-dark/90 text-white font-bold py-1.5 rounded-lg text-[11px] hover:bg-accent transition-all shadow-sm flex justify-center items-center gap-1.5 tracking-widest border border-dark"><i class="fas fa-credit-card"></i> 繼續線上信用卡付款</button>` : '';
-          
           return `<div class="bg-surface p-3 rounded-xl border border-secondary/20 text-xs mb-2 shadow-sm flex flex-col gap-1.5"><div class="flex justify-between font-bold text-dark border-b border-secondary/10 pb-1.5"><span>📅 ${h.date} ${h.time}</span><span class="${statusColor}">${h.status}</span></div><div class="flex justify-between text-dark/70 items-center mt-1"><span class="truncate pr-2">${h.service} <span class="bg-secondary/20 px-1 rounded">${h.teacher}</span></span><span class="font-bold text-dark whitespace-nowrap">💰 $${h.price}</span></div>${remitBtn}${repayBtn}</div>`;
         }).join('');
         Swal.fire({toast:true, position:'top', icon:'success', title: '已載入舊客資料', showConfirmButton:false, timer:1500});
@@ -570,36 +563,33 @@ function calculateFinalPrice() {
   document.getElementById('priceDisplay').innerText = "NT$ " + finalPrice.toLocaleString();
   const submitBtn = document.getElementById('submitBtn');
   
-  // 如果選銀行匯款，字眼保持轉帳
-const payWay = document.querySelector('input[name="paymentGateway"]:checked').value;
-if(payWay === 'REMIT') {
-   submitBtn.innerHTML = '確認提交預約 (轉帳匯款) <i class="fas fa-university ml-1"></i>';
-   submitBtn.classList.replace('bg-[#2e7d32]', 'bg-dark');
-   // 確保點擊事件是原本的送出邏輯
-   return;
-}
+  const payWayElement = document.querySelector('input[name="paymentGateway"]:checked');
+  const payWay = payWayElement ? payWayElement.value : 'ECPAY';
+  
+  if(payWay === 'REMIT') {
+     submitBtn.innerHTML = '確認提交預約 (轉帳匯款) <i class="fas fa-university ml-1"></i>';
+     submitBtn.classList.replace('bg-[#2e7d32]', 'bg-dark');
+  } else if (finalPrice === 0 && currentOriginalPrice > 0) { 
+    submitBtn.innerHTML = '全額抵扣・確認預約 <i class="fas fa-check-circle ml-2"></i>'; 
+    submitBtn.classList.replace('bg-dark', 'bg-[#2e7d32]');
+  } else { 
+    submitBtn.innerHTML = '前往支付 <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>';
+    submitBtn.classList.replace('bg-[#2e7d32]', 'bg-dark'); 
+  }
 
-if (finalPrice === 0 && currentOriginalPrice > 0) { 
-  submitBtn.innerHTML = '全額抵扣・確認預約 <i class="fas fa-check-circle ml-2"></i>'; 
-  submitBtn.classList.replace('bg-dark', 'bg-[#2e7d32]');
-} else { 
-  // 正常的「前往支付」按鈕，此時不需要任何 spinner 轉圈圈元素
-  submitBtn.innerHTML = '前往支付 <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>';
-  submitBtn.classList.replace('bg-[#2e7d32]', 'bg-dark'); 
-}
-
-if (currentCouponDiscount > 0 || deductAmount > 0) {
-  document.getElementById('discountDetail').classList.remove('hidden'); 
-  document.getElementById('discountDetail').classList.add('flex');
-  document.getElementById('originalPriceText').innerText = "原價 $" + currentOriginalPrice.toLocaleString();
-  let discountStr = []; 
-  if(currentCouponDiscount > 0) discountStr.push(`券折  $${currentCouponDiscount.toLocaleString()}`); 
-  if(deductAmount > 0) discountStr.push(`儲值抵  $${deductAmount.toLocaleString()}`);
-  document.getElementById('discountText').innerText = discountStr.join(' | ');
-} else { 
-  document.getElementById('discountDetail').classList.add('hidden'); 
-  document.getElementById('discountDetail').classList.remove('flex'); 
-}
+  if (currentCouponDiscount > 0 || deductAmount > 0) {
+    document.getElementById('discountDetail').classList.remove('hidden'); 
+    document.getElementById('discountDetail').classList.add('flex');
+    document.getElementById('originalPriceText').innerText = "原價 $" + currentOriginalPrice.toLocaleString();
+    let discountStr = []; 
+    if(currentCouponDiscount > 0) discountStr.push(`券折  $${currentCouponDiscount.toLocaleString()}`); 
+    if(deductAmount > 0) discountStr.push(`儲值抵  $${deductAmount.toLocaleString()}`);
+    document.getElementById('discountText').innerText = discountStr.join(' | ');
+  } else { 
+    document.getElementById('discountDetail').classList.add('hidden'); 
+    document.getElementById('discountDetail').classList.remove('flex'); 
+  }
+} // 🎯 修正核心死結：補上原本遺漏的大括號，徹底打通網頁執行天線
 
 function applyCoupon() {
   const code = document.getElementById('couponCode').value.trim();
@@ -677,7 +667,7 @@ function hasAvailableTime(dateStr, serviceName) {
 
 function renderCalendar() {
   const year = currentDate.getFullYear(); const month = currentDate.getMonth();
-  document.getElementById('monthYearText').textContent = `${year}  年  ${month + 1}  月`;
+  document.getElementById('monthYearText').textContent = `${year}   年   ${month + 1}   月`;
   const firstDay = new Date(year, month, 1).getDay(); const lastDate = new Date(year, month + 1, 0).getDate();
   const today = new Date(); today.setHours(0,0,0,0);
   const container = document.getElementById('calendarDays'); container.innerHTML = '';
@@ -790,7 +780,7 @@ function submitForm() {
       bookDate: document.getElementById('hiddenDate').value, bookTime: document.getElementById('hiddenTime').value,
       mainService: document.getElementById('serviceSelect').value, originalPrice: currentOriginalPrice, couponCode: document.getElementById('couponCode').value.trim(),
       useWallet: useWallet,
-      paymentMethod: payWay // 🚀【傳入新旗標】：告知後端是線上支付還是純匯款
+      paymentMethod: payWay
     };
     
     if(!formData.userPhone || !formData.userName || !formData.lineName || !formData.master || !formData.bookDate || !formData.bookTime || !formData.mainService) {
@@ -806,43 +796,36 @@ function submitForm() {
       .then(response => {
         if(response.success) {
           if (response.walletFullyPaid || response.isRemittance) {
-            // 儲值金全額扣抵 或 選擇銀行轉帳匯款時，一律直接導向成功頁
             window.location.href = response.scriptUrl + "?page=success";
           } else {
-            // 綠界科技付款模組跳轉機制
             const div = document.createElement('div');
-            div.id = 'ecpayFormContainer'; // ➕ 加上 ID 方便後續抓取
+            div.id = 'ecpayFormContainer';
             div.style.display = 'none'; 
             div.innerHTML = response.html; 
             document.body.appendChild(div);
             
             const ecpayForm = document.getElementById('ecpayForm');
             if(ecpayForm) {
-              // 1. 🚀 改用 window.open 嘗試開啟新分頁（綠界原本表單也是 target="_blank"）
               const paymentWindow = window.open('', '_blank');
               if (paymentWindow) {
                 ecpayForm.target = '_blank';
                 ecpayForm.submit();
               }
               
-              // 2. 🎯【核心進化】：解鎖按鈕，立刻把原本的「預約處理中...」轉圈按鈕變成紅色亮眼自救鈕！
               btn.disabled = false;
               btn.classList.remove('is-processing', 'opacity-50', 'cursor-not-allowed', 'bg-dark');
-              // 換成搶眼的紅色、大字體、並加上吸引注意的閃爍/呼吸動畫效果
               btn.className = "bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-6 rounded-xl shadow-xl transition-all tracking-wider text-sm flex items-center justify-center animate-pulse cursor-pointer w-full sm:w-auto";
               btn.innerHTML = '⚠️ 沒跳出綠界？請點此前往支付 <i class="fas fa-external-link-alt ml-2"></i>';
               
-              // 3. 🎯 綁定二次救回點擊：如果客人剛剛沒跳出視窗，點這個新按鈕，直接在原分頁強制開啟綠界！
               btn.onclick = function(e) {
                 e.preventDefault();
                 const retryForm = document.getElementById('ecpayForm');
                 if (retryForm) {
-                  retryForm.target = '_self'; // 這裡強制在「原分頁」跳轉，100% 免疫彈出視窗攔截！
+                  retryForm.target = '_self';
                   retryForm.submit();
                 }
               };
 
-              // 4. 貼心彈窗提示 (SweetAlert2)
               Swal.fire({
                 title: '🎉 預約時段已鎖定！',
                 html: `我們正嘗試開啟綠界安全支付分頁...<br><br>
@@ -875,7 +858,7 @@ function submitForm() {
 
 function resetSubmitBtn() {
   const btn = document.getElementById('submitBtn');
-  btn.onclick = function() { submitForm(); }; // 恢復原本提交表單的點擊功能
+  btn.onclick = function() { submitForm(); };
   calculateFinalPrice();
   btn.disabled = false; 
   btn.classList.remove('is-processing', 'opacity-50', 'cursor-not-allowed');
@@ -899,5 +882,4 @@ window.repayOrder = function(event, orderId) {
 </script>
 </body>
 </html>
-
 
