@@ -332,7 +332,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 </main>
 
 <script>
-const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwIGY8L774iM-U50uniLROYu_2I-T-osoV6xOYVk99CaQZt6kMRJmgnBhWhxvS35A5r/exec";
+const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzH95axgpO5ftPAK9FRlT9CfHGH48uZo2bVs16qbzpyLByOZrgbAmtmyj5d6Ij4BnV4Zg/exec";
 
 let globalServices = []; let globalSlots = []; let globalBookings = []; let staffMap = {}; let globalWalletPlans = [];
 let currentDate = new Date(); let selectedDateCell = null; let selectedTimeBtn = null; let selectedMasterBtn = null;
@@ -849,13 +849,36 @@ function submitForm() {
             div.innerHTML = response.html; 
             document.body.appendChild(div);
             
-            const ecpayForm = document.getElementById('ecpayForm');
-            if(ecpayForm) {
-              const paymentWindow = window.open('', '_blank');
-              if (paymentWindow) {
-                ecpayForm.target = '_blank';
-                ecpayForm.submit();
-              }
+            // 📍 修改後的新區塊（直接替換掉上述區塊，100% 防瀏覽器封鎖）：
+const ecpayForm = document.getElementById('ecpayForm');
+if(ecpayForm) {
+  // 🚀 關鍵修正：取消開新分頁，讓表單直接在當前頁面導向綠界，徹底解鎖手機安全封鎖
+  ecpayForm.target = '_self'; 
+  ecpayForm.submit();
+  
+  btn.disabled = false;
+  btn.classList.remove('is-processing', 'opacity-50', 'cursor-not-allowed', 'bg-dark');
+  btn.className = "bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-6 rounded-xl shadow-xl transition-all tracking-wider text-sm flex items-center justify-center animate-pulse cursor-pointer w-full sm:w-auto";
+  btn.innerHTML = '⚠️ 沒跳出綠界？請點此前往支付 <i class="fas fa-external-link-alt ml-2"></i>';
+  
+  btn.onclick = function(e) {
+    e.preventDefault();
+    const retryForm = document.getElementById('ecpayForm');
+    if (retryForm) {
+      retryForm.target = '_self';
+      retryForm.submit();
+    }
+  };
+
+  Swal.fire({
+    title: '🎉 預約時段已鎖定！',
+    html: `我們正在為您安全導向至綠界刷卡頁面...<br><br><span class="text-red-600 font-bold text-xs leading-relaxed">⚠️ 貼心提示：付款完成後，請務必點擊【返回商店】以便系統為您發送 LINE 成功指引喔！</span>`,
+    icon: 'success',
+    confirmButtonColor: '#7E6B5A',
+    confirmButtonText: '我知道了'
+  });
+}
+
               
               btn.disabled = false;
               btn.classList.remove('is-processing', 'opacity-50', 'cursor-not-allowed', 'bg-dark');
@@ -927,3 +950,5 @@ window.repayOrder = function(event, orderId) {
 </script>
 </body>
 </html>
+
+
