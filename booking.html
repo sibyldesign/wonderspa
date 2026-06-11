@@ -150,7 +150,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 
 <div class="bg-surface p-6 rounded-[1.5rem] shadow-soft space-y-5 w-full relative border border-secondary/10">
 <div id="initOverlay" class="absolute inset-0 bg-surface/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center rounded-[1.5rem]">
-<div class="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin mb-2"></div><span class="text-xs text-dark/70 tracking-widest font-bold">  系統連線中...   </span>
+<div class="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin mb-2"></div><span class="text-xs text-dark/70 tracking-widest font-bold">  系統連線中...    </span>
 </div>
 <h2 class="text-xs font-bold tracking-widest border-b border-secondary/10 pb-3 flex items-center justify-between">
 <span><i class="fas fa-calendar-alt mr-2 text-accent"></i>  預約安排 SCHEDULE  </span>
@@ -735,7 +735,7 @@ function selectDate(element, dateStr) {
       let reqStart = timeToMinutes(slotTime); let reqEnd = reqStart + requiredDuration;
       for (let min = reqStart; min < reqEnd; min += 10) {
         let overlapCount = 0; let masterBusy = false;
-        for (let i = 0; i < bookedIntervals.length; i++) { if (min >= bookedIntervals[i].start && min < bookedIntervals[i].end) { overlapCount++; if (bookedIntervals[i].teacher === master) masterBusy = true; } }
+        for (let i = 0; i < bookedIntervals.length; i++) { if (min >= bookedIntervals[j].start && min < bookedIntervals[j].end) { overlapCount++; if (bookedIntervals[j].teacher === master) masterBusy = true; } }
         if (overlapCount >= MAX_ROOMS || masterBusy) return false;
       }
       return true;
@@ -849,36 +849,11 @@ function submitForm() {
             div.innerHTML = response.html; 
             document.body.appendChild(div);
             
-            // 📍 修改後的新區塊（直接替換掉上述區塊，100% 防瀏覽器封鎖）：
-const ecpayForm = document.getElementById('ecpayForm');
-if(ecpayForm) {
-  // 🚀 關鍵修正：取消開新分頁，讓表單直接在當前頁面導向綠界，徹底解鎖手機安全封鎖
-  ecpayForm.target = '_self'; 
-  ecpayForm.submit();
-  
-  btn.disabled = false;
-  btn.classList.remove('is-processing', 'opacity-50', 'cursor-not-allowed', 'bg-dark');
-  btn.className = "bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-6 rounded-xl shadow-xl transition-all tracking-wider text-sm flex items-center justify-center animate-pulse cursor-pointer w-full sm:w-auto";
-  btn.innerHTML = '⚠️ 沒跳出綠界？請點此前往支付 <i class="fas fa-external-link-alt ml-2"></i>';
-  
-  btn.onclick = function(e) {
-    e.preventDefault();
-    const retryForm = document.getElementById('ecpayForm');
-    if (retryForm) {
-      retryForm.target = '_self';
-      retryForm.submit();
-    }
-  };
-
-  Swal.fire({
-    title: '🎉 預約時段已鎖定！',
-    html: `我們正在為您安全導向至綠界刷卡頁面...<br><br><span class="text-red-600 font-bold text-xs leading-relaxed">⚠️ 貼心提示：付款完成後，請務必點擊【返回商店】以便系統為您發送 LINE 成功指引喔！</span>`,
-    icon: 'success',
-    confirmButtonColor: '#7E6B5A',
-    confirmButtonText: '我知道了'
-  });
-}
-
+            // 🚀【修正後的安全跳轉區塊】：100%防手機與瀏覽器安全機制封鎖
+            const ecpayForm = document.getElementById('ecpayForm');
+            if(ecpayForm) {
+              ecpayForm.target = '_self'; 
+              ecpayForm.submit();
               
               btn.disabled = false;
               btn.classList.remove('is-processing', 'opacity-50', 'cursor-not-allowed', 'bg-dark');
@@ -896,19 +871,16 @@ if(ecpayForm) {
 
               Swal.fire({
                 title: '🎉 預約時段已鎖定！',
-                html: `我們正嘗試開啟綠界安全支付分頁...<br><br>
-                       <span class="text-red-600 font-bold text-xs leading-relaxed">⚠️ 若您的手機「卡住轉圈」或「沒有彈出刷卡畫面」，請立刻點擊下方按鈕：<br><b>【⚠️ 沒跳出綠界？請點此前往支付】</b> 完成付款喔！</span>`,
+                html: `我們正在為您安全導向至綠界刷卡頁面...<br><br><span class="text-red-600 font-bold text-xs leading-relaxed">⚠️ 貼心提示：付款完成後，請務必點擊【返回商店】以便系統為您發送 LINE 成功指引喔！</span>`,
                 icon: 'success',
                 confirmButtonColor: '#7E6B5A',
                 confirmButtonText: '我知道了'
               });
-
             } else {
               alert('找不到金流表單，但訂單可能已建立，請聯繫客服。');
               resetSubmitBtn();
             }
           }
-
         } else {
           alert('處理訂單失敗：' + response.message);
           resetSubmitBtn();
@@ -941,8 +913,10 @@ window.repayOrder = function(event, orderId) {
       if(response.success) {
         const div = document.createElement('div'); div.innerHTML = response.html; document.body.appendChild(div);
         const ecpayForm = document.getElementById('ecpayForm');
-        if(ecpayForm) ecpayForm.submit(); 
-        else { alert('找不到表單'); btn.innerHTML = originalText; btn.disabled = false; btn.classList.remove('opacity-70'); }
+        if(ecpayForm) {
+          ecpayForm.target = '_self'; // 補付通道同步修正防阻擋
+          ecpayForm.submit(); 
+        } else { alert('找不到表單'); btn.innerHTML = originalText; btn.disabled = false; btn.classList.remove('opacity-70'); }
       } else { alert('重啟付款失敗：' + response.message); btn.innerHTML = originalText; btn.disabled = false; btn.classList.remove('opacity-70'); }
     })
     .catch(() => { btn.innerHTML = originalText; btn.disabled = false; btn.classList.remove('opacity-70'); });
@@ -950,5 +924,3 @@ window.repayOrder = function(event, orderId) {
 </script>
 </body>
 </html>
-
-
