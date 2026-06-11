@@ -905,22 +905,60 @@ function resetSubmitBtn() {
 }
 
 window.repayOrder = function(event, orderId) {
-  event.preventDefault(); const btn = event.currentTarget; const originalText = btn.innerHTML;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 連結金流中...'; btn.disabled = true; btn.classList.add('opacity-70');
+  event.preventDefault(); 
+  const btn = event.currentTarget; 
+  const originalText = btn.innerHTML;
+  
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 連結金流中...'; 
+  btn.disabled = true; 
+  btn.classList.add('opacity-70');
   
   fetchFromGAS('getPaymentFormForExistingOrder', { orderId: orderId })
     .then(response => {
       if(response.success) {
-        const div = document.createElement('div'); div.innerHTML = response.html; document.body.appendChild(div);
+        // 建立隱藏容器塞入表單
+        const div = document.createElement('div'); 
+        div.innerHTML = response.html; 
+        document.body.appendChild(div);
+        
         const ecpayForm = document.getElementById('ecpayForm');
         if(ecpayForm) {
-          ecpayForm.target = '_self'; // 補付通道同步修正防阻擋
-          ecpayForm.submit(); 
-        } else { alert('找不到表單'); btn.innerHTML = originalText; btn.disabled = false; btn.classList.remove('opacity-70'); }
-      } else { alert('重啟付款失敗：' + response.message); btn.innerHTML = originalText; btn.disabled = false; btn.classList.remove('opacity-70'); }
+          // 🚀 舊客補付通道同步採用「文字跳轉提示」，消除按鈕一直轉圈圈
+          btn.disabled = false;
+          btn.classList.remove('opacity-70');
+          btn.className = "mt-1 w-full bg-green-600 text-white font-bold py-1.5 rounded-lg text-[11px] hover:bg-green-700 transition-all shadow-sm flex justify-center items-center gap-1.5 tracking-widest border border-green-600";
+          btn.innerHTML = '<i class="fas fa-lock mr-1 animate-bounce"></i> 正在安全跳轉至安全刷卡頁面...';
+
+          // 2. 顯示 SweetAlert 提示，完成後當前視窗直接安全導向綠界
+          Swal.fire({
+            title: '🎉 付款通道已打通！',
+            html: `系統正在為您啟動綠界安全支付通道...<br><br><span class="text-red-600 font-bold text-xs leading-relaxed">⚠️ 貼心提示：結帳完成後，請務必點擊【返回商店】喔！</span>`,
+            icon: 'success',
+            confirmButtonColor: '#7E6B5A',
+            confirmButtonText: '前往刷卡付款',
+            timer: 2000,
+            timerProgressBar: true
+          }).then(() => {
+            ecpayForm.target = '_self'; 
+            ecpayForm.submit();
+          });
+        } else { 
+          alert('找不到金流表單，請聯繫客服協助。'); 
+          btn.innerHTML = originalText; btn.disabled = false; btn.classList.remove('opacity-70'); 
+        }
+      } else { 
+        alert('重啟付款失敗：' + response.message); 
+        btn.innerHTML = originalText; btn.disabled = false; btn.classList.remove('opacity-70'); 
+      }
     })
-    .catch(() => { btn.innerHTML = originalText; btn.disabled = false; btn.classList.remove('opacity-70'); });
-};
+    .catch(err => { 
+      alert('連線逾時，請重試：' + err.toString());
+      btn.innerHTML = originalText; btn.disabled = false; btn.classList.remove('opacity-70'); 
+    });
+}; // 🎯 這裡才是 window.repayOrder 函式的完美終點
+
 </script>
 </body>
 </html>
+
+
