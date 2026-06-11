@@ -839,29 +839,78 @@ function submitForm() {
     btn.disabled = true;
     btn.classList.add('opacity-50', 'cursor-not-allowed');
 
+    // 🪡【0611與0612精準縫合】全線打通：轉帳引導匯款帳號防線 + 綠界滑順文字跳轉提示
     postToGAS('processBooking', formData)
       .then(response => {
         if(response.success) {
-          if (response.walletFullyPaid || response.isRemittance) {
+          
+          // 🏦 1. 如果是「儲值金全額扣掉」，直接帶去成功頁面
+          if (response.walletFullyPaid) {
             window.location.href = response.scriptUrl + "?page=success";
-          } else {
+          } 
+          // 🏦 2. 補回消失的核心功能：如果客人選擇「銀行轉帳匯款」
+          else if (response.isRemittance || payWay === 'REMIT') {
+            // 立刻解除按鈕的轉圈圈卡死狀態
+            resetSubmitBtn();
+            
+            // 彈出極具質感的國泰世華匯款帳號提示視窗，並引導後續動作
+            Swal.fire({
+              title: '🎉 預約成功！時段已為您鎖定',
+              html: `<div class="bg-[#F5EBE1] p-4 rounded-xl text-left text-xs text-dark space-y-2 border border-accent/20">
+                      <p class="font-bold text-accent text-sm text-center mb-1"><i class="fas fa-university"></i> 請於 30 分鐘內完成匯款</p>
+                      <p class="h-px bg-secondary/20 my-1"></p>
+                      <p><b>🏦 銀行：</b>國泰世華銀行 (013)</p>
+                      <p><b>🔢 帳號：</b><span class="font-mono font-bold text-sm tracking-wide text-dark select-all">0565-0605-4643</span></p>
+                      <p><b>💰 應付金額：</b><b class="text-red-600 text-sm">NT$ ${response.finalPrice || formData.originalPrice}</b></p>
+                     </div>
+                     <p class="text-[11px] text-red-600 font-bold mt-3 leading-relaxed text-left">
+                      💡 貼心提示：匯款完成後，請至頁面最上方點擊【查詢帶入】您的歷史紀錄，並按下【回報轉帳後五碼】按鈕，管理團隊核對後將立刻為您確立預約！
+                     </p>`,
+              icon: 'success',
+              confirmButtonColor: '#7E6B5A',
+              confirmButtonText: '我已記下匯款資訊',
+              allowOutsideClick: false
+            }).then(() => {
+              // 點選確定後，將客人頁面自動刷新載入，以便他看得到歷史紀錄並能即時點選回報
+              if(typeof fetchCustomerProfile === "function" && formData.userPhone) {
+                document.getElementById('userPhoneInput').value = formData.userPhone;
+                fetchCustomerProfile();
+              }
+            });
+          } 
+          // 💳 3. 如果客人選擇「線上刷卡支付」
+          else {
             const div = document.createElement('div');
             div.id = 'ecpayFormContainer';
             div.style.display = 'none'; 
             div.innerHTML = response.html; 
             document.body.appendChild(div);
             
-            // 🚀【修正後的安全跳轉區塊】：100%防手機與瀏覽器安全機制封鎖
             const ecpayForm = document.getElementById('ecpayForm');
             if(ecpayForm) {
+              // 取消開新分頁，當前視窗滑順引導
               ecpayForm.target = '_self'; 
-              ecpayForm.submit();
               
+              // 立刻解鎖按鈕文字，消除預約處理中轉圈圈
               btn.disabled = false;
               btn.classList.remove('is-processing', 'opacity-50', 'cursor-not-allowed', 'bg-dark');
-              btn.className = "bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-6 rounded-xl shadow-xl transition-all tracking-wider text-sm flex items-center justify-center animate-pulse cursor-pointer w-full sm:w-auto";
-              btn.innerHTML = '⚠️ 沒跳出綠界？請點此前往支付 <i class="fas fa-external-link-alt ml-2"></i>';
+              btn.className = "bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-xl shadow-xl transition-all tracking-wider text-sm flex items-center justify-center cursor-pointer w-full sm:w-auto";
+              btn.innerHTML = '<i class="fas fa-lock mr-2 animate-bounce"></i> 正在安全跳轉至綠界，請稍候...';
+
+              // 先彈出鎖定打勾提示，按確定或過 2.5 秒後，自動發動送出跳轉
+              Swal.fire({
+                title: '🎉 預約時段已成功鎖定！',
+                html: `系統正在為您啟動綠界安全支付通道...<br><br><span class="text-red-600 font-bold text-xs leading-relaxed">⚠️ 貼心提示：結帳完成後，請務必點擊【返回商店】以便系統為您發送 LINE 入場指引喔！</span>`,
+                icon: 'success',
+                confirmButtonColor: '#7E6B5A',
+                confirmButtonText: '前往刷卡付款',
+                timer: 2500,
+                timerProgressBar: true
+              }).then(() => {
+                ecpayForm.submit();
+              });
               
+              // 備援手動通道
               btn.onclick = function(e) {
                 e.preventDefault();
                 const retryForm = document.getElementById('ecpayForm');
@@ -870,14 +919,6 @@ function submitForm() {
                   retryForm.submit();
                 }
               };
-
-              Swal.fire({
-                title: '🎉 預約時段已鎖定！',
-                html: `我們正在為您安全導向至綠界刷卡頁面...<br><br><span class="text-red-600 font-bold text-xs leading-relaxed">⚠️ 貼心提示：付款完成後，請務必點擊【返回商店】以便系統為您發送 LINE 成功指引喔！</span>`,
-                icon: 'success',
-                confirmButtonColor: '#7E6B5A',
-                confirmButtonText: '我知道了'
-              });
             } else {
               alert('找不到金流表單，但訂單可能已建立，請聯繫客服。');
               resetSubmitBtn();
@@ -888,15 +929,6 @@ function submitForm() {
           resetSubmitBtn();
         }
       })
-      .catch(err => {
-        alert('伺服器連線過載，請稍後重試：' + err.toString());
-        resetSubmitBtn();
-      });
-  } catch (e) {
-    alert('發生預期外錯誤：' + e.message);
-    resetSubmitBtn();
-  }
-}
 
 function resetSubmitBtn() {
   const btn = document.getElementById('submitBtn');
