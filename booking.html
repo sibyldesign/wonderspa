@@ -334,7 +334,7 @@ tailwind.config = { theme: { extend: { colors: { primary: '#F5F1ED', secondary: 
 </main>
 
 <script>
-const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzH95axgpO5ftPAK9FRlT9CfHGH48uZo2bVs16qbzpyLByOZrgbAmtmyj5d6Ij4BnV4Zg/exec";
+const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwIGY8L774iM-U50uniLROYu_2I-T-osoV6xOYVk99CaQZt6kMRJmgnBhWhxvS35A5r/exec";
 
 let globalServices = []; let globalSlots = []; let globalBookings = []; let staffMap = {}; let globalWalletPlans = [];
 let currentDate = new Date(); let selectedDateCell = null; let selectedTimeBtn = null; let selectedMasterBtn = null;
@@ -707,11 +707,6 @@ function selectDate(element, dateStr) {
   const nowTimestamp = now.getTime();
   const todayFormatted = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
   
-  let leadTimeLimitMinutes = 0; 
-  try {
-    // 串接後端拋出的設定參數
-  } catch(e){}
-
   let validSlots = []; timeMasterMap = {};
 
   if (bookingMode === 'master') {
@@ -719,15 +714,12 @@ function selectDate(element, dateStr) {
     const mySlots = globalSlots.filter(s => s.date === dateStr && s.master === master).map(s => s.time);
     validSlots = mySlots.filter(slotTime => {
       
-      // 🛑【選師傅模式：精準阻擋 60/90 分鐘臨近預約防線】
       if (dateStr === todayFormatted) {
         let cleanDateStr = dateStr.replace(/-/g, '/');
         let slotDateTime = new Date(cleanDateStr + ' ' + slotTime);
         if (!isNaN(slotDateTime.getTime())) {
-          // 1. 過去的時間按鈕直接過濾
           if (slotDateTime.getTime() <= nowTimestamp) return false;
           
-          // 2. 超強效防線：距離目前時間不足 60 分鐘，前台直接砍掉！
           let currentLimit = window.leadTimeLimitMinutes || 60; 
           let timeDiffMinutes = (slotDateTime.getTime() - nowTimestamp) / (1000 * 60);
           if (timeDiffMinutes < currentLimit) return false;
@@ -737,7 +729,7 @@ function selectDate(element, dateStr) {
       let reqStart = timeToMinutes(slotTime); let reqEnd = reqStart + requiredDuration;
       for (let min = reqStart; min < reqEnd; min += 10) {
         let overlapCount = 0; let masterBusy = false;
-        for (let i = 0; i < bookedIntervals.length; i++) { if (min >= bookedIntervals[j].start && min < bookedIntervals[j].end) { overlapCount++; if (bookedIntervals[j].teacher === master) masterBusy = true; } }
+        for (let j = 0; j < bookedIntervals.length; j++) { if (min >= bookedIntervals[j].start && min < bookedIntervals[j].end) { overlapCount++; if (bookedIntervals[j].teacher === master) masterBusy = true; } }
         if (overlapCount >= MAX_ROOMS || masterBusy) return false;
       }
       return true;
@@ -749,15 +741,12 @@ function selectDate(element, dateStr) {
     allSlotsToday.forEach(slot => {
       if(!validMastersForService.includes(slot.master) && !validMastersForService.includes('共用')) return;
       
-      // 🛑【看空檔模式：精準阻擋 60/90 分鐘臨近預約防線】
       if (dateStr === todayFormatted) {
         let cleanDateStr = dateStr.replace(/-/g, '/');
         let slotDateTime = new Date(cleanDateStr + ' ' + slot.time);
         if (!isNaN(slotDateTime.getTime())) {
-          // 1. 過去的時間按鈕直接過濾
           if (slotDateTime.getTime() <= nowTimestamp) return;
           
-          // 2. 距離目前時間不足 60 分鐘，直接蒸發！
           let currentLimit = window.leadTimeLimitMinutes || 60; 
           let timeDiffMinutes = (slotDateTime.getTime() - nowTimestamp) / (1000 * 60);
           if (timeDiffMinutes < currentLimit) return;
@@ -767,7 +756,7 @@ function selectDate(element, dateStr) {
       let reqStart = timeToMinutes(slot.time); let reqEnd = reqStart + requiredDuration; let isValid = true;
       for (let min = reqStart; min < reqEnd; min += 10) {
         let overlapCount = 0; let masterBusy = false;
-        for (let i = 0; i < bookedIntervals.length; i++) { if (min >= bookedIntervals[i].start && min < bookedIntervals[i].end) { overlapCount++; if (bookedIntervals[i].teacher === slot.master) masterBusy = true; } }
+        for (let j = 0; j < bookedIntervals.length; j++) { if (min >= bookedIntervals[i].start && min < bookedIntervals[i].end) { overlapCount++; if (bookedIntervals[i].teacher === slot.master) masterBusy = true; } }
         if (overlapCount >= MAX_ROOMS || masterBusy) { isValid = false; break; }
       }
       if (isValid) { if(!timeMasterMap[slot.time]) timeMasterMap[slot.time] = []; if(!timeMasterMap[slot.time].includes(slot.master)) timeMasterMap[slot.time].push(slot.master); }
@@ -839,21 +828,14 @@ function submitForm() {
     btn.disabled = true;
     btn.classList.add('opacity-50', 'cursor-not-allowed');
 
-    // 🪡【0611與0612精準縫合】全線打通：轉帳引導匯款帳號防線 + 綠界滑順文字跳轉提示
     postToGAS('processBooking', formData)
       .then(response => {
         if(response.success) {
-          
-          // 🏦 1. 如果是「儲值金全額扣掉」，直接帶去成功頁面
           if (response.walletFullyPaid) {
             window.location.href = response.scriptUrl + "?page=success";
           } 
-          // 🏦 2. 補回消失的核心功能：如果客人選擇「銀行轉帳匯款」
           else if (response.isRemittance || payWay === 'REMIT') {
-            // 立刻解除按鈕的轉圈圈卡死狀態
             resetSubmitBtn();
-            
-            // 彈出極具質感的國泰世華匯款帳號提示視窗，並引導後續動作
             Swal.fire({
               title: '🎉 預約成功！時段已為您鎖定',
               html: `<div class="bg-[#F5EBE1] p-4 rounded-xl text-left text-xs text-dark space-y-2 border border-accent/20">
@@ -871,14 +853,12 @@ function submitForm() {
               confirmButtonText: '我已記下匯款資訊',
               allowOutsideClick: false
             }).then(() => {
-              // 點選確定後，將客人頁面自動刷新載入，以便他看得到歷史紀錄並能即時點選回報
               if(typeof fetchCustomerProfile === "function" && formData.userPhone) {
                 document.getElementById('userPhoneInput').value = formData.userPhone;
                 fetchCustomerProfile();
               }
             });
           } 
-          // 💳 3. 如果客人選擇「線上刷卡支付」
           else {
             const div = document.createElement('div');
             div.id = 'ecpayFormContainer';
@@ -888,16 +868,12 @@ function submitForm() {
             
             const ecpayForm = document.getElementById('ecpayForm');
             if(ecpayForm) {
-              // 取消開新分頁，當前視窗滑順引導
               ecpayForm.target = '_self'; 
-              
-              // 立刻解鎖按鈕文字，消除預約處理中轉圈圈
               btn.disabled = false;
               btn.classList.remove('is-processing', 'opacity-50', 'cursor-not-allowed', 'bg-dark');
               btn.className = "bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-xl shadow-xl transition-all tracking-wider text-sm flex items-center justify-center cursor-pointer w-full sm:w-auto";
               btn.innerHTML = '<i class="fas fa-lock mr-2 animate-bounce"></i> 正在安全跳轉至綠界，請稍候...';
 
-              // 先彈出鎖定打勾提示，按確定或過 2.5 秒後，自動發動送出跳轉
               Swal.fire({
                 title: '🎉 預約時段已成功鎖定！',
                 html: `系統正在為您啟動綠界安全支付通道...<br><br><span class="text-red-600 font-bold text-xs leading-relaxed">⚠️ 貼心提示：結帳完成後，請務必點擊【返回商店】以便系統為您發送 LINE 入場指引喔！</span>`,
@@ -910,7 +886,6 @@ function submitForm() {
                 ecpayForm.submit();
               });
               
-              // 備援手動通道
               btn.onclick = function(e) {
                 e.preventDefault();
                 const retryForm = document.getElementById('ecpayForm');
@@ -929,6 +904,15 @@ function submitForm() {
           resetSubmitBtn();
         }
       })
+      .catch(err => {
+        alert('系統連線異常，請重新嘗試：' + err.toString());
+        resetSubmitBtn();
+      });
+  } catch (e) {
+    alert('發生預期外錯誤：' + e.message);
+    resetSubmitBtn();
+  }
+}
 
 function resetSubmitBtn() {
   const btn = document.getElementById('submitBtn');
@@ -950,20 +934,17 @@ window.repayOrder = function(event, orderId) {
   fetchFromGAS('getPaymentFormForExistingOrder', { orderId: orderId })
     .then(response => {
       if(response.success) {
-        // 建立隱藏容器塞入表單
         const div = document.createElement('div'); 
         div.innerHTML = response.html; 
         document.body.appendChild(div);
         
         const ecpayForm = document.getElementById('ecpayForm');
         if(ecpayForm) {
-          // 🚀 舊客補付通道同步採用「文字跳轉提示」，消除按鈕一直轉圈圈
           btn.disabled = false;
           btn.classList.remove('opacity-70');
           btn.className = "mt-1 w-full bg-green-600 text-white font-bold py-1.5 rounded-lg text-[11px] hover:bg-green-700 transition-all shadow-sm flex justify-center items-center gap-1.5 tracking-widest border border-green-600";
           btn.innerHTML = '<i class="fas fa-lock mr-1 animate-bounce"></i> 正在安全跳轉至安全刷卡頁面...';
 
-          // 2. 顯示 SweetAlert 提示，完成後當前視窗直接安全導向綠界
           Swal.fire({
             title: '🎉 付款通道已打通！',
             html: `系統正在為您啟動綠界安全支付通道...<br><br><span class="text-red-600 font-bold text-xs leading-relaxed">⚠️ 貼心提示：結帳完成後，請務必點擊【返回商店】喔！</span>`,
@@ -989,10 +970,8 @@ window.repayOrder = function(event, orderId) {
       alert('連線逾時，請重試：' + err.toString());
       btn.innerHTML = originalText; btn.disabled = false; btn.classList.remove('opacity-70'); 
     });
-}; // 🎯 這裡才是 window.repayOrder 函式的完美終點
+};
 
 </script>
 </body>
 </html>
-
-
